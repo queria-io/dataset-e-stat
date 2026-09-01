@@ -18,6 +18,7 @@ import logging
 import re
 import time
 import urllib.parse
+from http.client import IncompleteRead
 from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
@@ -139,7 +140,17 @@ def _fetch(url: str) -> tuple[bytes, str]:
             req = Request(url, headers={"User-Agent": _UA})
             with urlopen(req, timeout=_TIMEOUT) as resp:
                 return resp.read(), resp.headers.get("Content-Disposition", "")
-        except (HTTPError, URLError) as e:
+        # 応答の読み取り中に起きる失敗は URLError に包まれない。urllib が包むのは
+        # 送信時の OSError だけで、getresponse() 以降はソケット層の
+        # TimeoutError / ConnectionResetError と、本文が Content-Length に届かない
+        # IncompleteRead がそのまま上がる。明示しないと再試行を素通りする。
+        except (
+            HTTPError,
+            URLError,
+            TimeoutError,
+            ConnectionResetError,
+            IncompleteRead,
+        ) as e:
             transient = not isinstance(e, HTTPError) or e.code in _TRANSIENT_HTTP_CODES
             if not transient or attempt == _MAX_RETRIES - 1:
                 raise
