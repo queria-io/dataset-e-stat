@@ -1,0 +1,77 @@
+schema: census
+name: census_commuting_flow
+title: 常住地から従業地・通学地への通勤・通学流動（令和2年国勢調査）
+description: |-
+  令和2年国勢調査 従業地・通学地による人口・就業状態等集計から、常住地（全国・都道府県・市区町村）
+  ごとに、従業地・通学地がどの都道府県かで分けた通勤者・通学者数を集計した表。
+  1行が「常住地 → 従業地・通学地」1組にあたる OD（起終点）行列で、常住地1,965 ×
+  従業地・通学地50 × 男女3区分 = 294,750行。
+  数えているのは自宅外で従業・通学する人だけで、自宅で従業する人（原典の「自宅で従業」）と
+  従業も通学もしていない人は含まない。census_municipality_daytime_population の
+  「自宅外の自市区町村で従業・通学」+「他市区町村で従業・通学」に、この表の従業地・通学地「不詳」を
+  足したものが destination_area_level = 'total' の値に一致する（全1,965地域・男女3区分で成立）。
+  従業地・通学地は都道府県までで、市区町村どうしの流動は含まない。
+  destination_area_level = 'total'（総数）の値は、47都道府県と不詳2区分（従業・通学市区町村
+  「不詳・外国」／従業地・通学地「不詳」）の和に等しい。総数と内訳が同じ列に混在するので、
+  絞らずに合計すると2倍になる。
+  常住地と同じ都道府県のセルには、自市区町村内で従業・通学する人（自宅外）も入る。
+  「県外へ出る人」を数えるには、destination_area が常住地の都道府県コードと違う行だけを取る。
+  area（常住地）は全国（00000）・都道府県・市・特別区部・政令指定都市の区・特別区・町村が
+  同じ列に縦に並ぶ。日本全域をちょうど1回覆うのは area_level = 'prefecture' か
+  area_level IN ('city', 'town_village') のいずれかで、どちらも従業地・通学地ごとの合計が
+  全国行と一致する（総数で 65,849,159）。絞らずに合計すると何重にも数える。
+  area は census_municipality_daytime_population・census_municipality_labor_force と同じ
+  1,965地域で、census_municipality・census_small_area_* の市区町村行・boundary.small_area の
+  key_code の上位5桁・code.municipality の area_code と同じ標準地域コード（5桁）。
+  全国地方公共団体コード（6桁）とは別体系なので、lg_code や address_br と結合するときは
+  桁と体系を揃える。
+  昼夜間人口そのものは census_municipality_daytime_population にある。
+  出典: 総務省統計局 令和2年国勢調査 従業地・通学地による人口・就業状態等集計（第6-1表）。
+  https://www.e-stat.go.jp/
+keywords:
+  - e-stat
+  - 国勢調査
+  - 通勤
+  - 通学
+  - 流動
+  - OD
+  - 市区町村
+  - 都道府県
+  - 昼間人口
+published: true
+sources:
+  - path: https://www.e-stat.go.jp/statistics/00200521
+fields:
+  - name: area
+    title: 常住地の標準地域コード（5桁）
+    description: 常住地（住んでいる場所）の標準地域コード。全国は 00000、都道府県は 13000 のように市区町村部が 000。census_municipality の area と同じ体系で、そちらの部分集合（2000年市区町村の再掲を除いた1,965地域）
+  - name: area_name
+    title: 常住地名
+    description: 常住地の名称（全国／東京都／特別区部／千代田区／札幌市／札幌市中央区 など）
+  - name: area_level
+    title: 常住地の粒度
+    description: 'area の粒度。national=全国（1）、prefecture=都道府県（47）、city=市・特別区部（793）、ward=政令指定都市の区と特別区（198）、town_village=町村（926）。日本全域をちょうど1回覆うのは prefecture だけ、または city と town_village の組だけで、どちらも従業地・通学地ごとの合計が全国行に一致する。ward は city の内訳で、足すと二重に数える'
+  - name: parent_area
+    title: 上位地域の標準地域コード
+    description: 常住地の1つ上の階層の area。都道府県の親は全国、市・町村の親は都道府県、政令指定都市の区の親はその市、特別区の親は特別区部（13100）。全国は NULL
+  - name: destination_area
+    title: 従業地・通学地のコード（5桁）
+    description: "従業地・通学地のコード。00000=総数、47都道府県は 13000 のように市区町村部が 000、99998=従業・通学市区町村「不詳・外国」、99999=従業地・通学地「不詳」。原典は市区町村まで持つが、この表は都道府県までに絞っている"
+  - name: destination_area_name
+    title: 従業地・通学地名
+    description: destination_area に対応する名称（総数／東京都／従業・通学市区町村「不詳・外国」／従業地・通学地「不詳」 など）
+  - name: destination_area_level
+    title: 従業地・通学地の粒度
+    description: "destination_area の粒度。total=総数（1区分）、prefecture=都道府県（47区分）、unknown=不詳2区分（99998・99999）。total の値は prefecture と unknown の和に等しく、全1,965地域・男女3区分で成り立つ。絞らずに合計すると2倍になる"
+  - name: sex_code
+    title: 男女コード
+    description: 男女のコード。0=総数、1=男、2=女。同じ常住地・同じ従業地・通学地で 男 + 女 = 総数 が全行で成り立つため、絞らずに合計すると2倍になる
+  - name: sex
+    title: 男女
+    description: sex_code に対応する区分名（総数／男／女）
+  - name: unit
+    title: 単位
+    description: 単位。この表では常に「人」
+  - name: value
+    title: 通勤者・通学者数
+    description: 通勤者・通学者数（人）。2020年10月1日現在。自宅外で従業・通学する人が対象で、自宅で従業する人と従業も通学もしていない人は含まない。原典が「-」の組み合わせは NULL で、294,750行のうち175,672行。その常住地からその従業地・通学地へ通う人がいない（0人）ことを表す

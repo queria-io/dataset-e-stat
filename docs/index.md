@@ -5,7 +5,7 @@ order: 0
 
 # e-Stat データセットの使い方
 
-e-Stat（政府統計の総合窓口）の API と統計GIS から取得した政府統計データです。中心となるのは社会・人口統計体系（SSDS）で、都道府県・市区町村それぞれ11分野の統計指標を共通のテーブル構造で収録しています。加えて消費者物価指数、統計表のメタデータ、令和2年国勢調査の市区町村別・小地域（町丁・字等）集計と境界データを収録します。
+e-Stat（政府統計の総合窓口）の API と統計GIS から取得した政府統計データです。中心となるのは社会・人口統計体系（SSDS）で、都道府県・市区町村それぞれ11分野の統計指標を共通のテーブル構造で収録しています。加えて消費者物価指数、統計表のメタデータ、令和2年国勢調査の市区町村別・小地域（町丁・字等）集計、昼夜間人口と通勤・通学流動、境界データを収録します。
 
 出典: [e-Stat](https://www.e-stat.go.jp/) / [社会・人口統計体系（SSDS）](https://www.e-stat.go.jp/statistics/00200502)
 
@@ -16,11 +16,11 @@ e-Stat（政府統計の総合窓口）の API と統計GIS から取得した�
 | ssds | 社会・人口統計体系。11分野 × 都道府県/市区町村 = 22テーブル + 指標定義 item_catalog + 指標別の収録年 series_coverage |
 | cpi | 消費者物価指数 price_index |
 | main | 統計表カタログ stats_catalog |
-| census | 令和2年国勢調査 小地域集計 census_small_area_*（年齢・世帯・住宅・産業）、市区町村別 基本集計 census_municipality、市区町村別 就業状態等基本集計 census_municipality_labor_force / census_municipality_employment_status、1kmメッシュ別昼間人口 daytime_population_mesh_1km |
+| census | 令和2年国勢調査 小地域集計 census_small_area_*（年齢・世帯・住宅・産業）、市区町村別 基本集計 census_municipality、市区町村別 就業状態等基本集計 census_municipality_labor_force / census_municipality_employment_status、昼夜間人口 census_municipality_daytime_population、通勤・通学流動 census_commuting_flow、1kmメッシュ別昼間人口 daytime_population_mesh_1km |
 | boundary | 令和2年国勢調査 町丁・字等別境界 small_area、1kmメッシュ境界 mesh_1km |
 | code | 統計に用いる標準地域コード municipality と、その変更（廃置分合）履歴 municipality_change |
 
-11分野（A〜K）の詳細は各カテゴリのガイドを参照してください。市区町村・都道府県を並べて比べたいときは[市区町村別 基本集計](/cookbook/e_stat/census-municipality)、働いているかどうかや働き方で比べたいときは[就業状態等基本集計](/cookbook/e_stat/census-employment)、市区町村より細かい粒度で見たいときは[小地域集計](/cookbook/e_stat/census)、昼と夜で人の分布を見分けたいときは[1kmメッシュ別 昼間人口](/cookbook/e_stat/mesh-daytime)、地図に載せるときは[境界データ](/cookbook/e_stat/boundary)を参照してください。
+11分野（A〜K）の詳細は各カテゴリのガイドを参照してください。市区町村・都道府県を並べて比べたいときは[市区町村別 基本集計](/cookbook/e_stat/census-municipality)、働いているかどうかや働き方で比べたいときは[就業状態等基本集計](/cookbook/e_stat/census-employment)、昼間に人が集まる街を見たいときや通勤・通学の行き先を見たいときは[昼夜間人口と通勤・通学流動](/cookbook/e_stat/census-commuting)、市区町村より細かい粒度で見たいときは[小地域集計](/cookbook/e_stat/census)、昼と夜で人の分布を見分けたいときは[1kmメッシュ別 昼間人口](/cookbook/e_stat/mesh-daytime)、地図に載せるときは[境界データ](/cookbook/e_stat/boundary)を参照してください。
 
 ## SSDS 共通のカラム構成
 

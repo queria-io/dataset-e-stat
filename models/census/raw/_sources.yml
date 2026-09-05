@@ -14,5 +14,7 @@ sources:
       - name: census_municipality_change
       - name: census_municipality_labor_force
       - name: census_municipality_employment_status
+      - name: census_municipality_daytime_population
+      - name: census_commuting_flow
       - name: mesh_population
       - name: mesh_establishment

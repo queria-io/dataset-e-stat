@@ -238,6 +238,97 @@ NULL になります。
 出典: 総務省統計局 令和2年国勢調査 就業状態等基本集計（第1-2-1表・第3-2表）。
 https://www.e-stat.go.jp/
 
+## 国勢調査 昼夜間人口と通勤・通学流動（census スキーマ）
+
+令和2年国勢調査 従業地・通学地による人口・就業状態等集計から、市区町村・都道府県の粒度で
+昼夜間人口と通勤・通学の流動を取った2表です。どちらも縦持ちで、年齢は総数のみです。
+
+| テーブル | 内容 | 区分の列 | 値 |
+|---------|------|---------|----|
+| census_municipality_daytime_population | 男女・常住地／従業地・通学地別 人口 | location_code / location | 人口 |
+| census_commuting_flow | 常住地 → 従業地・通学地（都道府県）別 通勤者・通学者数 | destination_area / destination_area_name | 通勤者・通学者数 |
+
+area は census_municipality と同じ標準地域コード（5桁）で、2000年（平成12年）市区町村の
+再掲を除いた1,965地域です。census_commuting_flow では area が常住地を指します。
+
+| area_level | 内容 | 地域数 | 夜間人口の合計 |
+|-----------|------|-------:|--------------:|
+| national | 全国 | 1 | 126,146,099 |
+| prefecture | 都道府県 | 47 | 126,146,099 |
+| city | 市・特別区部 | 793 | 115,757,942 |
+| town_village | 町村 | 926 | 10,388,157 |
+| ward | 政令指定都市の区・特別区 | 198 | 37,532,334 |
+
+### 昼夜間人口
+
+census_municipality_daytime_population は夜間人口（常住地による人口）側と昼間人口
+（従業地・通学地による人口）側が同じ列に縦に並びます。どちら側かは population_base、
+階層の深さは location_level に出ています。
+
+```sql
+SELECT area_name, value AS daytime_population
+FROM e_stat.census.census_municipality_daytime_population
+WHERE sex_code = '0' AND location_code = '1' AND area_level = 'ward'
+ORDER BY value DESC
+LIMIT 10;
+```
+
+昼夜間人口比率は昼間人口 ÷ 夜間人口 × 100 です。原典の第1-1-2表の公表値と一致します
+（千代田区は 903,780 ÷ 66,680 × 100 = 1355.39892）。
+
+```sql
+SELECT
+    area,
+    area_name,
+    MAX(value) FILTER (WHERE location_code = '0') AS nighttime_population,
+    MAX(value) FILTER (WHERE location_code = '1') AS daytime_population,
+    ROUND(
+        MAX(value) FILTER (WHERE location_code = '1') * 100.0
+        / MAX(value) FILTER (WHERE location_code = '0'), 1
+    ) AS daytime_ratio
+FROM e_stat.census.census_municipality_daytime_population
+WHERE sex_code = '0' AND area_level IN ('city', 'town_village')
+GROUP BY area, area_name
+ORDER BY daytime_ratio DESC
+LIMIT 10;
+```
+
+昼間人口 = 夜間人口 − 流出人口 + 流入人口 が全1,965地域・男女3区分で成り立ちます。
+流出人口・流入人口（is_reprint = true の2区分）が指す範囲は area_level で変わります。
+市区町村（区・町村・政令指定都市以外の市）は自市内他区・県内他市町村・他県の3区分の和、
+政令指定都市と特別区部は県内他市町村・他県の2区分の和、都道府県は他県のみ、全国は NULL です。
+
+### 通勤・通学流動
+
+census_commuting_flow は1行が「常住地 → 従業地・通学地」1組にあたる OD（起終点）行列です。
+従業地・通学地は都道府県までで、市区町村どうしの流動は含みません。
+
+```sql
+SELECT area, area_name, value AS commuters_to_tokyo
+FROM e_stat.census.census_commuting_flow
+WHERE destination_area = '13000'
+  AND sex_code = '0'
+  AND area_level IN ('city', 'town_village')
+  AND area NOT LIKE '13%'
+ORDER BY value DESC NULLS LAST
+LIMIT 10;
+```
+
+常住地と同じ都道府県のセルには自市区町村内で従業・通学する人（自宅外）も入ります。
+「県外へ出る人」を数えるには、destination_area が常住地の都道府県コードと違う行だけを取ります。
+
+数えているのは自宅外で従業・通学する人だけで、自宅で従業する人と従業も通学もしていない人は
+含みません。census_municipality_daytime_population の「自宅外の自市区町村で従業・通学」
+（0022）と「他市区町村で従業・通学」（003）の和に、この表の従業地・通学地「不詳」（99999）を
+足したものが destination_area_level = 'total' の値に一致します。
+
+原典が「-」の区分は NULL です。census_municipality_daytime_population は112,005行のうち
+11,360行、census_commuting_flow は294,750行のうち175,672行が NULL で、いずれも該当者が
+いない（0人）ことを表します。
+
+出典: 総務省統計局 令和2年国勢調査 従業地・通学地による人口・就業状態等集計（第1-1-1表・第6-1表）。
+https://www.e-stat.go.jp/
+
 ## 1kmメッシュ別 昼間人口（census スキーマ）
 
 | テーブル | 内容 | 主なカラム |

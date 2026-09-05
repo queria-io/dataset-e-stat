@@ -79,12 +79,18 @@ MUNICIPALITY_TABLES: List[Dict[str, Any]] = [
 ]
 
 
-def fetch_municipality_ids(app_id: str, specs: List[Dict[str, Any]]) -> Dict[str, str]:
+def fetch_municipality_ids(
+    app_id: str, specs: List[Dict[str, Any]], context: str = "census_municipality"
+) -> Dict[str, str]:
     """統計表番号と集計の種類から statsDataId を引く。
+
+    国勢調査の統計表はどの集計でも TITLE の @no と STATISTICS_NAME で引けるので、
+    従業地・通学地集計 (census_commuting) もこの関数を使う。
 
     Args:
         app_id: e-Stat API アプリケーション ID。
-        specs: MUNICIPALITY_TABLES の要素。table_no と tabulation を見る。
+        specs: MUNICIPALITY_TABLES と同じ形の要素。table_no と tabulation を見る。
+        context: エラーメッセージに出す呼び出し元の名前。
 
     Returns:
         テーブル名 -> statsDataId の対応。
@@ -104,7 +110,7 @@ def fetch_municipality_ids(app_id: str, specs: List[Dict[str, Any]]) -> Dict[str
     status = stats_list.get("RESULT", {}).get("STATUS")
     if status not in (EstatStatus.OK, EstatStatus.PARTIAL):
         error_msg = stats_list.get("RESULT", {}).get("ERROR_MSG", "Unknown error")
-        raise RuntimeError(f"census_municipality: API error (status {status}): {error_msg}")
+        raise RuntimeError(f"{context}: API error (status {status}): {error_msg}")
 
     tables = stats_list.get("DATALIST_INF", {}).get("TABLE_INF", [])
     if isinstance(tables, dict):
@@ -123,16 +129,16 @@ def fetch_municipality_ids(app_id: str, specs: List[Dict[str, Any]]) -> Dict[str
         }
         if len(ids) != 1:
             raise RuntimeError(
-                f"census_municipality: table_no={no} tabulation={tabulation} "
+                f"{context}: table_no={no} tabulation={tabulation} "
                 f"matched {len(ids)} ids ({sorted(ids)}) in "
                 f"statsCode={CENSUS_STATS_CODE} surveyYears={SURVEY_YEAR} "
                 f"({len(tables)} rows scanned). "
                 "e-Stat 側の表番号が変わった可能性がある。"
-                "MUNICIPALITY_TABLES を確認する。"
+                "取り込む統計表の一覧を確認する。"
             )
         resolved[spec["name"]] = ids.pop()
 
-    logger.info(f"census_municipality: resolved {resolved}")
+    logger.info(f"{context}: resolved {resolved}")
     return resolved
 
 

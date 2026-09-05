@@ -9,7 +9,9 @@
 {% set municipality_marts = [
     'census_municipality',
     'census_municipality_labor_force',
-    'census_municipality_employment_status'
+    'census_municipality_employment_status',
+    'census_municipality_daytime_population',
+    'census_commuting_flow'
 ] %}
 
 {% for mart in municipality_marts %}
