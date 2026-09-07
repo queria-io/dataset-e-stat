@@ -1,0 +1,60 @@
+version: 2
+
+models:
+  - name: municipality_industry
+    description: |
+      工業統計調査 確報の「市区町村別、産業中分類別統計」から、都道府県・市区町村・
+      政令指定都市の区ごとの事業所数・従業者数・製造品出荷額等を産業中分類別に
+      集めた表。従業者4人以上の事業所が対象。2008年から2020年まで、調査の無い
+      2011・2015・2016年を除く10年分。
+      産業中分類の内訳を持つのは市区町村と区の行だけで、都道府県・政令指定都市・
+      東京特別区の行は製造業計しか持たない。事業所の少ない市町村も内訳が秘匿されて
+      入らない（2020年で929市町村、事業所数の中央値16）。都道府県の産業別内訳は
+      同じ調査の別の統計表にある。
+      事業所数と従業者数は中分類の和が製造業計に一致し、市区町村の和が都道府県に
+      一致する。金額の項目は秘匿があるため、どちらの足し算も総数に届かない。
+      2017年調査から調査期日が12月31日から翌年6月1日に変わり、件数は調査年の
+      6月1日現在、金額は前年1〜12月の実績になった。金額を年で並べるときは
+      survey_year ではなく amount_reference_year を使う。
+      area は census_municipality・code.municipality と同じ標準地域コード(5桁)。
+      出典: 経済産業省 工業統計調査 確報。https://www.e-stat.go.jp/
+    access: public
+    columns:
+      - name: survey_year
+        description: "調査年。2008〜2010・2012〜2014・2017〜2020の10年。2011・2015・2016年は経済センサス‐活動調査の実施年で工業統計調査が行われていない。事業所数と従業者数はこの年の時点（2014年までは12月31日現在、2017年以降は6月1日現在）"
+      - name: amount_reference_year
+        description: "金額の項目が対象とする実績年。2014年までは survey_year と同じ、2017年以降は survey_year - 1（2017年調査から調査期日が翌年6月1日に変わり、経理事項は前年1〜12月の実績になった）。金額を年で並べるときはこの列を使う"
+      - name: area
+        description: "標準地域コード。都道府県は 13000 のように市区町村部が 000。census_municipality の area・code.municipality の area_code と同じ体系。全国の行は無い"
+      - name: area_name
+        description: "地域の名称。2012年までは政令指定都市の区が市名を含まない（中央区）のに対し、2013年以降は含む（札幌市中央区）。年をまたいで名称で束ねずコードで束ねる"
+      - name: area_level
+        description: "area の粒度。prefecture=都道府県（47）、municipality=市・町村・東京特別区（13100）、ward=政令指定都市の行政区・特別区。日本全域をちょうど1回覆うのは prefecture だけ、または municipality だけ"
+      - name: parent_area
+        description: "1つ上の階層の area。市区町村の親は都道府県、行政区の親はその市、特別区の親は東京特別区（13100）。都道府県は NULL"
+      - name: industry_code
+        description: "産業中分類コード。00=製造業計、09〜32=中分類24区分。日本標準産業分類 第12回改定以降のコードで、2008年から2020年まで同じ産業を指す"
+      - name: industry_name
+        description: "industry_code に対応する産業の名称"
+      - name: industry_level
+        description: "産業分類の階層。1=製造業計、2=中分類。重複なく製造業を覆うのは industry_level = 2 の24区分"
+      - name: establishments
+        description: "事業所数（従業者4人以上）。欠測なし"
+      - name: establishments_30_to_299
+        description: "事業所数のうち従業者30〜299人（事業所）。該当が無い行は NULL"
+      - name: establishments_300_or_more
+        description: "事業所数のうち従業者300人以上（事業所）。該当が無い行は NULL"
+      - name: employees
+        description: "従業者数（人）。欠測なし"
+      - name: cash_earnings_10k_yen
+        description: "現金給与総額（万円）。秘匿で NULL が入る"
+      - name: material_cost_10k_yen
+        description: "原材料使用額等（万円）。秘匿で NULL が入る"
+      - name: shipment_value_10k_yen
+        description: "製造品出荷額等（万円）。秘匿で NULL が入る"
+      - name: other_income_10k_yen
+        description: "製造品出荷額等のうちその他収入額（万円）。2014年までの統計表にしかなく、2017年以降は NULL"
+      - name: gross_value_added_10k_yen
+        description: "粗付加価値額（万円）。秘匿で NULL が入る。負の値をとる行がある"
+      - name: tangible_fixed_assets_10k_yen
+        description: "有形固定資産年末現在高（従業者30人以上、万円）。2014年までの統計表にしかなく、2017年以降は NULL"

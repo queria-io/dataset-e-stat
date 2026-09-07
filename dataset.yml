@@ -30,6 +30,9 @@ keywords:
   - 住民基本台帳
   - 人口動態
   - 経済センサス
+  - 工業統計調査
+  - 製造業
+  - 製造品出荷額
   - 事業所
   - 人口
   - 社会
@@ -52,10 +55,15 @@ sources:
     path: https://www.stat.go.jp/data/kakei/
   - title: 労働力調査（総務省統計局）
     path: https://www.stat.go.jp/data/roudou/
+  - title: 工業統計調査（経済産業省）
+    path: https://www.e-stat.go.jp/statistics/00550010
 
 contributors:
   - title: 総務省統計局
     path: https://www.stat.go.jp/
+    roles: [rightsHolder]
+  - title: 経済産業省
+    path: https://www.meti.go.jp/
     roles: [rightsHolder]
 
 temporal_coverage: { start: "1970", end: null }
@@ -84,3 +92,5 @@ schemas:
     title: 家計調査
   - name: labor
     title: 労働力調査
+  - name: manufacture
+    title: 工業統計調査

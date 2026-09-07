@@ -50,3 +50,40 @@ CASE
     END
 END
 {% endmacro %}
+
+{# 工業統計調査の市区町村編は、年によって地域軸の階層の振り方が違う。
+   2012年までは 2 都道府県 / 3 市・特別区部 / 4 町村と政令指定都市の区・特別区、
+   2013年以降は 1 都道府県 / 2 市区町村 / 3 政令指定都市の区・特別区。
+   2012年までの level=4 は町村と区が同じ階層に混ざるので、level だけでは分けられない。
+
+   親コードの3桁目が 1 なら政令指定都市か特別区部 (コードは 100〜199 がその範囲) で、
+   その子は区。町村の親は郡 (3桁目が 3 以上) で、郡はこの表に行として現れない。
+
+   東京の特別区 (13101〜13123) だけは親コードで判定できない。2013年以降のメタ情報は
+   東京特別区 (13100) と 23 区の親コードを、直前に並ぶ別の県の町 (12463 安房郡鋸南町) に
+   している。都道府県 (level=1) の次に level=3 が来て level=2 を飛ばすため、親を辿る側が
+   直前の level=2 を拾っているとみられる。コードで直接判定する。
+
+   東京特別区 (13100) は 23 区の合計にあたる行で、市区町村と同じ階層に置く。
+   2013年以降は level=3 に入っているが、level で市区町村を絞ると東京が丸ごと欠ける。 #}
+{% macro e_stat_manufacture_area_level(code_column, metadata_column) %}
+CASE
+    WHEN {{ code_column }} LIKE '%000' THEN 'prefecture'
+    WHEN {{ code_column }} LIKE '131%' AND {{ code_column }} <> '13100' THEN 'ward'
+    WHEN SUBSTR({{ metadata_column }}->>'$.parent_code', 3, 1) = '1' THEN 'ward'
+    ELSE 'municipality'
+END
+{% endmacro %}
+
+{# 1つ上の階層の地域コード。市区町村の親は都道府県で、メタ情報の親コード (2012年までは
+   郡、2013年以降は2桁の都道府県コード) は使わない。区の親は政令指定都市、特別区の親は
+   東京特別区 (13100)。都道府県の親は無い (この表に全国の行は無い)。 #}
+{% macro e_stat_manufacture_parent_area(code_column, metadata_column) %}
+CASE
+    WHEN {{ code_column }} LIKE '%000' THEN NULL
+    WHEN {{ code_column }} LIKE '131%' AND {{ code_column }} <> '13100' THEN '13100'
+    WHEN SUBSTR({{ metadata_column }}->>'$.parent_code', 3, 1) = '1'
+        THEN {{ metadata_column }}->>'$.parent_code'
+    ELSE SUBSTR({{ code_column }}, 1, 2) || '000'
+END
+{% endmacro %}

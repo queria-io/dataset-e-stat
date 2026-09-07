@@ -36,6 +36,11 @@ models:
         +materialized: table
       stg:
         +materialized: table
+    manufacture:
+      raw:
+        +materialized: table
+      stg:
+        +materialized: table
     resident_registry:
       raw:
         +materialized: table
