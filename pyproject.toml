@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "e-Stat dataset for Queria"
 requires-python = ">=3.13"
 dependencies = [
-    "queria>=0.13.0",
+    "queria>=0.22.0",
     "dbt-core>=1.10.0",
     "dbt-duckdb>=1.10.0",
     "dlt[ducklake,s3]>=1.17.0",
