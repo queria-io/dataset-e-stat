@@ -32,8 +32,19 @@ CATALOG_URL = "https://api.e-stat.go.jp/rest/3.0/app/json/getDataCatalog"
 STATS_CODE = "00200241"
 _UA = "dataset-e-stat"
 _TIMEOUT = 300
-_MAX_RETRIES = 4
-_TRANSIENT_HTTP_CODES = {500, 502, 503, 504}
+# 404 も一時障害に含める。統計表ファイルの配信は、存在するファイルに対しても
+# 404（本文は e-Stat の「ページが見つかりません」の HTML）を返す窓を持つ。
+# 単一接続・3 秒間隔で同一 URL を 8 回叩くと 200 200 404 404 404 404 404 200 で、
+# 404 は 1 回ごとの揺れではなく 15 秒ほど続いた。窓を待てる長さが要るので、
+# 上限 8 回・待ち時間の合計 91 秒（1,2,4,8,16,30,30）を取る。本当に消えた URL は
+# 再試行を使い切って例外になるので、欠測を黙って読み飛ばすことにはならない。
+_TRANSIENT_HTTP_CODES = {404, 500, 502, 503, 504}
+_MAX_RETRIES = 8
+_MAX_WAIT = 30
+# 接続・送信段の失敗は 1 回あたり _TIMEOUT 秒を使い切りうるので、HTTP の
+# 再試行とは上限を分ける。同じ 8 回にすると、e-Stat が不通のときに失敗を
+# 返すまでの時間が倍になる。
+_MAX_NETWORK_RETRIES = 4
 # getDataCatalog の 1 リクエストあたり上限。超えると status 102 で弾かれる。
 PAGE_LIMIT = 100
 
@@ -140,12 +151,17 @@ def _fetch(url: str) -> tuple[bytes, str]:
             with urlopen(req, timeout=_TIMEOUT) as resp:
                 return resp.read(), resp.headers.get("Content-Disposition", "")
         except (HTTPError, URLError) as e:
-            transient = not isinstance(e, HTTPError) or e.code in _TRANSIENT_HTTP_CODES
-            if not transient or attempt == _MAX_RETRIES - 1:
+            if isinstance(e, HTTPError):
+                transient = e.code in _TRANSIENT_HTTP_CODES
+                limit = _MAX_RETRIES
+            else:
+                transient = True
+                limit = _MAX_NETWORK_RETRIES
+            if not transient or attempt == limit - 1:
                 raise
-            wait = 2**attempt
+            wait = min(2**attempt, _MAX_WAIT)
             reason = getattr(e, "reason", None) or getattr(e, "code", None) or e
-            logger.warning(f"  {reason}, retry in {wait}s ({attempt + 1}/{_MAX_RETRIES})")
+            logger.warning(f"  {reason}, retry in {wait}s ({attempt + 1}/{limit})")
             time.sleep(wait)
     raise RuntimeError("unreachable")
 
