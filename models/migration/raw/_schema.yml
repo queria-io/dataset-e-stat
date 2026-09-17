@@ -1,0 +1,7 @@
+version: 2
+
+models:
+  - name: raw_migration_municipality
+  - name: raw_migration_municipality_inflow_pre2020
+  - name: raw_migration_municipality_outflow_pre2020
+  - name: raw_migration_municipality_net_pre2020

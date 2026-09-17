@@ -1,0 +1,11 @@
+version: 2
+
+sources:
+  - name: estat_source
+    database: e_stat
+    schema: _source
+    tables:
+      - name: migration_municipality
+      - name: migration_municipality_inflow_pre2020
+      - name: migration_municipality_outflow_pre2020
+      - name: migration_municipality_net_pre2020

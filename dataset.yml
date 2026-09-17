@@ -29,6 +29,10 @@ keywords:
   - 完全失業率
   - 住民基本台帳
   - 人口動態
+  - 人口移動
+  - 転入
+  - 転出
+  - 転入超過
   - 経済センサス
   - 工業統計調査
   - 製造業
@@ -51,6 +55,8 @@ sources:
     path: https://www.soumu.go.jp/toukei_toukatsu/index/seido/9-5.htm
   - title: 住民基本台帳に基づく人口、人口動態及び世帯数（総務省）
     path: https://www.soumu.go.jp/main_sosiki/jichi_gyousei/daityo/jinkou_jinkoudoutai-setaisuu.html
+  - title: 住民基本台帳人口移動報告（総務省統計局）
+    path: https://www.stat.go.jp/data/idou/
   - title: 家計調査（総務省統計局）
     path: https://www.stat.go.jp/data/kakei/
   - title: 労働力調査（総務省統計局）
@@ -94,3 +100,5 @@ schemas:
     title: 労働力調査
   - name: manufacture
     title: 工業統計調査
+  - name: migration
+    title: 住民基本台帳人口移動報告
