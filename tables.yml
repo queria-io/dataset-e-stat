@@ -173,3 +173,40 @@ tables:
     statsDataId: "0003009576"
     merge_keys: [tab, cat01, cat02, cat03, area, time]
     incremental: true
+
+  # 住民基本台帳人口移動報告 市区町村別の転入・転出（年次）
+  # 2020年以降は表章項目に転入・転出・転入超過の3つが同居する1表、2019年以前は
+  # 表章項目ごとに3表へ分かれる。分類軸の並びも era で違う（2020年以降は
+  # cat01=年齢・cat02=性別・cat03=国籍、2019年以前は cat01=性別・cat02=国籍・
+  # cat03=年齢）ので、積むのは stg で列を明示して行う。
+  # 年齢は総数だけを取る。年齢区分が era で違い（2019年以前は3区分、2020年以降は
+  # 5歳階級）、同じ列に積むと区分の意味が年で変わる。区分を取るなら 5歳階級の表が
+  # 2014年以降にあるので、そちらを別テーブルとして足す。
+  - name: migration_municipality
+    description: 住民基本台帳人口移動報告 市区町村別 転入者数・転出者数・転入超過数（2020年～）
+    statsDataId: "0003419945"
+    merge_keys: [tab, cat01, cat02, cat03, area, time]
+    incremental: true
+    api_params:
+      cdCat01: "000"
+  - name: migration_municipality_inflow_pre2020
+    description: 住民基本台帳人口移動報告 市区町村別 他市区町村からの転入者数（2010年～2019年）
+    statsDataId: "0003461887"
+    merge_keys: [tab, cat01, cat02, cat03, area, time]
+    incremental: true
+    api_params:
+      cdCat03: "000"
+  - name: migration_municipality_outflow_pre2020
+    description: 住民基本台帳人口移動報告 市区町村別 他市区町村への転出者数（2010年～2019年）
+    statsDataId: "0003461888"
+    merge_keys: [tab, cat01, cat02, cat03, area, time]
+    incremental: true
+    api_params:
+      cdCat03: "000"
+  - name: migration_municipality_net_pre2020
+    description: 住民基本台帳人口移動報告 市区町村別 転入超過数（2010年～2019年）
+    statsDataId: "0003461889"
+    merge_keys: [tab, cat01, cat02, cat03, area, time]
+    incremental: true
+    api_params:
+      cdCat03: "000"

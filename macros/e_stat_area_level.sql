@@ -87,3 +87,32 @@ CASE
     ELSE SUBSTR({{ code_column }}, 1, 2) || '000'
 END
 {% endmacro %}
+
+{# 住民基本台帳人口移動報告の市区町村別表は、地域軸に集計行と市区町村行が混在する。
+   階層は e-Stat のメタ情報の level(1〜4) と親コードにあり、コードの桁だけでは分からない。
+     1 全国 / 2 都道府県 / 3 市・政令指定都市・特別区部・郡・北海道の振興局・
+     東京の支庁・市部・郡部 / 4 政令指定都市の区・特別区・町村
+   level=3 と level=4 はどちらも市区町村と集計行が同居するので、level だけでは分けられない。
+
+   市部・郡部（コードの下3桁が 001 / 002）は市の合計と町村の合計にあたる集計行で、
+   全国と都道府県の両方に付く。郡と振興局・支庁も町村の合計にあたる。
+
+   政令指定都市のコードは 100 だけではない（川崎市 14130・相模原市 14150・浜松市 22130・
+   堺市 27140・福岡市 40130）。区を親コードで見分けるので、親の下3桁が 100 番台かで判定する。
+   町村の親は郡または振興局・支庁で、こちらは 300 番台以上になる。 #}
+{% macro e_stat_migration_area_level(code_column, metadata_column) %}
+CASE
+    WHEN {{ code_column }} = '00000' THEN 'national'
+    WHEN {{ code_column }} LIKE '%000' THEN 'prefecture'
+    WHEN SUBSTR({{ code_column }}, 3, 3) IN ('001', '002') THEN 'urban_rural_part'
+    WHEN {{ metadata_column }}->>'$.level' = '4' THEN CASE
+        WHEN SUBSTR({{ metadata_column }}->>'$.parent_code', 3, 1) = '1' THEN 'ward'
+        ELSE 'municipality'
+    END
+    WHEN {{ metadata_column }}->>'$.level' = '3'
+        AND TRY_CAST(SUBSTR({{ code_column }}, 3, 3) AS INTEGER) >= 300
+        AND TRY_CAST(SUBSTR({{ code_column }}, 3, 3) AS INTEGER) % 10 = 0
+        THEN 'county'
+    WHEN {{ metadata_column }}->>'$.level' = '3' THEN 'municipality'
+END
+{% endmacro %}

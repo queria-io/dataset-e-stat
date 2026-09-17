@@ -20,6 +20,9 @@ def drop_stat_inf(table: pa.Table) -> pa.Table:
 
 
 def _build_table(app_id: str, t: dict):
+    # api_params は取得そのものを絞る (cdCat01 等)。分類軸の一部しか要らない表で
+    # 全量を取ると、使わない区分のために取得も保存も何倍にもなる。取得後に
+    # dbt で捨てるのでは API の往復が減らない。
     resource = estat_table(
         stats_data_id=t["statsDataId"],
         table_name=t["name"],
@@ -29,6 +32,7 @@ def _build_table(app_id: str, t: dict):
         incremental=dlt.sources.incremental("time", initial_value="0000000000")
         if t.get("incremental")
         else None,
+        **t.get("api_params", {}),
     )
     # stat_inf は全テーブルで冗長なため、テーブルを問わず常に除去する。
     return resource.add_map(drop_stat_inf)
