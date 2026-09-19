@@ -36,6 +36,11 @@ models:
         +materialized: table
       stg:
         +materialized: table
+    local_finance:
+      raw:
+        +materialized: table
+      stg:
+        +materialized: table
     manufacture:
       raw:
         +materialized: table

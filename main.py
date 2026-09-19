@@ -13,7 +13,8 @@
 11. economic_census:   経済センサス‐活動調査 産業横断的集計取得 (getStatsData)
 12. census_commuting:  国勢調査 従業地・通学地集計取得 (getStatsData)
 13. manufacture:       工業統計調査 市区町村別・産業中分類別統計取得 (getStatsData)
-14. dbt:               dbt ビルド
+14. local_finance:     地方財政状況調査 決算収支・財政力取得 (getDataCatalog + CSV DL)
+15. dbt:               dbt ビルド
 """
 
 import logging
@@ -44,6 +45,7 @@ from pipelines.economic_census import (
     create_economic_census_source,
     fetch_economic_census_ids,
 )
+from pipelines.local_finance import build_local_finance
 from pipelines.manufacture import (
     create_manufacture_source,
     fetch_manufacture_ids,
@@ -84,27 +86,27 @@ def main():
         tables_config = yaml.safe_load(f)
 
     # 1. 国勢調査境界データ (Shapefile DL)
-    logger.info("1/14: census_boundary (国勢調査境界データ)")
+    logger.info("1/15: census_boundary (国勢調査境界データ)")
     download_boundary("data/census_boundary")
 
     # 2. 1kmメッシュ境界データ (統計GIS GML DL、API 不要)
-    logger.info("2/14: mesh_boundary (1kmメッシュ境界データ)")
+    logger.info("2/15: mesh_boundary (1kmメッシュ境界データ)")
     download_mesh_boundary("data/mesh_boundary")
 
     # 3. 統計に用いる標準地域コード (総務省統計局 CSV/Excel DL、API 不要)
-    logger.info("3/14: municipality_code (統計に用いる標準地域コード)")
+    logger.info("3/15: municipality_code (統計に用いる標準地域コード)")
     build_municipality_code("data/municipality_code")
 
     pipeline = create_pipeline()
     app_id = os.environ["ESTAT_API_KEY"]
 
     # 4. 統計表カタログ (全件取得)
-    logger.info("4/14: stats_list (統計表カタログ)")
+    logger.info("4/15: stats_list (統計表カタログ)")
     info = pipeline.run(stats_list_resource(app_id))
     logger.info(f"  {info}")
 
     # 5. メタ情報 (直近3日間に更新された統計表のみ)
-    logger.info("5/14: meta_info (メタ情報)")
+    logger.info("5/15: meta_info (メタ情報)")
     updated_ids = fetch_updated_ids(app_id, days=3)
     if updated_ids:
         info = pipeline.run(meta_info_resource(app_id, updated_ids))
@@ -113,12 +115,12 @@ def main():
         logger.info("  skip (no updates)")
 
     # 6. 社会・人口統計体系(SSDS) データ
-    logger.info("6/14: ssds (社会・人口統計体系)")
+    logger.info("6/15: ssds (社会・人口統計体系)")
     info = pipeline.run(create_source(app_id, tables_config))
     logger.info(f"  {info}")
 
     # 7. 国勢調査 小地域(町丁・字等)統計データ
-    logger.info("7/14: census_small_area (小地域統計)")
+    logger.info("7/15: census_small_area (小地域統計)")
     for spec in SMALL_AREA_TABLES:
         ids = fetch_small_area_ids(app_id, spec["title_prefix"])
         if ids:
@@ -132,7 +134,7 @@ def main():
             logger.info(f"  skip {spec['name']} (no tables)")
 
     # 8. 国勢調査・経済センサス 1kmメッシュ統計データ
-    logger.info("8/14: mesh_stats (1kmメッシュ統計)")
+    logger.info("8/15: mesh_stats (1kmメッシュ統計)")
     # fetch_mesh_ids は 0 件のとき例外を投げる。表題が変わってロードが飛ばされても
     # dbt は前回分でビルドが通ってしまい、CI が緑のままテーブルが更新されなくなるため。
     for spec in MESH_STATS_TABLES:
@@ -145,35 +147,39 @@ def main():
         logger.info(f"  {spec['name']}: {info}")
 
     # 9. 国勢調査 市区町村・都道府県別 基本集計
-    logger.info("9/14: census_municipality (市区町村・都道府県別 基本集計)")
+    logger.info("9/15: census_municipality (市区町村・都道府県別 基本集計)")
     ids = fetch_municipality_ids(app_id, MUNICIPALITY_TABLES)
     info = pipeline.run(create_municipality_source(app_id, ids))
     logger.info(f"  {info}")
 
     # 10. 住民基本台帳に基づく人口・世帯数・人口動態
-    logger.info("10/14: resident_registry (住民基本台帳 人口・世帯数・人口動態)")
+    logger.info("10/15: resident_registry (住民基本台帳 人口・世帯数・人口動態)")
     build_resident_registry("data/resident_registry", app_id)
 
     # 11. 経済センサス‐活動調査 産業横断的集計
-    logger.info("11/14: economic_census (経済センサス 産業横断的集計)")
+    logger.info("11/15: economic_census (経済センサス 産業横断的集計)")
     ids = fetch_economic_census_ids(app_id, ECONOMIC_CENSUS_TABLES)
     info = pipeline.run(create_economic_census_source(app_id, ids))
     logger.info(f"  {info}")
 
     # 12. 国勢調査 従業地・通学地による人口・就業状態等集計
-    logger.info("12/14: census_commuting (従業地・通学地集計)")
+    logger.info("12/15: census_commuting (従業地・通学地集計)")
     ids = fetch_municipality_ids(app_id, COMMUTING_TABLES, context="census_commuting")
     info = pipeline.run(create_commuting_source(app_id, ids))
     logger.info(f"  {info}")
 
     # 13. 工業統計調査 市区町村別、産業中分類別統計
-    logger.info("13/14: manufacture (工業統計調査 市区町村別・産業中分類別)")
+    logger.info("13/15: manufacture (工業統計調査 市区町村別・産業中分類別)")
     manufacture_ids = fetch_manufacture_ids(app_id)
     info = pipeline.run(create_manufacture_source(app_id, manufacture_ids))
     logger.info(f"  {info}")
 
-    # 14. dbt ビルド
-    logger.info("14/14: dbt build")
+    # 14. 地方財政状況調査 決算収支・財政力
+    logger.info("14/15: local_finance (地方財政状況調査)")
+    build_local_finance("data/local_finance", app_id)
+
+    # 15. dbt ビルド
+    logger.info("15/15: dbt build")
     dbt_build()
 
 

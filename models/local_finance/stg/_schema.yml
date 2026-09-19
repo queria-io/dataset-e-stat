@@ -1,0 +1,5 @@
+version: 2
+
+models:
+  - name: stg_local_finance_settlement
+  - name: stg_local_finance_capacity

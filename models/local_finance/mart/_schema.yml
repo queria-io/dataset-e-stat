@@ -1,0 +1,133 @@
+version: 2
+
+models:
+  - name: settlement_balance
+    description: |
+      地方財政状況調査の決算収支の状況。普通会計の歳入総額・歳出総額と、そこから出る
+      実質収支・単年度収支・実質単年度収支を、都道府県・市区町村・一部事務組合ごとに
+      年度で収録する。1989年度決算から毎年途切れなく続く全数調査で、標本ではない。
+      金額の単位はすべて千円。
+
+      都道府県分と市町村分の調査表が別々にあり、両方を縦に積んでいる (survey_scope)。
+      市町村分の調査表には一部事務組合と広域連合の行が入る (entity_kind='association')。
+      市区町村が組合に出す負担金は市区町村の歳出にも組合の歳入にも立つので、絞らずに
+      合計すると二重に数える。市区町村だけを数えるなら entity_kind='municipality'。
+
+      各調査表には「合計(全国)」の行が1本ずつ入っている (entity_kind='total')。これは
+      その調査表に載る全団体の単純な合計で、市町村分の合計は一部事務組合を含むため
+      市区町村の合計ではない (2024年度で市区町村の和 71.4兆円に対し 73.6兆円)。
+
+      収支の恒等式は歳入歳出差引 = 歳入総額 - 歳出総額、実質収支 = 歳入歳出差引 -
+      翌年度に繰り越すべき財源、実質単年度収支 = 単年度収支 + 積立金 + 繰上償還金 -
+      積立金取崩し額。原典の側に合わない行が 156,892 行中 7 行ある (2012年度の世田谷区、
+      2023年度の諏訪広域公立大学事務組合と宇和島地区広域事務組合、2024年度の川南町と、
+      それぞれを含む合計の行3本)。原典の値をそのまま収録している。
+
+      出典: 総務省 地方財政状況調査。
+      https://www.e-stat.go.jp/stat-search/files?toukei=00200251
+    access: public
+    columns:
+      - name: fiscal_year
+        description: "決算年度（西暦）。1989年度から収録する"
+        data_tests:
+          - not_null
+      - name: survey_scope
+        description: "どちらの調査表から来た行か。prefecture=都道府県分、municipality=市町村分（一部事務組合を含む）。どちらの調査表にも「合計(全国)」の行が1本ずつ入る"
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [prefecture, municipality]
+      - name: entity_kind
+        description: "団体の種別。prefecture=都道府県、municipality=市区町村、association=一部事務組合・広域連合、total=その調査表の合計(全国)。市区町村と組合を絞らずに合計すると、市区町村が組合に出す負担金を二重に数える"
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [prefecture, municipality, association, total]
+      - name: entity_category_code
+        description: "原典の団体区分コード。1=政令指定都市、2=特別区、8=中核市、9=施行時特例市、3・4=その他の市、5=町村、6・7=一部事務組合・広域連合（実測: 2024年度で 1 が20件、2 が23件、8 が62件、9 が23件）。都道府県分と、1990〜2000年度調査の組合の一部では空欄。空欄の年でも団体コードの3桁目が8・9なら組合にあたる"
+      - name: area_code
+        description: "標準地域コード（5桁）。lg_code の先頭5桁で、census / boundary / code.municipality と同じ体系。合計(全国)の行では NULL。一部事務組合は市区町村ではないのでこのコードで code.municipality を引いても当たらない"
+      - name: lg_code
+        description: "全国地方公共団体コード（6桁・チェックデジット付き）。原典の団体コードを6桁に揃えたもの。合計(全国)の行では NULL"
+      - name: pref_name
+        description: "都道府県名。合計(全国)の行では NULL"
+      - name: entity_name
+        description: "団体名。1990〜2000年度調査の一部事務組合には名称が入らない行があり、その場合は NULL"
+      - name: revenue_total
+        description: "歳入総額（千円）。普通会計の決算額"
+      - name: expenditure_total
+        description: "歳出総額（千円）。普通会計の決算額"
+      - name: balance
+        description: "歳入歳出差引（千円）。歳入総額 - 歳出総額"
+      - name: carryover_resources
+        description: "翌年度に繰り越すべき財源（千円）。翌年度へ繰り越した事業に充てる分で、当年度の収支からは差し引く"
+      - name: real_balance
+        description: "実質収支（千円）。歳入歳出差引 - 翌年度に繰り越すべき財源。負なら赤字決算"
+      - name: single_year_balance
+        description: "単年度収支（千円）。当年度の実質収支 - 前年度の実質収支"
+      - name: reserve_fund
+        description: "積立金（千円）。当年度に基金へ積み立てた額"
+      - name: early_redemption
+        description: "繰上償還金（千円）。地方債を約定より前倒しで返した額"
+      - name: reserve_fund_drawdown
+        description: "積立金取崩し額（千円）。当年度に基金から取り崩した額"
+      - name: real_single_year_balance
+        description: "実質単年度収支（千円）。単年度収支 + 積立金 + 繰上償還金 - 積立金取崩し額。積立と繰上償還を実質の黒字として戻し、取崩しを赤字の穴埋めとして差し引いた収支"
+
+  - name: fiscal_capacity
+    description: |
+      地方財政状況調査の表紙にある市区町村の財政力。財政力指数と、その計算に使う
+      基準財政収入額・基準財政需要額、地方交付税の算定の基礎になる標準財政規模を
+      年度で収録する。金額の単位は千円。
+
+      収録は2014年度決算から。原典の表紙は2005年度決算までさかのぼれるが、列に名前が
+      付くのは2014年度決算以降で、それ以前は「列001」…という無名の90列になり、同じ
+      位置が年によって別の項目を指す（2005年度決算の列009は財政力指数、2009年度決算の
+      列009は臨時財政対策債発行可能額）。位置から当てにいくと黙って別の値が入るので
+      取っていない。都道府県は原典の表紙が財政力の列を持たないため収録しない。
+
+      行は市区町村だけで、一部事務組合と広域連合は落としている（地方交付税の算定
+      対象ではなく、原典でも全項目が0で入る）。原典の「合計(全国)」の行も、財政力指数の
+      欄に指数ではない値が入るため落としている。1741市区町村 × 11年度 = 19,151行で、
+      政令指定都市は市単位の1行（行政区の行は無い）、東京23区は区ごとの行。
+      code.municipality が市区町村として数える1747件のうち、北方領土の6村は調査の
+      対象外で行を持たない。
+
+      出典: 総務省 地方財政状況調査。
+      https://www.e-stat.go.jp/stat-search/files?toukei=00200251
+    access: public
+    columns:
+      - name: fiscal_year
+        description: "決算年度（西暦）。2014年度から収録する"
+        data_tests:
+          - not_null
+      - name: entity_category_code
+        description: "原典の団体区分コード。1=政令指定都市、2=特別区、8=中核市、9=施行時特例市、3・4=その他の市、5=町村"
+        data_tests:
+          - not_null
+      - name: area_code
+        description: "標準地域コード（5桁）。lg_code の先頭5桁で、census / boundary / code.municipality と同じ体系"
+        data_tests:
+          - not_null
+      - name: lg_code
+        description: "全国地方公共団体コード（6桁・チェックデジット付き）"
+        data_tests:
+          - not_null
+      - name: pref_name
+        description: "都道府県名"
+      - name: entity_name
+        description: "市区町村名"
+      - name: fiscal_capacity_index
+        description: "財政力指数。基準財政収入額を基準財政需要額で割った値の3か年平均で、小数第2位まで。原典は100倍した整数で持ち、ここで100で割っている（2024年度の実測: 飛島村1.99、武蔵野市1.57、千代田区0.85、夕張市0.19で、1を超えるのは1741市区町村のうち74）。3か年平均なので、普通交付税の交付・不交付を単年度で判定した結果とは一致しない。対象の3か年は年度ごとに1年ずつ動く"
+      - name: standard_fiscal_scale
+        description: "標準財政規模（千円）。通常の状態で入る一般財源の規模。実質収支比率や実質公債費比率の分母になる"
+      - name: standard_tax_revenue
+        description: "標準税収入額等（千円）。標準的な税率で見込まれる地方税収に地方譲与税などを加えた額"
+      - name: standard_revenue
+        description: "基準財政収入額（千円）。地方交付税の算定で収入として見込む額。標準税収入額等の75%が基本"
+      - name: standard_demand
+        description: "基準財政需要額（千円）。地方交付税の算定で必要と見込む額。基準財政需要額が基準財政収入額を上回る分が普通交付税のもとになる"
+      - name: extraordinary_bond_limit
+        description: "臨時財政対策債発行可能額（千円）。普通交付税の不足分を地方債に振り替えた枠で、標準財政規模に含まれる"

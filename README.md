@@ -948,6 +948,82 @@ LIMIT 10;
 出典: 総務省統計局 住民基本台帳人口移動報告。
 https://www.stat.go.jp/data/idou/
 
+## 地方財政状況調査 決算収支と財政力（local_finance スキーマ）
+
+都道府県・市区町村がその年度にいくら入れていくら出したか、地方交付税の算定で
+どれだけの財政力があると見られているかの表です。全団体が報告する全数調査で、
+標本ではありません。金額の単位はすべて千円です。
+
+| テーブル | 内容 | 主なカラム |
+|---------|------|-----------|
+| settlement_balance | 都道府県・市区町村・一部事務組合別の決算収支（1989〜2024年度・156,892行） | fiscal_year / survey_scope / entity_kind / area_code / revenue_total / expenditure_total / real_balance / real_single_year_balance |
+| fiscal_capacity | 市区町村別の財政力指数・標準財政規模（2014〜2024年度・19,151行） | fiscal_year / area_code / fiscal_capacity_index / standard_fiscal_scale / standard_revenue / standard_demand |
+
+`area_code` は5桁の標準地域コードで、`code.municipality` や census 系の `area` と
+同じ体系です。6桁の全国地方公共団体コードは `lg_code` に別に入っています。
+
+### 一部事務組合を混ぜたまま合計しない
+
+`settlement_balance` の市町村分の調査表には、市区町村（2024年度で1,741）のほかに
+一部事務組合と広域連合（同1,321）の行が入ります。市区町村が組合に出す負担金は
+市区町村の歳出にも組合の歳入にも立つので、絞らずに合計すると二重に数えます。
+`entity_kind` が `municipality` / `association` / `prefecture` / `total` を分けます。
+
+各調査表には「合計(全国)」の行が1本ずつ入っていて（`entity_kind = 'total'`）、
+その調査表に載る全団体の単純な合計です。市町村分の合計は組合を含むので市区町村の
+合計ではありません（2024年度の市町村分の合計は73.6兆円、市区町村だけの和は71.4兆円）。
+
+```sql
+-- 歳出総額の多い市区町村（2024年度）
+SELECT entity_name, pref_name, expenditure_total, real_balance
+FROM e_stat.local_finance.settlement_balance
+WHERE fiscal_year = 2024 AND entity_kind = 'municipality'
+ORDER BY expenditure_total DESC
+LIMIT 10;
+```
+
+### 収支の恒等式
+
+歳入歳出差引 = 歳入総額 - 歳出総額、実質収支 = 歳入歳出差引 - 翌年度に繰り越すべき財源、
+実質単年度収支 = 単年度収支 + 積立金 + 繰上償還金 - 積立金取崩し額が成り立ちます。
+原典の側で合わない行が156,892行中7行あり（2012年度の世田谷区、2023年度の諏訪広域
+公立大学事務組合と宇和島地区広域事務組合、2024年度の川南町と、それぞれを含む合計の行3本）、
+原典の値をそのまま収録しています。
+
+### 団体の数は年度で変わる
+
+市区町村の行数は1989年度の3,268から2024年度の1,741まで減ります。平成の大合併で
+市町村そのものが減ったためで、収録の欠けではありません。年度をまたいで同じ団体を
+追うときは、`code.municipality_change` の廃置分合履歴で読み替えます。
+
+### 財政力指数は市区町村だけ・2014年度から
+
+`fiscal_capacity` は原典の調査表の表紙から取っています。列に名前が付くのは市町村分の
+2014年度決算以降で、それ以前は「列001」…という無名の90列になり、同じ位置が年度によって
+別の項目を指します（2005年度決算の列009は財政力指数、2009年度決算の列009は臨時財政
+対策債発行可能額）。位置から当てにいくと黙って別の値が入るので取っていません。
+都道府県の表紙は財政力の列を持たないため、この表は市区町村だけです。
+
+一部事務組合と広域連合は地方交付税の算定対象ではなく、原典でも全項目が0で入るので
+落としています。`code.municipality` が市区町村として数える1,747件のうち、北方領土の
+6村は調査の対象外で行がありません。
+
+`fiscal_capacity_index` は基準財政収入額を基準財政需要額で割った値の3か年平均で、
+小数第2位までです（原典は100倍した整数で持ちます）。3か年平均なので、普通交付税の
+交付・不交付を単年度で判定した結果とは一致しません。
+
+```sql
+-- 財政力指数の高い市区町村（2024年度）
+SELECT entity_name, pref_name, fiscal_capacity_index, standard_fiscal_scale
+FROM e_stat.local_finance.fiscal_capacity
+WHERE fiscal_year = 2024
+ORDER BY fiscal_capacity_index DESC
+LIMIT 10;
+```
+
+出典: 総務省 地方財政状況調査。
+https://www.e-stat.go.jp/stat-search/files?toukei=00200251
+
 ## ライセンス
 
 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
