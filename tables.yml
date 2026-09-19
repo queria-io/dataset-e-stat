@@ -210,3 +210,14 @@ tables:
     incremental: true
     api_params:
       cdCat03: "000"
+
+  # 小売物価統計調査（動向編） 調査品目の年平均価格
+  # 品目別の「円」そのものを市別に持つ唯一の表。cpi.price_index は地域ごとに
+  # 2020年=100 に揃えた指数なので、地域間の水準比較には使えない。
+  # 地域コードが 5 桁の標準地域コードなので、code.municipality と直接つながる。
+  # 月別の表（0003421913）は1,480万行あり、年平均だけでは足りない用途が出てから足す。
+  - name: retail_price_annual
+    description: 小売物価統計調査（動向編） 調査品目の年平均価格（都道府県庁所在市及び人口15万以上の市）
+    statsDataId: "0003420453"
+    merge_keys: [tab, cat01, cat02, area, time]
+    incremental: true

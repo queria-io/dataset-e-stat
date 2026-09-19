@@ -47,6 +47,10 @@ keywords:
   - 歳出
   - 財政力指数
   - 地方交付税
+  - 小売物価統計調査
+  - 小売価格
+  - 価格
+  - 物価
 homepage: https://github.com/queria-io/dataset-e-stat
 language: ja
 
@@ -72,6 +76,8 @@ sources:
     path: https://www.e-stat.go.jp/statistics/00550010
   - title: 地方財政状況調査（総務省）
     path: https://www.e-stat.go.jp/stat-search/files?toukei=00200251
+  - title: 小売物価統計調査（総務省統計局）
+    path: https://www.stat.go.jp/data/kouri/
 
 contributors:
   - title: 総務省統計局
@@ -113,3 +119,5 @@ schemas:
     title: 住民基本台帳人口移動報告
   - name: local_finance
     title: 地方財政状況調査
+  - name: retail_price
+    title: 小売物価統計調査
