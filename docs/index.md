@@ -5,7 +5,7 @@ order: 0
 
 # e-Stat データセットの使い方
 
-e-Stat（政府統計の総合窓口）の API と統計GIS から取得した政府統計データです。中心となるのは社会・人口統計体系（SSDS）で、都道府県・市区町村それぞれ11分野の統計指標を共通のテーブル構造で収録しています。加えて消費者物価指数、統計表のメタデータ、令和2年国勢調査の市区町村別・小地域（町丁・字等）集計、昼夜間人口と通勤・通学流動、境界データ、地方財政状況調査の決算収支と財政力を収録します。
+e-Stat（政府統計の総合窓口）の API と統計GIS から取得した政府統計データです。中心となるのは社会・人口統計体系（SSDS）で、都道府県・市区町村それぞれ11分野の統計指標を共通のテーブル構造で収録しています。加えて消費者物価指数、統計表のメタデータ、令和2年国勢調査の市区町村別・小地域（町丁・字等）集計、昼夜間人口と通勤・通学流動、境界データ、地方財政状況調査の決算収支と財政力、小売物価統計調査の調査品目の年平均価格を収録します。
 
 出典: [e-Stat](https://www.e-stat.go.jp/) / [社会・人口統計体系（SSDS）](https://www.e-stat.go.jp/statistics/00200502)
 
@@ -22,8 +22,9 @@ e-Stat（政府統計の総合窓口）の API と統計GIS から取得した�
 | manufacture | 工業統計調査 市区町村別・産業中分類別の製造業統計 municipality_industry |
 | migration | 住民基本台帳人口移動報告 市区町村別の転入・転出・転入超過 municipality_migration |
 | local_finance | 地方財政状況調査 決算収支 settlement_balance と市区町村の財政力 fiscal_capacity |
+| retail_price | 小売物価統計調査 調査品目の年平均価格 item_price |
 
-11分野（A〜K）の詳細は各カテゴリのガイドを参照してください。市区町村・都道府県を並べて比べたいときは[市区町村別 基本集計](/cookbook/e_stat/census-municipality)、働いているかどうかや働き方で比べたいときは[就業状態等基本集計](/cookbook/e_stat/census-employment)、昼間に人が集まる街を見たいときや通勤・通学の行き先を見たいときは[昼夜間人口と通勤・通学流動](/cookbook/e_stat/census-commuting)、市区町村より細かい粒度で見たいときは[小地域集計](/cookbook/e_stat/census)、昼と夜で人の分布を見分けたいときは[1kmメッシュ別 昼間人口](/cookbook/e_stat/mesh-daytime)、地図に載せるときは[境界データ](/cookbook/e_stat/boundary)、市区町村の製造業を産業別に見たいときは[市区町村別 製造業統計](/cookbook/e_stat/manufacture)、街に人が入ってきているか出ていっているかを見たいときは[市区町村別 転入・転出](/cookbook/e_stat/migration)、自治体そのものの決算規模や財政力を見たいときは[決算収支と財政力](/cookbook/e_stat/local-finance)を参照してください。
+11分野（A〜K）の詳細は各カテゴリのガイドを参照してください。市区町村・都道府県を並べて比べたいときは[市区町村別 基本集計](/cookbook/e_stat/census-municipality)、働いているかどうかや働き方で比べたいときは[就業状態等基本集計](/cookbook/e_stat/census-employment)、昼間に人が集まる街を見たいときや通勤・通学の行き先を見たいときは[昼夜間人口と通勤・通学流動](/cookbook/e_stat/census-commuting)、市区町村より細かい粒度で見たいときは[小地域集計](/cookbook/e_stat/census)、昼と夜で人の分布を見分けたいときは[1kmメッシュ別 昼間人口](/cookbook/e_stat/mesh-daytime)、地図に載せるときは[境界データ](/cookbook/e_stat/boundary)、市区町村の製造業を産業別に見たいときは[市区町村別 製造業統計](/cookbook/e_stat/manufacture)、街に人が入ってきているか出ていっているかを見たいときは[市区町村別 転入・転出](/cookbook/e_stat/migration)、自治体そのものの決算規模や財政力を見たいときは[決算収支と財政力](/cookbook/e_stat/local-finance)、品物の値段を市どうしで比べたいときは[調査品目の年平均価格](/cookbook/e_stat/retail-price)を参照してください。
 
 ## SSDS 共通のカラム構成
 

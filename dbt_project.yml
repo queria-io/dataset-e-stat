@@ -56,3 +56,8 @@ models:
         +materialized: table
       stg:
         +materialized: table
+    retail_price:
+      raw:
+        +materialized: table
+      stg:
+        +materialized: table
