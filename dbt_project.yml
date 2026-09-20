@@ -61,3 +61,8 @@ models:
         +materialized: table
       stg:
         +materialized: table
+    welfare_facility:
+      raw:
+        +materialized: table
+      stg:
+        +materialized: table

@@ -51,6 +51,11 @@ keywords:
   - 小売価格
   - 価格
   - 物価
+  - 社会福祉施設等調査
+  - 社会福祉施設
+  - 保育所
+  - 介護
+  - 福祉
 homepage: https://github.com/queria-io/dataset-e-stat
 language: ja
 
@@ -78,6 +83,8 @@ sources:
     path: https://www.e-stat.go.jp/stat-search/files?toukei=00200251
   - title: 小売物価統計調査（総務省統計局）
     path: https://www.stat.go.jp/data/kouri/
+  - title: 社会福祉施設等調査（厚生労働省）
+    path: https://www.e-stat.go.jp/stat-search/files?toukei=00450041
 
 contributors:
   - title: 総務省統計局
@@ -85,6 +92,9 @@ contributors:
     roles: [rightsHolder]
   - title: 経済産業省
     path: https://www.meti.go.jp/
+    roles: [rightsHolder]
+  - title: 厚生労働省
+    path: https://www.mhlw.go.jp/
     roles: [rightsHolder]
 
 temporal_coverage: { start: "1970", end: null }
@@ -121,3 +131,5 @@ schemas:
     title: 地方財政状況調査
   - name: retail_price
     title: 小売物価統計調査
+  - name: welfare_facility
+    title: 社会福祉施設等調査
