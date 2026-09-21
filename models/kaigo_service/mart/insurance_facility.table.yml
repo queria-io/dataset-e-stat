@@ -1,0 +1,81 @@
+schema: kaigo_service
+name: insurance_facility
+title: 介護保険施設数・定員（市区町村別）
+description: |-
+  介護サービス施設・事業所調査の介護保険施設数・定員を、市区町村別・施設の種類別に
+  1セル1行で収録する。介護老人福祉施設（特別養護老人ホーム）・介護老人保健施設・
+  介護医療院・介護療養型医療施設が対象。これらの施設は社会福祉施設等調査
+  （welfare_facility.facility_statistics）には1行も入らない。
+  収録は2001年〜2024年調査の24年、534,444行。調査日は毎年10月1日。
+
+  地域は市区町村まで下りる。全国・47都道府県・市区町村に加えて、政令指定都市の
+  行政区の行がある。足し合わせて全国になるのは area_kind が municipality と
+  designated_city の行で、行政区（ward）と東京23区をまとめた集計行（district）を混ぜると
+  二重に数える。全国の行があるのは2004年調査からで、2001〜2003年調査は都道府県から
+  始まる。area_code は調査時点の標準地域コードなので、平成の大合併の前後で
+  同じ市区町村が別のコードで並ぶ。
+
+  指標（measure）は施設数 facility_count・定員 capacity・常勤換算従事者数
+  fte_workers の3つ。常勤換算従事者数が入るのは2017年調査までで、2018年調査から
+  表に無い。値が入るのは年・指標ごとに 51.7%〜72.3% の行で、残りはその年その
+  市区町村にその種類の施設が無い行。
+
+  2012年調査から基本票（全施設）と詳細票（回収率の変動を受ける）の2本立てになり、
+  2017年調査まで両方が出る。2018年調査からは基本票だけ。年をまたぐ系列は
+  survey_form をそろえて作る。そろえないと実体のない段差が出る
+  （介護老人福祉施設の施設数は2017年調査が詳細票7,299・基本票7,891で、
+  2018年調査の基本票8,097につなぐと1割の跳ねになる）。
+
+  介護医療院は2018年調査から表に出る（62施設・定員4,533人 → 2024年調査で
+  917施設・定員52,837人）。介護療養型医療施設は2024年調査で表から無くなる。
+
+  出典: 厚生労働省 介護サービス施設・事業所調査。
+  https://www.e-stat.go.jp/stat-search/files?toukei=00450042
+  厚生労働省ポータル: https://www.mhlw.go.jp/toukei/list/24-22-2.html
+keywords:
+  - e-stat
+  - 介護サービス施設・事業所調査
+  - 介護保険施設
+  - 特別養護老人ホーム
+  - 介護老人福祉施設
+  - 介護老人保健施設
+  - 介護医療院
+  - 介護療養型医療施設
+  - 介護
+  - 高齢者
+  - 定員
+  - 市区町村
+published: true
+sources:
+  - path: https://www.e-stat.go.jp/stat-search/files?toukei=00450042
+fields:
+  - name: survey_year
+    title: 調査年
+    description: "調査年。毎年10月1日現在の調査で、2001〜2024で欠けは無い"
+  - name: area_code
+    title: 地域コード
+    description: "統計に用いる標準地域コード（5桁）。調査時点のコードなので、その後の合併で消えたコードが混ざる（実測: 2001〜2024年調査に出る3,785コードのうち、現行の code.municipality に残るのは1,960）"
+  - name: area_name
+    title: 地域名
+    description: "地域の名称。原典の行見出しからコードを切り出した残り"
+  - name: area_kind
+    title: 集計の段
+    description: "集計の段。nationwide=全国、prefecture=都道府県、designated_city=政令指定都市、municipality=市区町村（東京23区を含む）、ward=政令指定都市の行政区、district=東京23区をまとめた集計行（area_code 13100・area_name「特別区」。2004年〜2010年調査にだけある）。足し合わせて全国になるのは municipality と designated_city だけ"
+  - name: prefecture_code
+    title: 都道府県コード
+    description: "都道府県コード（2桁）。全国の行は NULL"
+  - name: prefecture_name
+    title: 都道府県名
+    description: "都道府県名。code.municipality の pref_name。全国の行は NULL"
+  - name: facility_type
+    title: 施設の種類
+    description: "施設の種類。介護老人福祉施設（特別養護老人ホーム）・介護老人保健施設・介護医療院・介護療養型医療施設。介護医療院は2018年調査から、介護療養型医療施設は2023年調査まで"
+  - name: survey_form
+    title: 調査票
+    description: "調査票。基本票は全施設、詳細票は回収率の変動を受ける。両方そろうのは2012〜2017年調査で、2018年調査からは基本票だけ。2011年調査までは票が1種類しか無いので NULL"
+  - name: measure
+    title: 指標
+    description: "指標。facility_count=施設数、capacity=定員（介護療養型医療施設は病床数）、fte_workers=常勤換算従事者数（2017年調査まで）"
+  - name: value
+    title: 値
+    description: "指標の値。その年その市区町村にその種類の施設が無い行は NULL。常勤換算従事者数は原典が1の位で丸めた値なので、足し上げても上位の行と一致しない（実測: 全国との最大差は市区町村の合計で118人、都道府県の合計で7人）"

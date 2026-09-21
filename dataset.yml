@@ -54,6 +54,9 @@ keywords:
   - 社会福祉施設等調査
   - 社会福祉施設
   - 保育所
+  - 介護サービス施設・事業所調査
+  - 介護保険施設
+  - 特別養護老人ホーム
   - 介護
   - 福祉
 homepage: https://github.com/queria-io/dataset-e-stat
@@ -85,6 +88,8 @@ sources:
     path: https://www.stat.go.jp/data/kouri/
   - title: 社会福祉施設等調査（厚生労働省）
     path: https://www.e-stat.go.jp/stat-search/files?toukei=00450041
+  - title: 介護サービス施設・事業所調査（厚生労働省）
+    path: https://www.e-stat.go.jp/stat-search/files?toukei=00450042
 
 contributors:
   - title: 総務省統計局
@@ -133,3 +138,5 @@ schemas:
     title: 小売物価統計調査
   - name: welfare_facility
     title: 社会福祉施設等調査
+  - name: kaigo_service
+    title: 介護サービス施設・事業所調査
