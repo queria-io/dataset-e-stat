@@ -96,6 +96,9 @@ PAGE_LIMIT = 100
 FIRST_SURVEY_YEAR = 2011
 # 調査年 N の表は N+1 年 12 月〜N+2 年 1 月に出る。最新年が取れなくなったことに気づくための許容幅 (check_latest_year)。
 LATEST_LAG_YEARS = 2
+# 基本票と詳細票に分かれた最初の調査年。基本票だけの定員 (capacity) の表は
+# この年から。2011 年調査は票が 1 種類で、定員は定員・在所者数の表に入る。
+FIRST_FORM_SPLIT_YEAR = 2012
 
 # 見出しの語。年によって全角空白が入るので、突き合わせる前に落とす。
 OPERATORS = {"総数", "公営", "私営"}
@@ -251,15 +254,17 @@ def catalog(app_id: str) -> list[tuple[int, str, str, str, str]]:
     if not found:
         raise RuntimeError(f"getDataCatalog に {STATS_CODE} の統計表ファイルが無い")
 
-    # 4 つの表は 2011 年調査から毎年そろっている。1 つでも取れなくなったら止める。
-    # 表題や区分の文言が変わると該当の表だけが黙って落ち、ほかの指標の行はそのまま
-    # 残るので、行数でも年の連続でも気づけない。
+    # 表は毎年そろっている。1 つでも取れなくなったら止める。表題や区分の文言が
+    # 変わると該当の表だけが黙って落ち、ほかの指標の行はそのまま残るので、行数でも
+    # 年の連続でも気づけない。2011 年調査だけは票の区分が無く、基本票の定員の表が
+    # 存在しない (定員は定員・在所者数の表で取る) ので capacity を外す。
     years = sorted({year for year, _ in found})
     check_latest_year(years[-1], LATEST_LAG_YEARS)
     expected = {
         (year, kind)
         for year in range(FIRST_SURVEY_YEAR, years[-1] + 1)
         for kind in {k for _, k in TABLE_PATTERNS}
+        if not (kind == "capacity" and year < FIRST_FORM_SPLIT_YEAR)
     }
     if missing := expected - set(found):
         raise RuntimeError(f"統計表が欠けている調査年・指標: {sorted(missing)}")
