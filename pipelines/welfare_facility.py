@@ -74,7 +74,7 @@ from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
-from pipelines import EstatStatus
+from pipelines import EstatStatus, check_latest_year
 
 logger = logging.getLogger("pipelines")
 
@@ -94,6 +94,8 @@ PAGE_LIMIT = 100
 # 取り込む最初の調査年。2010 年調査までは 1 つの指標が施設の種類の範囲で
 # 2〜4 ファイルに割れており、割れ方も年ごとに違う。
 FIRST_SURVEY_YEAR = 2011
+# 調査年 N の表は N+1 年 12 月〜N+2 年 1 月に出る。最新年が取れなくなったことに気づくための許容幅 (check_latest_year)。
+LATEST_LAG_YEARS = 2
 
 # 見出しの語。年によって全角空白が入るので、突き合わせる前に落とす。
 OPERATORS = {"総数", "公営", "私営"}
@@ -253,6 +255,7 @@ def catalog(app_id: str) -> list[tuple[int, str, str, str, str]]:
     # 表題や区分の文言が変わると該当の表だけが黙って落ち、ほかの指標の行はそのまま
     # 残るので、行数でも年の連続でも気づけない。
     years = sorted({year for year, _ in found})
+    check_latest_year(years[-1], LATEST_LAG_YEARS)
     expected = {
         (year, kind)
         for year in range(FIRST_SURVEY_YEAR, years[-1] + 1)

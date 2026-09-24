@@ -54,7 +54,7 @@ from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
-from pipelines import EstatStatus
+from pipelines import EstatStatus, check_latest_year
 
 logger = logging.getLogger("pipelines")
 
@@ -78,6 +78,8 @@ SKIPPED_CATEGORIES = {"全国"}
 # 決算収支の状況は 1990 年度調査から両区分そろっている。1 つでも欠ける年度が
 # あれば、収録がその年度だけ静かに片肺になる。
 FIRST_SURVEY_YEAR = 1990
+# 調査年 N の表は N+1 年 3 月末に出る。最新年が取れなくなったことに気づくための許容幅 (check_latest_year)。
+LATEST_LAG_YEARS = 1
 
 SETTLEMENT_TABLE_NO = "2"
 COVER_TABLE_NO = "0"
@@ -229,6 +231,7 @@ def _catalog(app_id: str) -> list[tuple[int, str, str, str]]:
         if no == SETTLEMENT_TABLE_NO
     }
     years = sorted({year for year, _ in settlement})
+    check_latest_year(years[-1], LATEST_LAG_YEARS)
     expected = {
         (year, scope)
         for year in range(FIRST_SURVEY_YEAR, years[-1] + 1)

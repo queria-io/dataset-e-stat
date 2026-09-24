@@ -65,7 +65,7 @@ from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
-from pipelines import EstatStatus
+from pipelines import EstatStatus, check_latest_year
 
 logger = logging.getLogger("pipelines")
 
@@ -84,6 +84,8 @@ PAGE_LIMIT = 100
 
 # 取り込む最初の調査年。2000 年調査は行見出しに標準地域コードが無い。
 FIRST_SURVEY_YEAR = 2001
+# 調査年 N の表は N+1 年 12 月〜N+2 年 1 月に出る。最新年が取れなくなったことに気づくための許容幅 (check_latest_year)。
+LATEST_LAG_YEARS = 2
 # 基本票と詳細票に分かれた最初の調査年。
 FIRST_SPLIT_YEAR = 2012
 
@@ -213,6 +215,7 @@ def catalog(app_id: str) -> list[tuple[int, str | None, str]]:
     # 表題が変わって 1 年分だけ落ちても、ほかの年の行はそのまま残るので行数でも
     # 値でも気づけない。年の連続と、票の区分ができた年からの基本票をここで押さえる。
     years = sorted({year for year, _ in found})
+    check_latest_year(years[-1], LATEST_LAG_YEARS)
     if missing := [
         year
         for year in range(FIRST_SURVEY_YEAR, years[-1] + 1)

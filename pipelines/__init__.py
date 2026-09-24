@@ -4,6 +4,7 @@ import logging
 import logging.config
 import os
 import tempfile
+from datetime import date
 from enum import IntEnum
 from pathlib import Path
 
@@ -22,6 +23,26 @@ class EstatStatus(IntEnum):
     NO_DATA = 1  # 正常終了（該当データなし）
     PARTIAL = 2  # 正常終了（条件不一致、部分的な結果）
     # 100+ はエラー
+
+
+def check_latest_year(latest: int, lag_years: int, today: date | None = None) -> None:
+    """取れた最新の調査年が、暦年から lag_years より遅れていないことを確かめる。
+
+    年の連続を見る検査は、上限に取れた最大年を使うので、最新年だけが取れなく
+    なると上限もいっしょに下がって素通りする。ここでは上限を暦年から決める。
+
+    調査年 N の表は、N + lag_years 年の 8 月までに出そろう前提で置く。9 月に
+    なってもまだ無ければ止める。実測の公表日 (パイプラインが読む表):
+    - 介護サービス施設・事業所調査 / 社会福祉施設等調査 (lag_years=2): N+1 年 12 月〜
+      N+2 年 1 月。最も遅いのは 2018 年調査の 2020-07-31
+    - 地方財政状況調査 (lag_years=1): N+1 年 3 月末。最も遅いのは 2020 年の 2021-05-27
+    """
+    today = today or date.today()
+    expected = today.year - lag_years - (0 if today.month >= 9 else 1)
+    if latest < expected:
+        raise RuntimeError(
+            f"最新の調査年が {latest} で、{today} 時点で出ているはずの {expected} に届かない"
+        )
 
 
 logging.config.dictConfig(
