@@ -9,7 +9,10 @@
     'census_small_area_age',
     'census_small_area_household',
     'census_small_area_industry',
-    'census_small_area_housing'
+    'census_small_area_housing',
+    'census_small_area_household_size',
+    'census_small_area_building_type',
+    'census_small_area_economic_type'
 ] %}
 
 {% for mart in census_marts %}

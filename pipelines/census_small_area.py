@@ -49,6 +49,21 @@ SMALL_AREA_TABLES = [
         "title_prefix": "住宅の所有の関係別一般世帯数",
         "primary_key": ["cat01", "cat02", "area"],
     },
+    {
+        "name": "census_small_area_household_size",
+        "title_prefix": "世帯人員別一般世帯数",
+        "primary_key": ["cat01", "cat02", "area"],
+    },
+    {
+        "name": "census_small_area_building_type",
+        "title_prefix": "住宅の建て方別世帯数",
+        "primary_key": ["cat01", "cat02", "area"],
+    },
+    {
+        "name": "census_small_area_economic_type",
+        "title_prefix": "世帯の経済構成別一般世帯数",
+        "primary_key": ["cat01", "cat02", "area"],
+    },
 ]
 
 

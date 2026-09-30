@@ -1,0 +1,58 @@
+schema: census
+name: census_small_area_building_type
+title: 小地域別 住宅の建て方別世帯数（令和2年国勢調査）
+description: '令和2年国勢調査 小地域(町丁・字等)別 住宅の建て方別世帯数。
+
+  area は同データセットの境界データ small_area の key_code と同一体系で、
+
+  key_code = area で境界ポリゴン・人口・世帯数と結合できる。
+
+  area には市区町村(5桁)と小地域(9桁/11桁)の各階層が含まれる。
+
+  分類は cat01=住宅の建て方(主世帯数・一戸建・長屋建・共同住宅とその階数区分・その他)、
+
+  cat02=秘匿・合算区分(無し/合算/秘匿)。
+
+  出典: 総務省統計局 令和2年国勢調査 小地域集計（統計GIS）。
+
+  https://www.e-stat.go.jp/gis'
+keywords:
+  - e-stat
+  - 国勢調査
+  - 小地域
+  - 町丁字
+  - 住宅
+  - 建て方
+  - 一戸建
+  - 共同住宅
+  - マンション
+published: true
+sources:
+  - path: https://www.e-stat.go.jp/gis
+fields:
+  - name: area
+    title: 地域コード（境界データ small_area の key_code と同一体系）
+    description: 地域コード。境界データ boundary.small_area の key_code と同一体系で、key_code = area で結合できる（9桁/11桁のみ）。市区町村（5桁）・町丁・字等（9桁）・その内訳区画（11桁）の3階層が同じ列に混在し、5桁は9桁の合計、9桁は11桁の合計にあたる。桁数を揃えずに合計すると二重・三重の計上になる
+  - name: area_name
+    title: 町丁・字等名称
+    description: 地域の名称。5桁の行は市区町村名（札幌市中央区）、9桁/11桁の行は市区町村名に町丁・字等名を続けた表記（札幌市中央区円山）
+  - name: area_level
+    description: area の粒度。municipality=市区町村（5桁）、small_area=町丁・字等（9桁）、small_area_detail=丁目など町丁・字等の内訳（11桁）。municipality と small_area はどちらも全域を覆い、総人口の合計はどちらも 126,146,099 で一致する。small_area_detail は丁目に分かれている地域にしか無く全域を覆わない（総人口で 80,726,789、64%）ので、この粒度だけで合計すると足りない
+  - name: cat01
+    title: 住宅の建て方コード
+    description: 住宅の建て方コード（4桁）。0010=主世帯数（総数）、0020=一戸建、0030=長屋建、0040=共同住宅、0050〜0080=共同住宅のうち1・2階建／3〜5階建／6〜10階建／11階建以上、0090=その他。0040 は 0050〜0080 の合計なので、cat01 を絞らずに value を合計すると二重・三重の計上になる
+  - name: building_type
+    title: 住宅の建て方名
+    description: cat01 に対応する住宅の建て方名（主世帯数、一戸建、共同住宅１１階建以上 など）
+  - name: cat02
+    title: 秘匿・合算区分コード
+    description: 秘匿・合算区分のコード。1=無し、2=合算、3=秘匿
+  - name: secrecy
+    title: 秘匿・合算区分名（無し/合算/秘匿）
+    description: cat02 に対応する区分名（無し／合算／秘匿）
+  - name: unit
+    title: 単位
+    description: 単位。この表では常に「世帯」
+  - name: value
+    title: 主世帯数
+    description: 主世帯数（世帯）。住宅に住む一般世帯のうち、間借り世帯を除いた世帯の数。cat02=3（秘匿）の行は 0 が入るが「0世帯」ではなく非公表で、実数は cat02=2（合算）の地域に含まれている。秘匿を 0 として合計すると実態より小さくなる
