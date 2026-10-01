@@ -9,6 +9,9 @@ sources:
       - name: census_small_area_household
       - name: census_small_area_industry
       - name: census_small_area_housing
+      - name: census_small_area_household_size
+      - name: census_small_area_building_type
+      - name: census_small_area_economic_type
       - name: census_municipality_population
       - name: census_municipality_household
       - name: census_municipality_change

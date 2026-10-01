@@ -13,8 +13,13 @@ order: 14
 | census_small_area_household | 世帯の家族類型別一般世帯数 | 家族類型 | 一般世帯数 |
 | census_small_area_industry | 産業大分類別就業者数 | 産業大分類 | 就業者数 |
 | census_small_area_housing | 住宅の所有関係別一般世帯数 | 住宅の種類・所有の関係 | 一般世帯数 |
+| census_small_area_household_size | 世帯人員別一般世帯数 | 世帯人員 | 一般世帯数・一般世帯人員・1世帯当たり人員 |
+| census_small_area_building_type | 住宅の建て方別世帯数 | 住宅の建て方 | 主世帯数 |
+| census_small_area_economic_type | 世帯の経済構成別一般世帯数 | 世帯の経済構成 | 一般世帯数 |
 
-4表とも `area` / `area_name` / `area_level` / `cat01` / 主分類名 / `cat02` / 秘匿区分名 / `unit` / `value` の9カラムです。主分類の名称列だけテーブルごとに `age_class` / `family_type` / `industry` / `tenure` と名前が違います。
+7表とも `area` / `area_name` / `area_level` / `cat01` / 主分類名 / `cat02` / 秘匿区分名 / `unit` / `value` の9カラムです。主分類の名称列だけテーブルごとに `age_class` / `family_type` / `industry` / `tenure` / `household_size` / `building_type` / `economic_type` と名前が違います。
+
+`census_small_area_household_size` は `cat01` によって単位が違います。`0010`〜`0060` は世帯数、`0070` は一般世帯人員（人）、`0080` は1世帯当たり人員（人／世帯）です。
 
 出典: [統計GIS 小地域集計](https://www.e-stat.go.jp/gis)
 

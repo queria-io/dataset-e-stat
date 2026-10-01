@@ -97,6 +97,9 @@ area には市区町村・町丁・字等・その内訳の3階層が含まれ�
 | census_small_area_household | 世帯の家族類型別一般世帯数 | 家族類型 | 一般世帯数 |
 | census_small_area_industry | 産業（大分類）別就業者数 | 産業大分類 | 就業者数 |
 | census_small_area_housing | 住宅の所有の関係別一般世帯数 | 住宅の種類・所有の関係 | 一般世帯数 |
+| census_small_area_household_size | 世帯人員別一般世帯数 | 世帯人員 | 一般世帯数・一般世帯人員・1世帯当たり人員 |
+| census_small_area_building_type | 住宅の建て方別世帯数 | 住宅の建て方 | 主世帯数 |
+| census_small_area_economic_type | 世帯の経済構成別一般世帯数 | 世帯の経済構成 | 一般世帯数 |
 
 ### 地域の粒度
 
@@ -120,10 +123,15 @@ SELECT * FROM e_stat.census.census_small_area_age WHERE area_level = 'small_area
 `area = key_code` でそのまま結合すれば、末端の区画が自然に選ばれて 1億2603万人に
 なります。
 
-4表とも cat02 は秘匿・合算区分です。census_small_area_age だけ名称列が sex という
-名前ですが、中身は他の3表の secrecy と同じ秘匿・合算区分で、男女は cat01 側
+7表とも cat02 は秘匿・合算区分です。census_small_area_age だけ名称列が sex という
+名前ですが、中身は他の6表の secrecy と同じ秘匿・合算区分で、男女は cat01 側
 （総数 / 男 / 女 × 年齢区分）に入っています。主分類の名称列はテーブルごとに
-age_class / family_type / industry / tenure として展開しています。
+age_class / family_type / industry / tenure / household_size / building_type /
+economic_type として展開しています。
+
+census_small_area_household_size は cat01 によって単位が違います。0010〜0060 は世帯数、
+0070 は一般世帯人員（人）、0080 は1世帯当たり人員（人／世帯）です。世帯人員6人以上の
+世帯数の行は無く、0010 から 0020〜0060 を引いた差にあたります。
 
 秘匿（cat02 = 3）の行は value が 0 で入りますが「0」ではなく非公表で、実数は
 合算（cat02 = 2）の地域に含まれています。そのまま合計すると実態より小さくなります。
