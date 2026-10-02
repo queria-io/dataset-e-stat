@@ -9,6 +9,11 @@
 時系列データ) にあるため、STATISTICS_NAME に集計の名前を含むことを併せて条件に
 する。これを外すと 1-1-1 だけで 5 つ、1-2-1 で 3 つの ID が当たる。
 
+令和7年国勢調査の参考表「令和２年国勢調査に関する不詳補完値（遡及集計）」は
+surveyYears=2020 で返り、STATISTICS_NAME に「人口等基本集計」を含み @no も
+原数値の表と同じなので、集計の名前だけでは区別できない。STATISTICS_NAME に
+「不詳補完」を含む表は除く。
+
 また getStatsList のレスポンスには同一 @id が複数回現れる (令和2年国勢調査で
 1,747 行・632 ID)。ID は集合として扱い、1 件に定まらなければ落とす。
 
@@ -126,6 +131,7 @@ def fetch_municipality_ids(
             if isinstance(t.get("TITLE"), dict)
             and t["TITLE"].get("@no") == no
             and tabulation in str(t.get("STATISTICS_NAME") or "")
+            and "不詳補完" not in str(t.get("STATISTICS_NAME") or "")
         }
         if len(ids) != 1:
             raise RuntimeError(
