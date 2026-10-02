@@ -74,6 +74,8 @@ TABLES = ("sanko1", "sanko2")
 FILE_FORMATS = {"XLS", "XLS_REP"}
 
 PREFECTURE_COUNT = 47
+# 参考表2 の産業。日本標準産業分類の大分類 C〜R。
+INDUSTRY_COUNT = 16
 NATIONWIDE_CODE = "00000"
 
 SEX_CODES = {"男女計": "0", "男": "1", "女": "2"}
@@ -330,6 +332,19 @@ def parse_sanko2(body: bytes, survey_year: int) -> list[dict]:
                 )
             code = unicodedata.normalize("NFKC", m.group(1))
             columns.append((c, code, m.group(2), SANKO2_MEASURES[measure]))
+
+        # 見出しがずれて産業と指標の組が欠けたり重なったりすると、値が NULL に
+        # なるか後の列で上書きされたまま通る。16 産業 × 2 指標がちょうどそろうことを見る。
+        pairs = [(code, measure) for _, code, _, measure in columns]
+        industries_found = {code for code, _ in pairs}
+        if len(industries_found) != INDUSTRY_COUNT or sorted(pairs) != sorted(
+            (code, measure)
+            for code in industries_found
+            for measure in SANKO2_MEASURES.values()
+        ):
+            raise RuntimeError(
+                f"{survey_year}年 参考表2 {sex} の産業と指標の列がそろわない: {pairs}"
+            )
 
         cells: dict[tuple[str, str], dict] = {}
         prefectures = 0

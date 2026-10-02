@@ -7,6 +7,10 @@
 -- 労働者数は原典が十人単位なので、内訳の足し算は丸めの幅を許す。実測の最大ずれは
 -- 男と女の合計と男女計で10人、47都道府県の合計と全国で50人。
 --
+-- 足し算の検査は NULL の行を飛ばすので、NULL の出方も固定する。prefecture_wage には
+-- NULL が無く、prefecture_industry_wage では原典が「-」の鉱業，採石業，砂利採取業（C）だけが
+-- 2指標そろって欠ける。秘匿記号や見出しのずれで値が落ちたときはここで止まる。
+--
 -- 突き合わせだけだと片方の年が丸ごと消えたときに 0 行で成功してしまうので、
 -- 2020年から最新年まで年が連続し、各年に全国+47都道府県 × 3つの性がそろうことも見る。
 
@@ -88,6 +92,21 @@ UNION ALL
 SELECT 'area_total_mismatch', year, sex_code, national - prefectures
 FROM by_area
 WHERE ABS(national - prefectures) > 50
+
+UNION ALL
+
+SELECT 'unexpected_null', year, area, NULL
+FROM p
+WHERE age IS NULL OR tenure_years IS NULL OR scheduled_hours IS NULL OR overtime_hours IS NULL
+   OR contractual_earnings IS NULL OR scheduled_earnings IS NULL
+   OR annual_special_earnings IS NULL OR workers IS NULL
+
+UNION ALL
+
+SELECT 'unexpected_null', year, area, NULL
+FROM i
+WHERE (scheduled_earnings IS NULL OR annual_special_earnings IS NULL)
+  AND (industry_code <> 'C' OR (scheduled_earnings IS NULL) <> (annual_special_earnings IS NULL))
 
 UNION ALL
 
