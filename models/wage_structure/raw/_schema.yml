@@ -1,0 +1,5 @@
+version: 2
+
+models:
+  - name: raw_wage_structure_prefecture
+  - name: raw_wage_structure_prefecture_industry

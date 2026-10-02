@@ -1,0 +1,5 @@
+version: 2
+
+models:
+  - name: stg_wage_structure_prefecture
+  - name: stg_wage_structure_prefecture_industry
