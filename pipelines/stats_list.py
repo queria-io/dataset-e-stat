@@ -20,8 +20,13 @@ CACHE_FILE = Path(".stats_list_cache.json")
 PAGE_LIMIT = 50000
 
 
-def _fetch(client: EstatApiClient, **kwargs) -> list[dict]:
-    """getStatsList API を NEXT_KEY で辿り、TABLE_INF のリストを全件返す。"""
+def _fetch(
+    client: EstatApiClient, allow_empty: bool = False, **kwargs
+) -> list[dict]:
+    """getStatsList API を NEXT_KEY で辿り、TABLE_INF のリストを全件返す。
+
+    allow_empty=True のとき、該当データなし (STATUS 1) を空リストとして返す。
+    """
     tables: list[dict] = []
     start_position = 1
 
@@ -32,6 +37,8 @@ def _fetch(client: EstatApiClient, **kwargs) -> list[dict]:
 
         stats_list = result.get("GET_STATS_LIST", {})
         status = stats_list.get("RESULT", {}).get("STATUS")
+        if allow_empty and status == EstatStatus.NO_DATA:
+            return tables
         if status not in (EstatStatus.OK, EstatStatus.PARTIAL):
             error_msg = stats_list.get("RESULT", {}).get("ERROR_MSG", "Unknown error")
             raise RuntimeError(f"stats_list: API error (status {status}): {error_msg}")
@@ -115,7 +122,8 @@ def fetch_updated_ids(app_id: str, days: int = 30) -> List[str]:
     client = EstatApiClient(app_id=app_id, timeout=300)
     since = (date.today() - timedelta(days=days)).strftime("%Y%m%d")
     today = date.today().strftime("%Y%m%d")
-    tables = _fetch(client, updatedDate=f"{since}-{today}")
+    # 連休中は更新が 1 件も無く、API は STATUS 1 (該当データなし) を返す
+    tables = _fetch(client, allow_empty=True, updatedDate=f"{since}-{today}")
     ids = list(set(t["@id"] for t in tables))
     logger.info(f"stats_list: {len(ids)} tables updated in last {days} days")
     return ids
