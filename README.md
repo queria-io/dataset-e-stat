@@ -1317,6 +1317,69 @@ ORDER BY non_regular_pct DESC;
 出典: 総務省統計局 就業構造基本調査。
 https://www.stat.go.jp/data/shugyou/
 
+## 賃金構造基本統計調査 都道府県別・産業別の賃金（wage_structure スキーマ）
+
+| テーブル | 内容 | 主なカラム |
+|---------|------|-----------|
+| prefecture_wage | 都道府県別・男女別の一般労働者の賃金・労働時間・労働者数。2020〜2025年 | year / area / area_name / prefecture_code / sex_code / age / tenure_years / scheduled_hours / overtime_hours / contractual_earnings / scheduled_earnings / annual_special_earnings / workers |
+| prefecture_industry_wage | 都道府県別・産業（大分類）別・男女別の所定内給与額と年間賞与。2020〜2025年 | year / area / area_name / prefecture_code / industry_code / industry / sex_code / scheduled_earnings / annual_special_earnings |
+
+厚生労働省の賃金構造基本統計調査のうち、一般労働者（短時間労働者以外の常用労働者）の
+都道府県別の参考表2つです。企業規模計（10人以上）の値で、金額は千円単位の平均値です。
+prefecture_wage は864行（全国+47都道府県 × 男女計・男・女 × 6年）、
+prefecture_industry_wage は13,824行（さらに × 16産業）です。
+
+```sql
+-- 都道府県別の所定内給与額（2025年、男女計）
+SELECT area_name, scheduled_earnings, annual_special_earnings
+FROM e_stat.wage_structure.prefecture_wage
+WHERE year = 2025 AND sex_code = '0' AND area <> '00000'
+ORDER BY scheduled_earnings DESC;
+```
+
+2025年は東京都が418.3千円で最も高く、神奈川県368.6千円、大阪府348.9千円と続きます。
+最も低いのは青森県の263.9千円です。全国は340.6千円で、厚生労働省の公表値と一致します。
+
+### 産業別の表に産業計は無い
+
+prefecture_industry_wage の産業は日本標準産業分類の大分類 C〜R の16区分で、産業計の行は
+ありません。産業計と比べるときは prefecture_wage の同じ年・地域・性の行と結合します。
+
+```sql
+-- 医療，福祉の所定内給与額が産業計の何%か（2025年、男女計）
+SELECT i.area_name, i.scheduled_earnings AS medical_welfare, p.scheduled_earnings AS all_industries,
+    round(100.0 * i.scheduled_earnings / p.scheduled_earnings, 1) AS ratio_pct
+FROM e_stat.wage_structure.prefecture_industry_wage i
+JOIN e_stat.wage_structure.prefecture_wage p USING (year, area, sex_code)
+WHERE i.year = 2025 AND i.sex_code = '0' AND i.industry_code = 'P' AND i.area <> '00000'
+ORDER BY ratio_pct DESC;
+```
+
+秋田県は109.7%で産業計を上回り、東京都は88.4%で最も低くなります。
+
+### 月額と年額が混ざっている
+
+所定内給与額ときまって支給する現金給与額は調査年の6月分の月額、年間賞与その他特別給与額は
+調査前年1年間の合計です。所定内給与額は残業代などの超過労働給与額を含みません。
+
+### 2019年以前とは比べない
+
+2020年調査で一部の調査事項と推計方法（回収率を考慮した労働者数の推計など）が変わり、
+厚生労働省はそれまでの公表値との比較には注意が必要としています。収録は2020年からです。
+
+### 労働者数は十人単位の推計値
+
+workers は原典の十人単位を10倍して人に直した推計値です。男と女の合計は男女計と最大10人、
+47都道府県の合計は全国と最大50人ずれます。
+
+### 欠けているセル
+
+prefecture_industry_wage で原典が「-」のセルは NULL です。鉱業，採石業，砂利採取業（C）の
+41行だけで、所定内給与額と年間賞与は同じ行で欠けます。
+
+出典: 厚生労働省 賃金構造基本統計調査。
+https://www.e-stat.go.jp/stat-search/files?toukei=00450091
+
 ## ライセンス
 
 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)

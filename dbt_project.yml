@@ -71,6 +71,11 @@ models:
         +materialized: table
       stg:
         +materialized: table
+    wage_structure:
+      raw:
+        +materialized: table
+      stg:
+        +materialized: table
     welfare_facility:
       raw:
         +materialized: table

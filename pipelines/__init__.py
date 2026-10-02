@@ -36,6 +36,7 @@ def check_latest_year(latest: int, lag_years: int, today: date | None = None) ->
     - 介護サービス施設・事業所調査 / 社会福祉施設等調査 (lag_years=2): N+1 年 12 月〜
       N+2 年 1 月。最も遅いのは 2018 年調査の 2020-07-31
     - 地方財政状況調査 (lag_years=1): N+1 年 3 月末。最も遅いのは 2020 年の 2021-05-27
+    - 賃金構造基本統計調査 (lag_years=1): N+1 年 3 月。2024 年調査は 2025-03-17、2025 年調査は 2026-03-24
     """
     today = today or date.today()
     expected = today.year - lag_years - (0 if today.month >= 9 else 1)

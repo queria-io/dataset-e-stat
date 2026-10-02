@@ -30,6 +30,9 @@ keywords:
   - 就業構造基本調査
   - 有業率
   - 非正規雇用
+  - 賃金構造基本統計調査
+  - 賃金
+  - 所定内給与額
   - 住民基本台帳
   - 人口動態
   - 人口移動
@@ -95,6 +98,8 @@ sources:
     path: https://www.e-stat.go.jp/stat-search/files?toukei=00450042
   - title: 就業構造基本調査（総務省統計局）
     path: https://www.stat.go.jp/data/shugyou/
+  - title: 賃金構造基本統計調査（厚生労働省）
+    path: https://www.e-stat.go.jp/stat-search/files?toukei=00450091
 
 contributors:
   - title: 総務省統計局
@@ -147,3 +152,5 @@ schemas:
     title: 介護サービス施設・事業所調査
   - name: employment_structure
     title: 就業構造基本調査
+  - name: wage_structure
+    title: 賃金構造基本統計調査

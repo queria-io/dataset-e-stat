@@ -1,0 +1,85 @@
+version: 2
+
+models:
+  - name: prefecture_wage
+    description: |
+      賃金構造基本統計調査の一般労働者の賃金を、都道府県別・男女別に収録する（都道府県別 参考表1）。
+      所定内給与額・きまって支給する現金給与額・年間賞与その他特別給与額のほか、
+      平均年齢・勤続年数・実労働時間数・労働者数が1行に並ぶ。産業計・企業規模計（10人以上）の値。
+      収録は2020年〜2025年調査の6年、864行（全国+47都道府県 × 男女計・男・女 × 6年）。
+      調査は毎年6月分の賃金で、年間賞与は前年1年間の支給額。
+      2025年の所定内給与額は全国 340.6千円で、東京都 418.3千円が最も高く、青森県 263.9千円が最も低い。
+      2020年調査で一部の調査事項と推計方法が変わり、厚生労働省はそれまでの公表値との比較には注意が必要としている。
+      一般労働者は短時間労働者以外の常用労働者。短時間労働者の時給はこの表に無い。
+      金額は千円単位の平均値。労働者数は推計値で、原典の十人単位を10倍して人に直してある。
+      男と女の労働者数の合計は男女計と最大10人、47都道府県の合計は全国と最大50人ずれる（十人単位の丸め）。
+      出典: 厚生労働省 賃金構造基本統計調査。
+      https://www.e-stat.go.jp/stat-search/files?toukei=00450091
+    access: public
+    columns:
+      - name: year
+        description: "調査年（西暦4桁）。2020〜2025"
+      - name: area
+        description: "地域コード（5桁）。00000=全国、XX000=都道府県"
+      - name: area_name
+        description: "地域名（全国、北海道、青森県 など）"
+      - name: prefecture_code
+        description: "都道府県コード（2桁）。全国は NULL"
+      - name: sex_code
+        description: "男女コード。0=男女計、1=男、2=女。男女計と内訳が同じ列にあるので、絞らずに集計すると二重に数える"
+      - name: sex
+        description: "sex_code に対応する名称"
+      - name: age
+        description: "平均年齢（歳）"
+      - name: tenure_years
+        description: "平均勤続年数（年）"
+      - name: scheduled_hours
+        description: "所定内実労働時間数（時間）。6月の1か月分"
+      - name: overtime_hours
+        description: "超過実労働時間数（時間）。6月の1か月分"
+      - name: contractual_earnings
+        description: "きまって支給する現金給与額（千円）。6月分の月額で、所定内給与額に超過労働給与額を足したもの"
+      - name: scheduled_earnings
+        description: "所定内給与額（千円）。6月分の月額で、きまって支給する現金給与額から超過労働給与額（残業代・休日出勤手当など）を除いたもの。賃金水準の比較には通常この値を使う"
+      - name: annual_special_earnings
+        description: "年間賞与その他特別給与額（千円）。調査前年1年間の賞与・期末手当などの合計"
+      - name: workers
+        description: "労働者数（人）。推計値。原典の十人単位を10倍した値"
+
+  - name: prefecture_industry_wage
+    description: |
+      賃金構造基本統計調査の一般労働者の所定内給与額と年間賞与その他特別給与額を、
+      都道府県別・産業（大分類）別・男女別に収録する（都道府県別 参考表2）。企業規模計（10人以上）の値。
+      収録は2020年〜2025年調査の6年、13,824行（全国+47都道府県 × 16産業 × 男女計・男・女 × 6年）。
+      産業は日本標準産業分類の大分類 C〜R の16区分。産業計の行はこの表に無いので、
+      産業計と比べるときは prefecture_wage の同じ年・地域・性の行を使う。
+      2025年の全国の所定内給与額は、電気・ガス・熱供給・水道業 444.0千円が最も高く、
+      宿泊業，飲食サービス業 277.2千円が最も低い。
+      原典で「-」のセルは NULL。鉱業，採石業，砂利採取業（C）の41行だけで、
+      所定内給与額と年間賞与は常に同じ行で欠ける。
+      2020年調査で一部の調査事項と推計方法が変わり、厚生労働省はそれまでの公表値との比較には注意が必要としている。
+      金額は千円単位の平均値。
+      出典: 厚生労働省 賃金構造基本統計調査。
+      https://www.e-stat.go.jp/stat-search/files?toukei=00450091
+    access: public
+    columns:
+      - name: year
+        description: "調査年（西暦4桁）。2020〜2025"
+      - name: area
+        description: "地域コード（5桁）。00000=全国、XX000=都道府県"
+      - name: area_name
+        description: "地域名（全国、北海道、青森県 など）"
+      - name: prefecture_code
+        description: "都道府県コード（2桁）。全国は NULL"
+      - name: industry_code
+        description: "日本標準産業分類の大分類コード（C〜R の1文字）。原典の列は C〜R の16区分で、A 農業，林業・B 漁業・S 公務の列は無い"
+      - name: industry
+        description: "industry_code に対応する産業名"
+      - name: sex_code
+        description: "男女コード。0=男女計、1=男、2=女。男女計と内訳が同じ列にあるので、絞らずに集計すると二重に数える"
+      - name: sex
+        description: "sex_code に対応する名称"
+      - name: scheduled_earnings
+        description: "所定内給与額（千円）。6月分の月額で、残業代などの超過労働給与額を含まない。原典で「-」のセルは NULL"
+      - name: annual_special_earnings
+        description: "年間賞与その他特別給与額（千円）。調査前年1年間の賞与・期末手当などの合計。原典で「-」のセルは NULL"
