@@ -1,0 +1,21 @@
+SELECT
+    year,
+    area,
+    area_name,
+    area_kind,
+    prefecture_code,
+    sex_code,
+    sex,
+    marital_status_code,
+    marital_status,
+    education_code,
+    education,
+    status_code,
+    status,
+    status_level,
+    status_parent,
+    age_class_code,
+    age_class,
+    unit,
+    value
+FROM {{ ref('stg_employment_structure_status') }}

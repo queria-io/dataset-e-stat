@@ -36,6 +36,11 @@ models:
         +materialized: table
       stg:
         +materialized: table
+    employment_structure:
+      raw:
+        +materialized: table
+      stg:
+        +materialized: table
     kaigo_service:
       raw:
         +materialized: table

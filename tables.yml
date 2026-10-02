@@ -221,3 +221,19 @@ tables:
     statsDataId: "0003420453"
     merge_keys: [tab, cat01, cat02, area, time]
     incremental: true
+
+  # 就業構造基本調査 就業状態・従業上の地位・雇用形態別の15歳以上人口（第7-1表）
+  # 5年ごとの調査で、調査年ごとに統計表が別になる。2017年は都道府県編（全国・都道府県と
+  # その市部・政令指定都市）、2022年は地域編（全国・都道府県・政令指定都市・県庁所在都市・
+  # 人口30万以上の市）で地域の並びが違うが、分類軸の並びとコードは同じなので stg で積む。
+  # 次の調査（2027年）の表は statsDataId を足して取る。
+  - name: employment_structure_status_2017
+    description: 就業構造基本調査 男女，配偶関係，教育，就業状態・仕事の主従・従業上の地位・雇用形態，年齢別人口（2017年・都道府県編）
+    statsDataId: "0003222786"
+    merge_keys: [tab, cat01, cat02, cat03, cat04, cat05, area, time]
+    incremental: true
+  - name: employment_structure_status_2022
+    description: 就業構造基本調査 男女、配偶関係、教育、就業状態・仕事の主従・従業上の地位・雇用形態、年齢別人口（2022年・地域編）
+    statsDataId: "0004008431"
+    merge_keys: [tab, cat01, cat02, cat03, cat04, cat05, area, time]
+    incremental: true

@@ -1,0 +1,5 @@
+version: 2
+
+models:
+  - name: raw_employment_structure_status_2017
+  - name: raw_employment_structure_status_2022

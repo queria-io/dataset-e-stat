@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: estat_source
+    database: e_stat
+    schema: _source
+    tables:
+      - name: employment_structure_status_2017
+      - name: employment_structure_status_2022
