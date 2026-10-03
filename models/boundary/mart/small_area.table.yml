@@ -35,7 +35,7 @@ fields:
   - name: city_code
     title: 市区町村番号
     description: 市区町村番号（3桁）。単独では一意にならず、prefecture_code と連結した5桁が標準地域コードになる（01 + 101 = 01101 札幌市中央区）
-    semantic: { role: entity, name: city }
+    semantic: { role: dimension }
   - name: city_name
     title: 市区町村名
     description: 市区町村名。政令指定都市は行政区名まで含む

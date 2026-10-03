@@ -29,6 +29,7 @@ fields:
   - name: area
     title: 地域コード
     description: 都道府県の標準地域コード（5桁、末尾3桁は 000）。全国計 00000 の行を含むため、area を絞らずに合計すると二重計上になる。code.municipality の area_code と同体系
+    semantic: { role: entity, name: prefecture }
   - name: area_name
     title: 地域名
     description: 地域名。都道府県名、または全国計の「全国」

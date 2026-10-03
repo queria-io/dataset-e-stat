@@ -29,6 +29,7 @@ fields:
   - name: area
     title: 標準地域コード（5桁）
     description: 標準地域コード。全国は 00000、都道府県は 13000 のように市区町村部が 000。census_small_area_* の市区町村行・boundary.small_area の key_code の上位5桁・code.municipality の area_code と同じ体系。全国地方公共団体コード（6桁）とは別体系
+    semantic: { role: entity, name: city }
   - name: area_name
     title: 地域名
     description: 地域の名称（全国／東京都／特別区部／千代田区／札幌市／札幌市中央区 など）。2000年市区町村の行は「（旧：戸井町）」のように括弧付きで入る

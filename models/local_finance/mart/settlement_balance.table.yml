@@ -56,9 +56,11 @@ fields:
   - name: area_code
     title: 標準地域コード（5桁）
     description: 標準地域コード（5桁）。lg_code の先頭5桁で、census / boundary / code.municipality と同じ体系。合計(全国)の行では NULL。一部事務組合は市区町村ではないのでこのコードで code.municipality を引いても当たらない
+    semantic: { role: entity, name: city }
   - name: lg_code
     title: 全国地方公共団体コード（6桁）
     description: 全国地方公共団体コード（6桁・チェックデジット付き）。原典の団体コードを6桁に揃えたもの。合計(全国)の行では NULL
+    semantic: { role: entity, name: city }
   - name: pref_name
     title: 都道府県名
     description: 都道府県名。合計(全国)の行では NULL

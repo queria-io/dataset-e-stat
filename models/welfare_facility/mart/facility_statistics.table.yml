@@ -53,12 +53,14 @@ fields:
   - name: area_code
     title: 地域コード
     description: "統計に用いる標準地域コード（5桁）。code.municipality の area_code と直接つながる。全国と国の行は NULL"
+    semantic: { role: entity, name: city }
   - name: area_name
     title: 地域名
     description: "地域の名称。都道府県は原典の表記に接尾辞を補ってある（原典は2022年調査まで「青森」、2023年調査から「青森県」）"
   - name: prefecture_code
     title: 都道府県コード
     description: "都道府県コード（2桁）。指定都市・中核市の行にはその市が属する都道府県が入る。2017年調査までの都道府県の行は市の分を含まないので、都道府県の通年の系列はこの列で束ねて足し合わせる。全国と国の行は NULL"
+    semantic: { role: entity, name: prefecture }
   - name: facility_code
     title: 施設の種類の符号
     description: "施設の種類の符号（4桁）。原典が施設の種類の名称に前置している番号。大分類の小計・内訳・再掲には付かない。2024年調査の女性自立支援施設のように、足し合わせる段にいながら符号を持たない種類もあるので、段の判定には facility_level を使う"
