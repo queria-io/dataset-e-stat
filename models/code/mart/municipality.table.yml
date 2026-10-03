@@ -29,9 +29,11 @@ fields:
   - name: area_code
     title: 標準地域コード（5桁）
     description: 統計に用いる標準地域コード（5桁）。この表の一意キーで、ssds / census / boundary の地域コードと同体系。全国地方公共団体コード（6桁・チェックデジット付き）とは別物なので、6桁のコードと突き合わせるときは桁を落として揃える
+    semantic: { role: entity, name: city }
   - name: pref_code
     title: 都道府県コード（2桁）
     description: 都道府県コード（2桁）。area_code の先頭2桁
+    semantic: { role: entity, name: prefecture }
   - name: pref_name
     title: 都道府県名
     description: 都道府県名
@@ -65,3 +67,4 @@ fields:
   - name: municipality_code
     title: 所属する市区町村の標準地域コード（行政区は所属市、市区町村は自分自身、集計行は NULL）
     description: 所属する市区町村の標準地域コード。行政区の行は所属する政令市のコード、市区町村の行は自分自身、都道府県・郡などの集計行は NULL。行政区単位のデータを市単位に畳むときに使う
+    semantic: { role: entity, name: city }

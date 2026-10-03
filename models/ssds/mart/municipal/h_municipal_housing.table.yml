@@ -27,6 +27,7 @@ fields:
   - name: area
     title: 地域コード
     description: 市区町村の標準地域コード（5桁）。全国計・都道府県計の行は無いが、政令指定都市の合計行（01100 札幌市）と行政区（01101 中央区）、東京都の「特別区部」（13100）と特別区（13101 千代田区）が同居する。市区町村単位で数えるときは code.municipality の is_municipality で絞る
+    semantic: { role: entity, name: city }
   - name: area_name
     title: 地域名
     description: 地域名。「北海道 札幌市 豊平区」のように都道府県名から連結された表記

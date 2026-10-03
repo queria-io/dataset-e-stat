@@ -34,12 +34,14 @@ fields:
 - name: area
   title: 地域コード
   description: 地域コード（5桁）。00000=全国、XX000=都道府県
+  semantic: { role: entity, name: prefecture }
 - name: area_name
   title: 地域名
   description: 地域名（全国、北海道、青森県 など）
 - name: prefecture_code
   title: 都道府県コード
   description: 都道府県コード（2桁）。全国は NULL
+  semantic: { role: entity, name: prefecture }
 - name: industry_code
   title: 産業コード
   description: 日本標準産業分類の大分類コード（C〜R の1文字）。原典の列は C〜R の16区分で、A 農業，林業・B 漁業・S 公務の列は無い

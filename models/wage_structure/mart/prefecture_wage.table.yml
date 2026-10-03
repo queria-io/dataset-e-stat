@@ -33,12 +33,14 @@ fields:
 - name: area
   title: 地域コード
   description: 地域コード（5桁）。00000=全国、XX000=都道府県
+  semantic: { role: entity, name: prefecture }
 - name: area_name
   title: 地域名
   description: 地域名（全国、北海道、青森県 など）
 - name: prefecture_code
   title: 都道府県コード
   description: 都道府県コード（2桁）。全国は NULL
+  semantic: { role: entity, name: prefecture }
 - name: sex_code
   title: 男女コード
   description: 男女コード。0=男女計、1=男、2=女。男女計と内訳が同じ列にあるので、絞らずに集計すると二重に数える

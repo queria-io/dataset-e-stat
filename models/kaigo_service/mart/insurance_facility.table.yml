@@ -55,6 +55,7 @@ fields:
   - name: area_code
     title: 地域コード
     description: "統計に用いる標準地域コード（5桁）。調査時点のコードなので、その後の合併で消えたコードが混ざる（実測: 2001〜2024年調査に出る3,785コードのうち、現行の code.municipality に残るのは1,960）"
+    semantic: { role: entity, name: city }
   - name: area_name
     title: 地域名
     description: "地域の名称。原典の行見出しからコードを切り出した残り"
@@ -64,6 +65,7 @@ fields:
   - name: prefecture_code
     title: 都道府県コード
     description: "都道府県コード（2桁）。全国の行は NULL"
+    semantic: { role: entity, name: prefecture }
   - name: prefecture_name
     title: 都道府県名
     description: "都道府県名。code.municipality の pref_name。全国の行は NULL"

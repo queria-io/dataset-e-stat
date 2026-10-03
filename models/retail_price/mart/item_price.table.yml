@@ -47,6 +47,7 @@ fields:
   - name: area
     title: 地域コード
     description: "地域コード（5桁）。統計に用いる標準地域コードそのものなので code.municipality と直接つながる（実測: 95コード中88。残る7つは政令指定都市へ移行する前の市のコードで、現行の一覧には無い）。cpi.price_index（01A01 形式）や household.expenditure（01003 形式）とは体系が違い、そちらは area_name の先頭5桁がこのコードにあたる。東京は 13100 特別区部で、特別区をまとめた1行"
+    semantic: { role: entity, name: city }
   - name: area_name
     title: 市名
     description: area に対応する市の名称。cpi や household と違いコードは前置されない。末尾に【…】の注記が付くことがある

@@ -42,8 +42,10 @@ sources:
 fields:
   - name: mesh_code
     title: メッシュコード（境界データ mesh_1km と同一体系の8桁）
+    semantic: { role: entity, name: mesh }
   - name: city_code
     title: 按分に使った市区町村コード（メッシュ中心点が属する市区町村。5桁）
+    semantic: { role: entity, name: city }
   - name: nighttime_population
     title: 夜間人口（常住人口。令和2年国勢調査の人口総数）
   - name: daytime_population
