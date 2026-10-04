@@ -1380,6 +1380,63 @@ prefecture_industry_wage で原典が「-」のセルは NULL です。鉱業，
 出典: 厚生労働省 賃金構造基本統計調査。
 https://www.e-stat.go.jp/stat-search/files?toukei=00450091
 
+## 学校基本調査 学年別の児童生徒数（school スキーマ）
+
+| テーブル | 内容 | 主なカラム |
+|---------|------|-----------|
+| enrollment_by_grade | 小学校の学年別児童数・中学校の学年別生徒数。都道府県別・設置者別・男女別。2000〜2025年 | year / school_type / founder_code / area / area_name / prefecture_code / grade / sex_code / students |
+
+文部科学省の学校基本調査のうち、小学校の「学年別児童数」と中学校の「学年別生徒数」です。
+毎年5月1日現在の在学者数で、119,808行（小学校 74,880行、中学校 44,928行）です。
+
+```sql
+-- 小学1年生の数の2000年からの増減（都道府県別）
+SELECT area_name,
+    sum(students) FILTER (WHERE year = 2000) AS y2000,
+    sum(students) FILTER (WHERE year = 2025) AS y2025,
+    round(100.0 * sum(students) FILTER (WHERE year = 2025) / sum(students) FILTER (WHERE year = 2000) - 100, 1) AS change_pct
+FROM e_stat.school.enrollment_by_grade
+WHERE school_type = 'elementary' AND founder_code = '0' AND grade = 1 AND area <> '00000'
+GROUP BY area_name
+ORDER BY change_pct;
+```
+
+全国の小学1年生は2000年の1,192,258人から2025年の897,428人に減りました。
+秋田県は52.7%減、青森県は49.5%減で、増えたのは東京都（4.5%増）だけです。
+
+```sql
+-- 中学生のうち私立に通う割合（2025年）
+SELECT area_name,
+    round(100.0 * sum(students) FILTER (WHERE founder_code = '3')
+        / sum(students) FILTER (WHERE founder_code = '0'), 1) AS private_pct
+FROM e_stat.school.enrollment_by_grade
+WHERE school_type = 'junior_high' AND year = 2025 AND grade = 0 AND sex_code = '0' AND area <> '00000'
+GROUP BY area_name
+ORDER BY private_pct DESC;
+```
+
+東京都が26.7%で最も高く、高知県18.6%、京都府14.4%と続きます。
+
+### 計と内訳が同じ列に並ぶ
+
+設置者（founder_code）の計、全国（area = '00000'）、学年の計（grade = 0）、男女計（sex_code = '0'）が
+内訳と同じ列にあります。絞らずに足すと二重に数えます。男女計の行は学年の計にだけあり、
+学年別の行は男と女だけです。
+
+### この表に入らない在学者
+
+義務教育学校、中等教育学校の前期課程、特別支援学校の小学部・中学部の在学者は入りません。
+小学校・中学校の在学者だけです。
+
+### 原典の値を直したセル
+
+原典で「-」のセル（その都道府県にその設置者の学校が無いなど）は 0 です。
+2003年の小学校 公立 福岡県 男 の計は原典で 14656 と1桁欠けているので、男女・学年・
+都道府県・設置者の合計がそろう 146656 に直しています。
+
+出典: 文部科学省 学校基本調査。
+https://www.e-stat.go.jp/stat-search/files?toukei=00400001
+
 ## ライセンス
 
 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
