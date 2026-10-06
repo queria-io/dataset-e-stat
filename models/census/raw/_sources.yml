@@ -21,3 +21,5 @@ sources:
       - name: census_commuting_flow
       - name: mesh_population
       - name: mesh_establishment
+      # 手元でだけ取り込む (load_local_mesh.py)。CI の main.py はロードしない
+      - name: mesh_population_250m

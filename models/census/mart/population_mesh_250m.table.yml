@@ -1,0 +1,67 @@
+schema: census
+name: population_mesh_250m
+title: 250mメッシュ別 人口・世帯（令和2年国勢調査）
+description: '令和2年国勢調査の地域メッシュ統計のうち、250mメッシュ（4分の1地域メッシュ）別の
+
+  人口と世帯。年齢区分（15歳未満・15〜64歳・18歳以上・20歳以上・65歳以上・75歳以上など）、
+
+  外国人人口、世帯人員別・家族類型別の世帯数など50区分を縦持ちで収録する。
+
+  町丁目の年齢は5歳階級でしか区切れないが、この表は18歳以上人口を持つので、
+
+  17歳以下・18〜64歳を出せる。
+
+  秘匿のメッシュは人口総数・男女別・世帯総数・一般世帯数だけが入り、年齢などの内訳は0で、
+
+  その人数は合算先のメッシュの内訳に足し込まれている。範囲で合計すれば正しいが、
+
+  1メッシュごとに内訳を引き算すると秘匿・合算のメッシュでずれる。
+
+  mesh_1km_code で同データセットの境界データ mesh_1km と結合できる。
+
+  出典: 総務省統計局 令和2年国勢調査に関する地域メッシュ統計。
+
+  https://www.e-stat.go.jp/'
+keywords:
+  - e-stat
+  - 国勢調査
+  - メッシュ
+  - 地域メッシュ統計
+  - 人口
+  - 年齢
+  - 世帯
+  - GIS
+published: true
+sources:
+  - path: https://www.e-stat.go.jp/
+fields:
+  - name: mesh_code
+    title: 250mメッシュコード（10桁）
+    description: 4分の1地域メッシュのコード（10桁）。上8桁が3次メッシュ（1km）、9桁目が2分の1地域メッシュ（500m）、10桁目が4分の1地域メッシュ（250m）の位置
+    semantic: { role: entity, name: mesh_250m }
+  - name: mesh_1km_code
+    title: 3次メッシュコード（8桁）
+    description: mesh_code の上8桁。境界データ mesh_1km の mesh_code と結合できる
+    semantic: { role: entity, name: mesh }
+  - name: mesh1_code
+    title: 1次メッシュコード（4桁）
+    description: mesh_code の上4桁。統計表の配布単位で、約80km四方
+    semantic: { role: dimension }
+  - name: cat01
+    title: 区分コード
+    description: 年齢別人口・世帯の種類別世帯数等の区分コード（4桁）。0010 人口総数、0040 0〜14歳、0100 15〜64歳、0130 18歳以上、0160 20歳以上、0190 65歳以上、0220 75歳以上、0310 外国人、0340 世帯総数など50区分。総数と内訳が同じ列に並ぶので、cat01 を絞らずに value を合計すると重複する
+  - name: category
+    title: 区分名
+    description: cat01 に対応する区分名（「人口（総数）」「１８歳以上人口　総数」など）
+  - name: cat02
+    title: 秘匿・合算区分コード
+    description: 1=無し、2=合算、3=秘匿。秘匿のメッシュは年齢などの内訳が0で、その人数は合算先（cat02=2）のメッシュの内訳に含まれる
+  - name: suppression
+    title: 秘匿・合算区分名
+    description: cat02 に対応する区分名（無し／合算／秘匿）
+  - name: unit
+    title: 単位
+    description: 人または世帯
+  - name: value
+    title: 値
+    description: 人口（人）または世帯数（世帯）。人口総数と世帯総数はすべての行を合計すると全国・地域の総数に一致する

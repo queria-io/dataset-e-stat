@@ -65,6 +65,24 @@ MESH_STATS_TABLES = [
 ]
 
 
+# 手元でだけ取り込むメッシュ統計表。
+#
+# 250mメッシュは全国で約5,800万行あり、毎日の CI でロードすると GitHub ランナーの
+# メモリに収まらない。令和2年国勢調査の値は次の調査まで変わらないので、手元で一度だけ
+# 取り込み (load_local_mesh.py)、CI では取り込まずに前回ロード分から dbt で作り直す。
+# 毎回全件を入れ直すので merge ではなく replace で書く (merge の重複排除を避ける)。
+LOCAL_MESH_STATS_TABLES = [
+    {
+        "name": "mesh_population_250m",
+        "stats_code": "00200521",
+        "statistics_name": "令和２年国勢調査 世界測地系(250Mメッシュ)",
+        "table_name": "人口及び世帯",
+        "primary_key": ["cat01", "cat02", "area"],
+        "write_disposition": "replace",
+    },
+]
+
+
 def _text(value) -> str:
     """API レスポンスの文字列フィールド ({"$": ...} 形式もある) を取り出す。"""
     if isinstance(value, dict):
@@ -137,6 +155,7 @@ def create_mesh_source(
     table_name: str,
     primary_key: List[str],
     maximum_offset: Optional[int] = None,
+    write_disposition: str = "merge",
 ):
     """複数の1次メッシュの統計表を 1 テーブルへ集約するソースを作成する。
 
@@ -150,7 +169,7 @@ def create_mesh_source(
             stats_data_id=sid,
             app_id=app_id,
             table_name=f"_mesh_{sid}",
-            write_disposition="merge",
+            write_disposition=write_disposition,
             primary_key=primary_key,
             maximum_offset=maximum_offset,
         )
