@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: estat_source
+    database: e_stat
+    schema: _source
+    tables:
+      - name: building_starts_municipality_use
+      - name: building_starts_municipality_use_pre2020

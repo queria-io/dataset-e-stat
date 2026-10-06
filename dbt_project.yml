@@ -21,6 +21,11 @@ models:
         +materialized: table
       stg:
         +materialized: table
+    building_starts:
+      raw:
+        +materialized: table
+      stg:
+        +materialized: table
     census:
       raw:
         +materialized: table

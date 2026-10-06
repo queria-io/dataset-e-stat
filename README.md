@@ -1437,6 +1437,63 @@ ORDER BY private_pct DESC;
 出典: 文部科学省 学校基本調査。
 https://www.e-stat.go.jp/stat-search/files?toukei=00400001
 
+## 建築着工統計調査 市区町村別・用途別の建築着工（building_starts スキーマ）
+
+| テーブル | 内容 | 主なカラム |
+|---------|------|-----------|
+| municipality_use | 着工した建築物の数・床面積・工事費予定額。市区町村別・政令指定都市の区別・用途（大分類）別。2011〜2024年 | area / area_name / area_level / parent_area / year / use_code / use_name / buildings / floor_area / construction_cost |
+
+国土交通省の建築着工統計調査のうち、建築物着工統計の市区町村別・用途別（大分類）の年次の表です。
+505,153行で、市区町村の行を足すと全国の値に一致します。
+
+```sql
+-- 2024年に製造業用の建築物の着工床面積が大きかった市区町村
+SELECT area, area_name, floor_area, buildings
+FROM e_stat.building_starts.municipality_use
+WHERE year = 2024 AND use_code = '34' AND area_level = 'municipality'
+ORDER BY floor_area DESC
+LIMIT 5;
+```
+
+合志市の241,342平方メートル（20棟）が最も大きく、浜松市・守山市・宇都宮市・姫路市と続きます。
+
+```sql
+-- 居住専用住宅と建築物全体の着工床面積（2011年と2024年）
+SELECT year,
+    sum(floor_area) FILTER (WHERE use_code = '12') AS residential,
+    sum(floor_area) FILTER (WHERE use_code = '11') AS total
+FROM e_stat.building_starts.municipality_use
+WHERE area_level = 'municipality' AND year IN (2011, 2024)
+GROUP BY year
+ORDER BY year;
+```
+
+居住専用住宅は74,633,440平方メートルから59,571,227平方メートルへ20.2%減り、
+建築物全体（18.8%減）より減り方が大きくなっています。
+
+### 計と内訳が同じ列に並ぶ
+
+用途の計（use_code = '11'）と政令指定都市の区（area_level = 'ward'）が内訳と同じ列にあります。
+用途で足すときは計を除き、地域で足すときは area_level = 'municipality' に絞ります。
+
+### 着工の無い年の地域は行が無い
+
+着工が1棟も無かった年の地域は行がありません。0 の行は持たないので、年ごとの市区町村の数は
+1,716〜1,735の範囲で動きます。
+
+### 工事費予定額は2019年まで
+
+2020年以降の市区町村別の表には工事費予定額がないので、2020年以降は NULL です。
+2019年までも原典の「＊」（秘匿）は NULL で、用途の内訳の23%、計の2%にあたります。
+
+### 地域コードは各年の時点のもの
+
+合併で消えた市町村のコードと、浜松市の行政区再編（2024年1月）前の区のコードは、
+それぞれの年の行に残っています。現行の code.municipality にはこれらのコードがありません。
+
+出典: 国土交通省 建築着工統計調査 建築物着工統計。
+https://www.e-stat.go.jp/statistics/00600120
+
 ## ライセンス
 
 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)

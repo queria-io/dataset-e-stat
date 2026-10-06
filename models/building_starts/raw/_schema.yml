@@ -1,0 +1,5 @@
+version: 2
+
+models:
+  - name: raw_building_starts_municipality_use
+  - name: raw_building_starts_municipality_use_pre2020
