@@ -211,6 +211,21 @@ tables:
     api_params:
       cdCat03: "000"
 
+  # 建築着工統計調査（建築物着工統計） 市区町村別・用途別（大分類）の建築物の数・床面積
+  # 2019年までと2020年以降で統計表が分かれる。2020年以降の表は工事費予定額を持たない。
+  # 地域軸には市区町村のほかに郡・振興局・支庁と特別区部の集計行が入るが、2020〜2023年の
+  # 集計行は値が入っていない（0）ので stg で落とす。
+  - name: building_starts_municipality_use
+    description: 建築着工統計調査 建築物着工統計 市区町村別、用途別（大分類）／建築物の数、床面積（2020年以降）
+    statsDataId: "0004019181"
+    merge_keys: [tab, cat01, area, time]
+    incremental: true
+  - name: building_starts_municipality_use_pre2020
+    description: 建築着工統計調査 建築物着工統計 市区町村別、用途別（大分類）／建築物の数、床面積、工事費予定額（2011年～2019年）
+    statsDataId: "0003114492"
+    merge_keys: [tab, cat01, area, time]
+    incremental: true
+
   # 小売物価統計調査（動向編） 調査品目の年平均価格
   # 品目別の「円」そのものを市別に持つ唯一の表。cpi.price_index は地域ごとに
   # 2020年=100 に揃えた指数なので、地域間の水準比較には使えない。

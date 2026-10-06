@@ -38,6 +38,10 @@ keywords:
   - 中学校
   - 児童数
   - 生徒数
+  - 建築着工統計調査
+  - 建築着工
+  - 着工床面積
+  - 建築物
   - 住民基本台帳
   - 人口動態
   - 人口移動
@@ -161,3 +165,5 @@ schemas:
     title: 賃金構造基本統計調査
   - name: school
     title: 学校基本調査
+  - name: building_starts
+    title: 建築着工統計調査
