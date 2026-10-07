@@ -19,6 +19,9 @@
 17. wage_structure:    賃金構造基本統計調査 都道府県別・産業別の賃金取得 (getDataCatalog + Excel DL)
 18. school:            学校基本調査 小学校・中学校の学年別児童生徒数取得 (getDataCatalog + Excel DL)
 19. dbt:               dbt ビルド
+
+250mメッシュ統計はここでは取り込まない。量が多く CI のメモリに収まらないので、
+手元で load_local_mesh.py を回してロードする (README「手元でだけ取り込むテーブル」)。
 """
 
 import logging

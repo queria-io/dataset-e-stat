@@ -254,6 +254,34 @@ models:
       - name: establishments
         description: "事業所数。平成28年経済センサス‐活動調査のA～R全産業（S公務を除く）"
 
+  - name: population_mesh_250m
+    description: |
+      令和2年国勢調査 250mメッシュ（4分の1地域メッシュ）別の人口と世帯（縦持ち・50区分）。
+      秘匿のメッシュは年齢などの内訳が0で、その人数は合算先のメッシュの内訳に含まれる。
+      手元でだけロードする (load_local_mesh.py)。
+      出典: 総務省統計局 令和2年国勢調査に関する地域メッシュ統計。
+      https://www.e-stat.go.jp/
+    access: public
+    columns:
+      - name: mesh_code
+        description: "4分の1地域メッシュのコード（10桁）"
+      - name: mesh_1km_code
+        description: "mesh_code の上8桁。境界データ mesh_1km の mesh_code と結合できる"
+      - name: mesh1_code
+        description: "mesh_code の上4桁（1次メッシュ）"
+      - name: cat01
+        description: "年齢別人口・世帯の種類別世帯数等の区分コード（4桁）"
+      - name: category
+        description: "cat01 に対応する区分名"
+      - name: cat02
+        description: "秘匿・合算区分のコード。1=無し、2=合算、3=秘匿"
+      - name: suppression
+        description: "cat02 に対応する区分名"
+      - name: unit
+        description: "単位（人または世帯）"
+      - name: value
+        description: "人口（人）または世帯数（世帯）"
+
   - name: census_municipality
     description: |
       令和2年国勢調査 人口等基本集計から、全国・都道府県・市区町村ごとの人口、

@@ -16,7 +16,7 @@ e-Stat（政府統計の総合窓口）の API と統計GIS から取得した�
 | ssds | 社会・人口統計体系。11分野 × 都道府県/市区町村 = 22テーブル + 指標定義 item_catalog + 指標別の収録年 series_coverage |
 | cpi | 消費者物価指数 price_index |
 | main | 統計表カタログ stats_catalog |
-| census | 令和2年国勢調査 小地域集計 census_small_area_*（年齢・世帯・住宅・産業）、市区町村別 基本集計 census_municipality、市区町村別 就業状態等基本集計 census_municipality_labor_force / census_municipality_employment_status、昼夜間人口 census_municipality_daytime_population、通勤・通学流動 census_commuting_flow、1kmメッシュ別昼間人口 daytime_population_mesh_1km |
+| census | 令和2年国勢調査 小地域集計 census_small_area_*（年齢・世帯・住宅・産業）、市区町村別 基本集計 census_municipality、市区町村別 就業状態等基本集計 census_municipality_labor_force / census_municipality_employment_status、昼夜間人口 census_municipality_daytime_population、通勤・通学流動 census_commuting_flow、1kmメッシュ別昼間人口 daytime_population_mesh_1km、250mメッシュ別 人口・世帯 population_mesh_250m |
 | boundary | 令和2年国勢調査 町丁・字等別境界 small_area、1kmメッシュ境界 mesh_1km |
 | code | 統計に用いる標準地域コード municipality と、その変更（廃置分合）履歴 municipality_change |
 | manufacture | 工業統計調査 市区町村別・産業中分類別の製造業統計 municipality_industry |
