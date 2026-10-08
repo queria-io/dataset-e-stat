@@ -179,9 +179,8 @@ tables:
   # 表章項目ごとに3表へ分かれる。分類軸の並びも era で違う（2020年以降は
   # cat01=年齢・cat02=性別・cat03=国籍、2019年以前は cat01=性別・cat02=国籍・
   # cat03=年齢）ので、積むのは stg で列を明示して行う。
-  # 年齢は総数だけを取る。年齢区分が era で違い（2019年以前は3区分、2020年以降は
-  # 5歳階級）、同じ列に積むと区分の意味が年で変わる。区分を取るなら 5歳階級の表が
-  # 2014年以降にあるので、そちらを別テーブルとして足す。
+  # ここでは年齢を総数だけに絞る。年齢区分は 2010〜2013年が3区分しか無いので、
+  # 年齢5歳階級の内訳は2014年からの表を下の migration_municipality_age* で別に取る。
   - name: migration_municipality
     description: 住民基本台帳人口移動報告 市区町村別 転入者数・転出者数・転入超過数（2020年～）
     statsDataId: "0003419945"
@@ -210,6 +209,41 @@ tables:
     incremental: true
     api_params:
       cdCat03: "000"
+
+  # 2020年以降の表は総数（000）と3区分の合計（301 / 302 / 401）も同じ軸に持つが、
+  # 2019年以前の表には無いので、両方にある5歳階級（0～4歳 … 85～89歳、90歳以上）だけを取る。
+  # 2020年以降の表は上の migration_municipality と同じ統計表だが、あちらは年齢を総数に絞って
+  # 増分取得しているので、絞りを外すと過去の年が取り直されない。別のテーブルとして取る。
+  - name: migration_municipality_age
+    description: 住民基本台帳人口移動報告 市区町村別 年齢5歳階級別 転入者数・転出者数・転入超過数（2020年～）
+    statsDataId: "0003419945"
+    merge_keys: [tab, cat01, cat02, cat03, area, time]
+    incremental: true
+    api_params:
+      cdTab: "21,22,04"
+      cdCat01: "201,202,203,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,402"
+  - name: migration_municipality_age_inflow_pre2020
+    description: 住民基本台帳人口移動報告 市区町村別 年齢5歳階級別 他市区町村からの転入者数（2014年～2019年）
+    statsDataId: "0003461890"
+    merge_keys: [tab, cat01, cat02, cat03, area, time]
+    incremental: true
+    api_params:
+      cdTab: "11"
+      cdCat03: "201,202,203,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,402"
+  - name: migration_municipality_age_outflow_pre2020
+    description: 住民基本台帳人口移動報告 市区町村別 年齢5歳階級別 他市区町村への転出者数（2014年～2019年）
+    statsDataId: "0003461891"
+    merge_keys: [tab, cat01, cat02, cat03, area, time]
+    incremental: true
+    api_params:
+      cdCat03: "201,202,203,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,402"
+  - name: migration_municipality_age_net_pre2020
+    description: 住民基本台帳人口移動報告 市区町村別 年齢5歳階級別 転入超過数（2014年～2019年）
+    statsDataId: "0003461892"
+    merge_keys: [tab, cat01, cat02, cat03, area, time]
+    incremental: true
+    api_params:
+      cdCat03: "201,202,203,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,402"
 
   # 建築着工統計調査（建築物着工統計） 市区町村別・用途別（大分類）の建築物の数・床面積
   # 2019年までと2020年以降で統計表が分かれる。2020年以降の表は工事費予定額を持たない。
