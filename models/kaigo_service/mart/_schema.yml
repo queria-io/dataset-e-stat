@@ -78,3 +78,92 @@ models:
                   - fte_workers
       - name: value
         description: "指標の値。その年その市区町村にその種類の施設が無い行は NULL。常勤換算従事者数は原典が1の位で丸めた値なので、足し上げても上位の行と一致しない（実測: 全国との最大差は市区町村の合計で118人、都道府県の合計で7人）"
+  - name: service_establishment
+    description: |
+      介護サービス施設・事業所調査の基本票から、居宅サービス・介護予防サービス・
+      地域密着型サービス・地域密着型介護予防サービスの事業所数を、都道府県別・
+      サービスの種類別に1セル1行で収録する。2013年〜2024年調査。
+      地域は全国・47都道府県と、その再掲の指定都市・中核市まで。足し合わせて
+      全国になるのは prefecture の行だけ。
+      出典: 厚生労働省 介護サービス施設・事業所調査。
+      https://www.e-stat.go.jp/stat-search/files?toukei=00450042
+    access: public
+    columns:
+      - name: survey_year
+        description: "調査年。毎年10月1日現在の調査で、2013〜2024で欠けは無い"
+      - name: area_code
+        description: "統計に用いる標準地域コード（5桁）。地域名から code.municipality で当てる。全国は 00000"
+        data_tests:
+          - not_null
+      - name: area_name
+        description: "地域の名称"
+      - name: area_kind
+        description: "集計の段。nationwide=全国、prefecture=都道府県、designated_city=指定都市（再掲）、core_city=中核市（再掲）"
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - nationwide
+                  - prefecture
+                  - designated_city
+                  - core_city
+      - name: prefecture_code
+        description: "都道府県コード（2桁）。全国の行は NULL"
+      - name: prefecture_name
+        description: "都道府県名。全国の行は NULL"
+      - name: service_category
+        description: "サービスの区分"
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - 居宅サービス
+                  - 介護予防サービス
+                  - 地域密着型サービス
+                  - 地域密着型介護予防サービス
+      - name: service_type
+        description: "サービスの種類。原典の列見出し"
+        # 見出しの文言が変わると足し算の検査は成り立ったまま名前だけ変わり、
+        # 種類で絞るクエリが黙って 0 行になるので、値の集合をここで押さえる。
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - 訪問介護
+                  - 訪問入浴介護
+                  - 訪問看護ステーション
+                  - 通所介護
+                  - 通所リハビリテーション
+                  - 短期入所生活介護
+                  - 短期入所療養介護
+                  - 特定施設入居者生活介護
+                  - 福祉用具貸与
+                  - 特定福祉用具販売
+                  - 居宅介護支援
+                  - 介護予防訪問介護
+                  - 介護予防訪問入浴介護
+                  - 介護予防訪問看護ステーション
+                  - 介護予防通所介護
+                  - 介護予防通所リハビリテーション
+                  - 介護予防短期入所生活介護
+                  - 介護予防短期入所療養介護
+                  - 介護予防特定施設入居者生活介護
+                  - 介護予防福祉用具貸与
+                  - 特定介護予防福祉用具販売
+                  - 介護予防支援
+                  - 定期巡回・随時対応型訪問介護看護
+                  - 夜間対応型訪問介護
+                  - 地域密着型通所介護
+                  - 認知症対応型通所介護
+                  - 小規模多機能型居宅介護
+                  - 認知症対応型共同生活介護
+                  - 地域密着型特定施設入居者生活介護
+                  - 複合型サービス（看護小規模多機能型居宅介護）
+                  - 介護予防認知症対応型通所介護
+                  - 介護予防小規模多機能型居宅介護
+                  - 介護予防認知症対応型共同生活介護
+      - name: value
+        description: "事業所数。原典が「-」（該当なし）の行は NULL"

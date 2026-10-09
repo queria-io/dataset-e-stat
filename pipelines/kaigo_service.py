@@ -49,6 +49,22 @@ CP932 の CSV で、先頭に表題と注が入り、その下に見出しが 2�
 東京都だけは例外で、13101〜13123 の特別区が基礎自治体そのもの (集計行の
 13100 特別区は 2004〜2010 年調査にだけ並ぶ)。
 
+■ 居宅サービス・地域密着型サービスの事業所数
+
+もう 1 つ、基本票編の「居宅サービスの事業所数」「介護予防サービスの事業所数」
+「地域密着型サービスの事業所数」「地域密着型介護予防サービスの事業所数」の 4 表を
+service_establishment として取る。訪問介護・通所介護・居宅介護支援・グループホーム
+などの事業所数で、行は全国・47 都道府県と、その再掲の指定都市・中核市まで。
+市区町村の粒度は無い。
+
+2013 年調査から取る。2012 年調査の基本票はこの 4 表が Excel でしか出ておらず、
+2011 年調査までは基本票と詳細票の区分が無い (表題も 2006 年調査以前は形が違う)。
+
+行見出しに標準地域コードは無く、地域名だけが入る (都道府県は 2023 年調査まで
+「青森」のような略称)。コードは dbt 側で code.municipality の名前に当てる。
+指定都市と中核市の行は「指定都市（再掲）」「中核市（再掲）」の見出し行の下に並ぶ。
+都道府県の内数の再掲なので、足すと二重に数える。
+
 データソース: 厚生労働省 介護サービス施設・事業所調査
 https://www.e-stat.go.jp/stat-search/files?toukei=00450042
 """
@@ -116,6 +132,30 @@ TOKYO_PREF_CODE = "13"
 
 PREFECTURE_COUNT = 47
 
+# 事業所数の 4 表を取る最初の調査年。2012 年調査の基本票は Excel でしか出ていない。
+FIRST_ESTABLISHMENT_YEAR = 2013
+# 基本票編の事業所数の表。2013 年調査の介護予防だけ「介護予防居宅サービス」と書く。
+ESTABLISHMENT_TITLE_RE = re.compile(
+    r"^\d+_(?P<category>[^_，]*サービス)の事業所数，都道府県[^、]*、[^、]*サービスの種類別$"
+)
+SERVICE_CATEGORIES = {
+    "居宅サービス": "居宅サービス",
+    "介護予防サービス": "介護予防サービス",
+    "介護予防居宅サービス": "介護予防サービス",
+    "地域密着型サービス": "地域密着型サービス",
+    "地域密着型介護予防サービス": "地域密着型介護予防サービス",
+}
+# 再掲の見出し行。この下の行が指定都市・中核市。
+REPRINT_SECTIONS = {
+    "指定都市（再掲）": "designated_city",
+    "中核市（再掲）": "core_city",
+}
+# 2015 年調査まで地域密着型サービスの見出しは「〜事業所」で終わる。
+# 複合型サービスは 2015 年に看護小規模多機能型居宅介護へ名前が変わった同じサービス。
+SERVICE_TYPE_ALIASES = {
+    "複合型サービス": "複合型サービス（看護小規模多機能型居宅介護）",
+}
+
 
 def _fetch(url: str) -> bytes:
     """再試行付きで URL を取得する。"""
@@ -150,9 +190,9 @@ def _norm(cell: str) -> str:
     return cell.replace("　", "").replace(" ", "").strip()
 
 
-def catalog(app_id: str) -> list[tuple[int, str | None, str]]:
-    """市区町村別の表の所在を (調査年, 調査票, URL) で集める。"""
-    found: dict[tuple[int, str | None], str] = {}
+def _catalog_resources(app_id: str) -> list[tuple[int, str, dict]]:
+    """統計表ファイルの一覧を (調査年, データセット名, リソース) で集める。"""
+    resources: list[tuple[int, str, dict]] = []
     start_position = 1
     while True:
         params = urllib.parse.urlencode(
@@ -175,29 +215,11 @@ def catalog(app_id: str) -> list[tuple[int, str | None, str]]:
             items = [items]
         for item in items:
             title = item["DATASET"]["TITLE"]
-            survey_year = int(title["SURVEY_DATE"])
-            if survey_year < FIRST_SURVEY_YEAR:
-                continue
-            # 票の区分はデータセットの名前に入る (「基本票編」「詳細票編」)。
-            # 2011 年調査までは区分が無い。
-            form = next(
-                (f for marker, f in FORM_MARKERS.items() if marker in title["NAME"]),
-                None,
-            )
-            resources = item["RESOURCES"]["RESOURCE"]
-            if isinstance(resources, dict):
-                resources = [resources]
-            for res in resources:
-                if res["FORMAT"] != "CSV":
-                    continue
-                if not TABLE_TITLE_RE.search(res["TITLE"]["NAME"]):
-                    continue
-                key = (survey_year, form)
-                if key in found:
-                    raise RuntimeError(
-                        f"{survey_year}年調査の {form or '-'} に表が 2 つある"
-                    )
-                found[key] = res["URL"]
+            item_resources = item["RESOURCES"]["RESOURCE"]
+            if isinstance(item_resources, dict):
+                item_resources = [item_resources]
+            for res in item_resources:
+                resources.append((int(title["SURVEY_DATE"]), title["NAME"], res))
 
         next_key = listing.get("RESULT_INF", {}).get("NEXT_KEY")
         if not next_key:
@@ -209,8 +231,39 @@ def catalog(app_id: str) -> list[tuple[int, str | None, str]]:
             )
         start_position = int(next_key)
 
-    if not found:
+    if not resources:
         raise RuntimeError(f"getDataCatalog に {STATS_CODE} の統計表ファイルが無い")
+    return resources
+
+
+def _form(dataset_name: str) -> str | None:
+    """票の区分はデータセットの名前に入る (「基本票編」「詳細票編」)。
+
+    2011 年調査までは区分が無い。
+    """
+    return next(
+        (f for marker, f in FORM_MARKERS.items() if marker in dataset_name), None
+    )
+
+
+def catalog(
+    resources: list[tuple[int, str, dict]],
+) -> list[tuple[int, str | None, str]]:
+    """市区町村別の表の所在を (調査年, 調査票, URL) で集める。"""
+    found: dict[tuple[int, str | None], str] = {}
+    for survey_year, dataset_name, res in resources:
+        if survey_year < FIRST_SURVEY_YEAR or res["FORMAT"] != "CSV":
+            continue
+        if not TABLE_TITLE_RE.search(res["TITLE"]["NAME"]):
+            continue
+        form = _form(dataset_name)
+        key = (survey_year, form)
+        if key in found:
+            raise RuntimeError(f"{survey_year}年調査の {form or '-'} に表が 2 つある")
+        found[key] = res["URL"]
+
+    if not found:
+        raise RuntimeError("市区町村別の介護保険施設の表が見つからない")
 
     # 表題が変わって 1 年分だけ落ちても、ほかの年の行はそのまま残るので行数でも
     # 値でも気づけない。年の連続と、票の区分ができた年からの基本票をここで押さえる。
@@ -364,13 +417,126 @@ def parse(body: bytes, survey_year: int, form: str | None) -> list[dict]:
     return records
 
 
+def establishment_catalog(
+    resources: list[tuple[int, str, dict]],
+) -> list[tuple[int, str, str]]:
+    """事業所数の 4 表の所在を (調査年, サービスの区分, URL) で集める。"""
+    found: dict[tuple[int, str], str] = {}
+    for survey_year, dataset_name, res in resources:
+        if survey_year < FIRST_ESTABLISHMENT_YEAR or res["FORMAT"] != "CSV":
+            continue
+        if _form(dataset_name) != "基本票":
+            continue
+        m = ESTABLISHMENT_TITLE_RE.search(res["TITLE"]["NAME"])
+        if not m:
+            continue
+        category = SERVICE_CATEGORIES.get(m.group("category"))
+        if category is None:
+            raise RuntimeError(f"知らないサービスの区分: {m.group('category')!r}")
+        key = (survey_year, category)
+        if key in found:
+            raise RuntimeError(f"{survey_year}年調査の {category} に表が 2 つある")
+        found[key] = res["URL"]
+
+    if not found:
+        raise RuntimeError("事業所数の表が見つからない")
+
+    # 4 表のうち 1 つだけ表題が変わって落ちても、残りの表の行で年はそろって見える。
+    # 年と区分の組を全部ここで押さえる。
+    years = sorted({year for year, _ in found})
+    check_latest_year(years[-1], LATEST_LAG_YEARS)
+    if missing := [
+        f"{year} {category}"
+        for year in range(FIRST_ESTABLISHMENT_YEAR, years[-1] + 1)
+        for category in sorted(set(SERVICE_CATEGORIES.values()))
+        if (year, category) not in found
+    ]:
+        raise RuntimeError(f"事業所数の表が欠けている: {missing}")
+
+    return sorted((year, category, url) for (year, category), url in found.items())
+
+
+def _service_type(label: str) -> str:
+    label = label.replace("(", "（").replace(")", "）")
+    if label.endswith("事業所"):
+        label = label.removesuffix("事業所")
+    return SERVICE_TYPE_ALIASES.get(label, label)
+
+
+def parse_establishments(body: bytes, survey_year: int, category: str) -> list[dict]:
+    """事業所数の表 CSV を 1 セル 1 行の縦持ちにする。
+
+    列見出しの行は 1 列目が空で、2 列目以降に値が並ぶ最初の行。表題の行は
+    1 列目に年が入るので外れる。表の下の注は列の数が違うので外れる。
+    """
+    rows = list(csv.reader(io.StringIO(body.decode("cp932"))))
+    header = next(
+        (
+            i
+            for i, row in enumerate(rows)
+            if row and not _norm(row[0]) and any(_norm(c) for c in row[1:])
+        ),
+        None,
+    )
+    if header is None:
+        raise RuntimeError(f"{survey_year}年調査 {category}: 列見出しが無い")
+    width = len(rows[header])
+    service_types = [_service_type(_norm(c)) for c in rows[header][1:]]
+    if not all(service_types):
+        raise RuntimeError(
+            f"{survey_year}年調査 {category}: 空の列見出しがある {service_types}"
+        )
+
+    records = []
+    area_kind = None
+    prefectures = 0
+    for row in rows[header + 1 :]:
+        if len(row) != width or not _norm(row[0]):
+            continue
+        area_name = _norm(row[0])
+        cells = row[1:]
+        if area_name in REPRINT_SECTIONS:
+            area_kind = REPRINT_SECTIONS[area_name]
+            continue
+        if not any(_norm(c) for c in cells):
+            raise RuntimeError(
+                f"{survey_year}年調査 {category}: 値の無い行 {area_name!r}"
+            )
+        if area_kind is None:
+            # 再掲の見出しより上は全国 1 行と都道府県。
+            if area_name == "全国":
+                kind = "nationwide"
+            else:
+                kind = "prefecture"
+                prefectures += 1
+        else:
+            kind = area_kind
+        for service_type, cell in zip(service_types, cells, strict=True):
+            records.append(
+                {
+                    "survey_year": survey_year,
+                    "area_name": area_name,
+                    "area_kind": kind,
+                    "service_category": category,
+                    "service_type": service_type,
+                    "value": _value(cell),
+                }
+            )
+    if prefectures != PREFECTURE_COUNT:
+        raise RuntimeError(
+            f"{survey_year}年調査 {category}: 都道府県が {prefectures} 行 (47 行のはず)"
+        )
+    return records
+
+
 def build_kaigo_service(dest_dir: str, app_id: str) -> None:
-    """統計表 CSV を取得し、介護保険施設の施設数・定員を NDJSON に整形する。"""
+    """統計表 CSV を取得し、介護保険施設の施設数・定員と事業所数を NDJSON に整形する。"""
     dest = Path(dest_dir)
     dest.mkdir(parents=True, exist_ok=True)
+    resources = _catalog_resources(app_id)
 
     records: list[dict] = []
-    for survey_year, form, url in catalog(app_id):
+    for survey_year, form, url in catalog(resources):
         parsed = parse(_fetch(url), survey_year, form)
         logger.info(f"  {survey_year} {form or '-'}: {len(parsed)} rows")
         records += parsed
@@ -385,4 +551,20 @@ def build_kaigo_service(dest_dir: str, app_id: str) -> None:
     years = sorted({r["survey_year"] for r in records})
     logger.info(
         f"  insurance_facility={len(records)} rows, {years[0]}-{years[-1]}年調査"
+    )
+
+    establishments: list[dict] = []
+    for survey_year, category, url in establishment_catalog(resources):
+        parsed = parse_establishments(_fetch(url), survey_year, category)
+        logger.info(f"  {survey_year} {category}: {len(parsed)} rows")
+        establishments += parsed
+
+    with (dest / "service_establishment.ndjson").open("w", encoding="utf-8") as f:
+        for record in establishments:
+            f.write(json.dumps(record, ensure_ascii=False) + "\n")
+
+    years = sorted({r["survey_year"] for r in establishments})
+    logger.info(
+        f"  service_establishment={len(establishments)} rows,"
+        f" {years[0]}-{years[-1]}年調査"
     )

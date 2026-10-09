@@ -2,3 +2,4 @@ version: 2
 
 models:
   - name: raw_kaigo_service
+  - name: raw_kaigo_service_establishment

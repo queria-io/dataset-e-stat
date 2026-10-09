@@ -1,5 +1,5 @@
 ---
-title: 介護保険施設の施設数・定員
+title: 介護保険施設と介護サービス事業所の数
 order: 25
 ---
 
@@ -111,10 +111,55 @@ LIMIT 10
 
 保育所・障害者支援施設・児童養護施設・養護老人ホームなどは、この調査ではなく社会福祉施設等調査の対象です。[社会福祉施設の施設数・定員・従事者数](/cookbook/e_stat/welfare-facility)を参照してください。
 
-訪問介護・通所介護などの居宅サービス事業所と地域密着型サービスの事業所数は、同じ調査の別の表にあります。この表には入っていません。
+訪問介護・通所介護などの居宅サービス事業所と地域密着型サービスの事業所数は、下の `service_establishment` にあります。
 
 事業所1件ごとの名簿が必要なときは mhlw データセットの `kaigo.establishment` を参照してください。あちらは現時点の一覧で、年次の増減はこの表でしか追えません。
 
 ## 値が NULL の行
 
 その年その市区町村にその種類の施設が無い行は NULL です。値が入るのは年・指標ごとに51.7%〜72.3%の行なので、集計の前に `value IS NOT NULL` で絞るか、`SUM` の NULL 無視に任せます。
+
+## 居宅サービス・地域密着型サービスの事業所数（service_establishment）
+
+訪問介護・通所介護・訪問看護ステーション・居宅介護支援・認知症対応型共同生活介護（グループホーム）などの事業所数を、都道府県別・サービスの種類別に収録します。テーブルは `e_stat.kaigo_service.service_establishment`。基本票の4表（居宅サービス・介護予防サービス・地域密着型サービス・地域密着型介護予防サービス）を1つにしたもので、2013年から2024年までの46,087行です。
+
+- survey_year: 調査年
+- area_code / area_name / area_kind: 標準地域コード / 地域名 / 集計の段（`nationwide` / `prefecture` / `designated_city` / `core_city`）
+- prefecture_code / prefecture_name: 都道府県コード / 都道府県名
+- service_category: サービスの区分（原典の表）
+- service_type: サービスの種類
+- value: 事業所数
+
+```sql
+SELECT area_name, value AS establishments
+FROM e_stat.kaigo_service.service_establishment
+WHERE survey_year = 2024
+  AND area_kind = 'prefecture'
+  AND service_type = '訪問介護'
+ORDER BY value DESC
+LIMIT 10
+```
+
+2024年の訪問介護は大阪府が5,811で最も多く、東京都3,265、神奈川県2,258、愛知県2,004と続きます。
+
+### 指定都市・中核市は再掲
+
+行は全国・47都道府県と、その再掲の指定都市・中核市までで、市区町村の粒度はありません。足し合わせて全国になるのは `area_kind = 'prefecture'` の行だけです。指定都市と中核市は都道府県の内数なので、混ぜると二重に数えます。中核市は年とともに増えます（2013年調査42市 → 2024年調査62市）。
+
+原典の行見出しは地域名だけなので、`area_code` は `code.municipality` の現行の名前から当てています。
+
+### 通所介護は2016年に半分が地域密着型へ移る
+
+2016年4月に定員18人以下の通所介護が地域密着型通所介護へ移りました。通所介護は2015年調査43,406から2016年調査23,038へ半減し、地域密着型通所介護が2016年調査21,063で現れます。年をまたいで比べるときは2つを合わせます。
+
+```sql
+SELECT survey_year,
+    SUM(value) FILTER (WHERE service_type = '通所介護') AS day_service,
+    SUM(value) FILTER (WHERE service_type = '地域密着型通所介護') AS community_day_service
+FROM e_stat.kaigo_service.service_establishment
+WHERE area_kind = 'nationwide'
+GROUP BY survey_year
+ORDER BY survey_year
+```
+
+介護予防訪問介護と介護予防通所介護は総合事業へ移り、2017年調査を最後に表から無くなります。原典が「-」（該当なし）のセルは NULL です。

@@ -1,0 +1,74 @@
+schema: kaigo_service
+name: service_establishment
+title: 居宅サービス・地域密着型サービスの事業所数（都道府県別）
+description: |-
+  介護サービス施設・事業所調査の基本票から、居宅サービス・介護予防サービス・
+  地域密着型サービス・地域密着型介護予防サービスの事業所数を、都道府県別・
+  サービスの種類別に1セル1行で収録する。訪問介護・通所介護・訪問看護ステーション・
+  居宅介護支援・認知症対応型共同生活介護（グループホーム）・小規模多機能型居宅介護
+  などが対象。介護保険施設（特別養護老人ホームなど）は insurance_facility にある。
+  収録は2013年〜2024年調査の12年、46,087行。調査日は毎年10月1日。
+
+  地域は全国・47都道府県と、その再掲の指定都市・中核市まで。市区町村の粒度は無い。
+  足し合わせて全国になるのは area_kind が prefecture の行だけで、designated_city と
+  core_city は都道府県の内数なので、混ぜると二重に数える。中核市は年とともに増える
+  （2013年調査42市 → 2024年調査62市）。
+
+  サービスの種類は制度改正で入れ替わる。2016年4月に定員18人以下の通所介護が
+  地域密着型通所介護へ移ったので、通所介護は2015年調査43,406から2016年調査23,038へ
+  半減する。年をまたいで比べるときは地域密着型通所介護（2016年調査21,063）と
+  合わせる。介護予防訪問介護と介護予防通所介護は総合事業へ移り、2017年調査を
+  最後に表から無くなる。
+
+  出典: 厚生労働省 介護サービス施設・事業所調査。
+  https://www.e-stat.go.jp/stat-search/files?toukei=00450042
+  厚生労働省ポータル: https://www.mhlw.go.jp/toukei/list/24-22-2.html
+keywords:
+  - e-stat
+  - 介護サービス施設・事業所調査
+  - 居宅サービス
+  - 介護予防サービス
+  - 地域密着型サービス
+  - 訪問介護
+  - 通所介護
+  - デイサービス
+  - 訪問看護
+  - 居宅介護支援
+  - グループホーム
+  - 介護
+  - 高齢者
+  - 事業所数
+  - 都道府県
+published: true
+sources:
+  - path: https://www.e-stat.go.jp/stat-search/files?toukei=00450042
+fields:
+  - name: survey_year
+    title: 調査年
+    description: "調査年。毎年10月1日現在の調査で、2013〜2024で欠けは無い"
+  - name: area_code
+    title: 地域コード
+    description: "統計に用いる標準地域コード（5桁）。原典の行見出しは地域名だけなので、code.municipality の現行の名前から当てている。全国は 00000"
+    semantic: { role: entity, name: city }
+  - name: area_name
+    title: 地域名
+    description: "地域の名称。都道府県は原典が2023年調査まで略称（「青森」）で出すので、接尾辞を補って正式名にそろえている"
+  - name: area_kind
+    title: 集計の段
+    description: "集計の段。nationwide=全国、prefecture=都道府県、designated_city=指定都市（再掲）、core_city=中核市（再掲）。足し合わせて全国になるのは prefecture だけ"
+  - name: prefecture_code
+    title: 都道府県コード
+    description: "都道府県コード（2桁）。指定都市・中核市の行はその市がある都道府県。全国の行は NULL"
+    semantic: { role: entity, name: prefecture }
+  - name: prefecture_name
+    title: 都道府県名
+    description: "都道府県名。code.municipality の pref_name。全国の行は NULL"
+  - name: service_category
+    title: サービスの区分
+    description: "サービスの区分。居宅サービス・介護予防サービス・地域密着型サービス・地域密着型介護予防サービスの4つで、原典の表に対応する"
+  - name: service_type
+    title: サービスの種類
+    description: "サービスの種類。原典の列見出し。2015年調査までの地域密着型サービスの「〜事業所」の接尾辞は外し、複合型サービスは2015年の改称後の名前（複合型サービス（看護小規模多機能型居宅介護））にそろえている。地域密着型通所介護は2016年調査から、介護予防訪問介護・介護予防通所介護は2017年調査まで"
+  - name: value
+    title: 事業所数
+    description: "事業所数。原典が「-」（該当なし）の行は NULL"

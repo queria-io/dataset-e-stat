@@ -15,7 +15,7 @@
 13. manufacture:       工業統計調査 市区町村別・産業中分類別統計取得 (getStatsData)
 14. local_finance:     地方財政状況調査 決算収支・財政力取得 (getDataCatalog + CSV DL)
 15. welfare_facility:  社会福祉施設等調査 施設数・定員・在所者数・従事者数取得 (getDataCatalog + CSV DL)
-16. kaigo_service:     介護サービス施設・事業所調査 介護保険施設数・定員取得 (getDataCatalog + CSV DL)
+16. kaigo_service:     介護サービス施設・事業所調査 介護保険施設数・定員・事業所数取得 (getDataCatalog + CSV DL)
 17. wage_structure:    賃金構造基本統計調査 都道府県別・産業別の賃金取得 (getDataCatalog + Excel DL)
 18. school:            学校基本調査 小学校・中学校の学年別児童生徒数取得 (getDataCatalog + Excel DL)
 19. dbt:               dbt ビルド
@@ -193,7 +193,7 @@ def main():
     logger.info("15/19: welfare_facility (社会福祉施設等調査)")
     build_welfare_facility("data/welfare_facility", app_id)
 
-    # 16. 介護サービス施設・事業所調査 介護保険施設数・定員
+    # 16. 介護サービス施設・事業所調査 介護保険施設数・定員・居宅サービス等の事業所数
     logger.info("16/19: kaigo_service (介護サービス施設・事業所調査)")
     build_kaigo_service("data/kaigo_service", app_id)
 
