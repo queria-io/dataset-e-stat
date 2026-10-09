@@ -1240,12 +1240,12 @@ ORDER BY value DESC;
 
 特別養護老人ホーム（介護老人福祉施設）・介護老人保健施設・訪問介護事業所などの介護保険の
 施設は、この調査ではなく介護サービス施設・事業所調査の対象です。介護保険施設の施設数と
-定員は `kaigo_service` スキーマにあります。
+定員、居宅サービスなどの事業所数は `kaigo_service` スキーマにあります。
 
 出典: 厚生労働省 社会福祉施設等調査。
 https://www.e-stat.go.jp/stat-search/files?toukei=00450041
 
-## 介護サービス施設・事業所調査 介護保険施設数・定員（kaigo_service スキーマ）
+## 介護サービス施設・事業所調査 介護保険施設数・定員・事業所数（kaigo_service スキーマ）
 
 介護老人福祉施設（特別養護老人ホーム）・介護老人保健施設・介護医療院・介護療養型医療施設の
 施設数と定員を、市区町村別・施設の種類別に収録した表です。2001年から2024年までの534,444行で、
@@ -1254,6 +1254,7 @@ https://www.e-stat.go.jp/stat-search/files?toukei=00450041
 | テーブル | 内容 | 主なカラム |
 |---------|------|-----------|
 | insurance_facility | 市区町村別・施設の種類別の介護保険施設数・定員 | survey_year / area_code / area_name / area_kind / prefecture_code / prefecture_name / facility_type / survey_form / measure / value |
+| service_establishment | 都道府県別・サービスの種類別の居宅サービス・地域密着型サービスの事業所数 | survey_year / area_code / area_name / area_kind / prefecture_code / prefecture_name / service_category / service_type / value |
 
 1セル1行の縦持ちで、指標は `measure` で選びます（`facility_count` 施設数、`capacity` 定員、
 `fte_workers` 常勤換算従事者数）。常勤換算従事者数が入るのは2017年調査までです。値が入るのは
@@ -1306,6 +1307,37 @@ LIMIT 5;
 介護療養型医療施設が減り（2012年調査1,759施設 → 2023年調査197施設）、2024年調査では
 表から無くなります。介護療養型医療施設の定員は原典の見出しが「病床数」ですが、
 `measure = 'capacity'` に寄せてあります。
+
+### 居宅サービス・地域密着型サービスの事業所数
+
+`service_establishment` は基本票の事業所数の4表（居宅サービス・介護予防サービス・
+地域密着型サービス・地域密着型介護予防サービス）を1つにした表です。2013年から2024年までの
+46,087行で、訪問介護・通所介護・訪問看護ステーション・居宅介護支援・認知症対応型共同生活介護
+（グループホーム）などの事業所数が引けます。行は全国・47都道府県と、その再掲の指定都市・
+中核市までで、市区町村の粒度はありません。
+
+```sql
+-- 訪問介護の事業所が多い都道府県（2024年）
+SELECT area_name, value AS establishments
+FROM e_stat.kaigo_service.service_establishment
+WHERE survey_year = 2024
+  AND area_kind = 'prefecture'
+  AND service_type = '訪問介護'
+ORDER BY value DESC
+LIMIT 5;
+```
+
+2024年は大阪府が5,811で最も多く、東京都3,265、神奈川県2,258、愛知県2,004と続きます。
+
+足し合わせて全国になるのは `area_kind = 'prefecture'` の行だけです。指定都市
+（`designated_city`）と中核市（`core_city`）は都道府県の内数の再掲なので、混ぜると二重に
+数えます。原典の行見出しは地域名だけなので、`area_code` は `code.municipality` の現行の
+名前から当てています。
+
+2016年4月に定員18人以下の通所介護が地域密着型通所介護へ移ったので、通所介護は
+2015年調査43,406から2016年調査23,038へ半減します。年をまたいで比べるときは
+地域密着型通所介護（2016年調査21,063）と合わせます。介護予防訪問介護と介護予防通所介護は
+2017年調査を最後に表から無くなります。原典が「-」（該当なし）のセルは NULL です。
 
 出典: 厚生労働省 介護サービス施設・事業所調査。
 https://www.e-stat.go.jp/stat-search/files?toukei=00450042
