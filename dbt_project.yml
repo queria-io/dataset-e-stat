@@ -81,6 +81,11 @@ models:
         +materialized: table
       stg:
         +materialized: table
+    school_health:
+      raw:
+        +materialized: table
+      stg:
+        +materialized: table
     wage_structure:
       raw:
         +materialized: table

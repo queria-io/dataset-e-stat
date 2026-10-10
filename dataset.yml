@@ -74,6 +74,10 @@ keywords:
   - 特別養護老人ホーム
   - 介護
   - 福祉
+  - 学校保健統計調査
+  - 身長
+  - 体重
+  - 発育
 homepage: https://github.com/queria-io/dataset-e-stat
 language: ja
 
@@ -165,5 +169,7 @@ schemas:
     title: 賃金構造基本統計調査
   - name: school
     title: 学校基本調査
+  - name: school_health
+    title: 学校保健統計調査
   - name: building_starts
     title: 建築着工統計調査
