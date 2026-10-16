@@ -1,0 +1,20 @@
+SELECT
+    year,
+    industry_code,
+    industry,
+    salary_class_code,
+    salary_class,
+    salary_class_lower,
+    salary_class_upper,
+    sex_code,
+    sex,
+    earners,
+    avg_age,
+    avg_tenure_years,
+    wages_total,
+    wages_avg,
+    bonus_total,
+    bonus_avg,
+    pay_total,
+    pay_avg
+FROM {{ ref('stg_private_salary_industry') }}

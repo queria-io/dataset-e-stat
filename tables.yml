@@ -286,3 +286,12 @@ tables:
     statsDataId: "0004008431"
     merge_keys: [tab, cat01, cat02, cat03, cat04, cat05, area, time]
     incremental: true
+
+  # 民間給与実態統計調査 全国計表 第9表 業種別及び給与階級別の給与所得者数・給与額
+  # 2008年からの同名の表（0003045946）は別系列で、重なる年でも値が一致しないので取らない。
+  # 地域の軸が無い表なので merge キーに area を含めない。
+  - name: private_salary_industry
+    description: 民間給与実態統計調査 業種別及び給与階級別の給与所得者数・給与額（1年を通じて勤務した給与所得者・2014年～）
+    statsDataId: "0004009620"
+    merge_keys: [tab, cat01, cat02, cat03, time]
+    incremental: true

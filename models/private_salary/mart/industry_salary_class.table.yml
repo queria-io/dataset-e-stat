@@ -1,0 +1,89 @@
+schema: private_salary
+name: industry_salary_class
+title: 業種別・給与階級別の給与所得者数と給与
+description: |-
+  民間給与実態統計調査の、1年を通じて勤務した給与所得者の人数と給与を、
+  業種別・給与階級別・男女別に収録する（全国計表 第9表）。給与階級別の人数を持つので、
+  平均だけでなく年間給与の分布が見られる。全国の値で、都道府県別の行は無い。
+  収録は2014年〜2024年分の11年、7,425行（15業種区分 × 15給与階級区分 × 3性別区分 × 11年）。
+  業種（industry_code）は国税庁の14区分と合計で、日本標準産業分類の大分類とは区切りが違う。
+  給与階級（salary_class_code）は100万円刻みで1,000万円まで、その上は500万円刻みで2,500万円超まで。
+  合計・計の行が内訳と同じ列に並ぶので、絞らずに集計すると二重に数える。
+  2024年の平均給与（pay_avg）は合計で4,775千円。電気･ガス･熱供給・水道業 8,324千円が最も高く、
+  宿泊業，飲食サービス業 2,793千円が最も低い。人数が最も多い給与階級は300万円超400万円以下（16.1%）。
+  原典で「-」（該当する計数のないとき）のセルは NULL。給与所得者のいない66行は全指標が NULL で、
+  ほかに賞与だけが NULL の行が67行ある。
+  人数は標本からの推計値で、内訳の合計と計は最大4人ずれる。
+  e-Stat には2008年からの同名の統計表（0003045946）もあるが、重なる2014〜2021年でも
+  セルの95%で値が違う。この表は2014年からの系列だけを収録する。
+  出典: 国税庁 民間給与実態統計調査。
+  https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004009620
+  国税庁ポータル: https://www.nta.go.jp/publication/statistics/kokuzeicho/minkan/toukei.htm
+keywords:
+- e-stat
+- 民間給与実態統計調査
+- 国税庁
+- 給与
+- 平均給与
+- 年収
+- 賞与
+- 給与階級
+- 業種
+published: true
+sources:
+- path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004009620
+fields:
+- name: year
+  title: 年分
+  description: 年分（西暦4桁）。その年の1月〜12月に支払われた給与。2014〜2024
+- name: industry_code
+  title: 業種コード
+  description: 業種コード。1〜14が国税庁の業種区分で、15=合計。日本標準産業分類の大分類とは区切りが違い、10 は学術研究，専門・技術サービス業と教育，学習支援業をまとめた区分、14 は農林水産業と鉱業をまとめた区分
+- name: industry
+  title: 業種
+  description: industry_code に対応する業種名
+- name: salary_class_code
+  title: 給与階級コード
+  description: 給与階級コード。1〜14が給与階級で、15=計。コードが大きいほど給与が高い
+- name: salary_class
+  title: 給与階級
+  description: salary_class_code に対応する名称。「200万円以下」のように上限だけの名前だが、実際は前の階級の上限を超えこの上限以下の区間
+- name: salary_class_lower
+  title: 給与階級の下限
+  description: 給与階級の下限（万円）。この値を超える給与が入る。計の行は NULL
+- name: salary_class_upper
+  title: 給与階級の上限
+  description: 給与階級の上限（万円）。この値以下の給与が入る。2,500万円超と計の行は NULL
+- name: sex_code
+  title: 性別コード
+  description: 性別コード。1=男、2=女、3=計。計と内訳が同じ列にあるので、絞らずに集計すると二重に数える
+- name: sex
+  title: 性別
+  description: sex_code に対応する名称
+- name: earners
+  title: 給与所得者数
+  description: 給与所得者数（人）。1年を通じて勤務した給与所得者の推計値。原典で「-」のセルは NULL
+- name: avg_age
+  title: 平均年齢
+  description: 平均年齢（歳）
+- name: avg_tenure_years
+  title: 平均勤続年数
+  description: 平均勤続年数（年）
+- name: wages_total
+  title: 給料・手当の総額
+  description: 給料・手当の総額（百万円）。賞与を含まない
+- name: wages_avg
+  title: 給料・手当の平均
+  description: 給料・手当の1人あたり平均（千円）
+- name: bonus_total
+  title: 賞与の総額
+  description: 賞与の総額（百万円）。賞与の支払いが無い区分は NULL
+- name: bonus_avg
+  title: 賞与の平均
+  description: 賞与の1人あたり平均（千円）。賞与の支払いが無い区分は NULL
+- name: pay_total
+  title: 給与の総額
+  description: 給与の総額（百万円）。給料・手当と賞与の和で、百万円未満の丸めにより最大1ずれる
+- name: pay_avg
+  title: 平均給与
+  description: 給与の1人あたり平均（千円）。給料・手当と賞与の和。国税庁が「平均給与」として公表する値

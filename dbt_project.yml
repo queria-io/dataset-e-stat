@@ -71,6 +71,11 @@ models:
         +materialized: table
       stg:
         +materialized: table
+    private_salary:
+      raw:
+        +materialized: table
+      stg:
+        +materialized: table
     retail_price:
       raw:
         +materialized: table

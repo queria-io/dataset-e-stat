@@ -1,0 +1,4 @@
+version: 2
+
+models:
+  - name: stg_private_salary_industry

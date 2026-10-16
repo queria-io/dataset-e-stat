@@ -78,6 +78,9 @@ keywords:
   - 身長
   - 体重
   - 発育
+  - 民間給与実態統計調査
+  - 平均給与
+  - 給与階級
 homepage: https://github.com/queria-io/dataset-e-stat
 language: ja
 
@@ -113,6 +116,8 @@ sources:
     path: https://www.stat.go.jp/data/shugyou/
   - title: 賃金構造基本統計調査（厚生労働省）
     path: https://www.e-stat.go.jp/stat-search/files?toukei=00450091
+  - title: 民間給与実態統計調査（国税庁）
+    path: https://www.nta.go.jp/publication/statistics/kokuzeicho/minkan/toukei.htm
 
 contributors:
   - title: 総務省統計局
@@ -123,6 +128,9 @@ contributors:
     roles: [rightsHolder]
   - title: 厚生労働省
     path: https://www.mhlw.go.jp/
+    roles: [rightsHolder]
+  - title: 国税庁
+    path: https://www.nta.go.jp/
     roles: [rightsHolder]
 
 temporal_coverage: { start: "1970", end: null }
@@ -173,3 +181,5 @@ schemas:
     title: 学校保健統計調査
   - name: building_starts
     title: 建築着工統計調査
+  - name: private_salary
+    title: 民間給与実態統計調査
