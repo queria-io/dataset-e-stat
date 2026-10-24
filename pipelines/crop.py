@@ -125,9 +125,15 @@ def survey_year(statistics_name: str) -> int | None:
     return ERA_BASE[m[1]] + (1 if m[2] == "元" else int(m[2]))
 
 
-def catalog(app_id: str) -> list[tuple[int, str, str]]:
+def catalog(app_id: str, cache_dir: Path | None = None) -> list[tuple[int, str, str]]:
     """都道府県別の表を (年産, 統計表 ID, 表題) で集める。"""
-    root = _api(app_id, "getStatsList", statsCode=STATS_CODE, limit=PAGE_LIMIT)
+    cached = cache_dir / "stats_list.json" if cache_dir else None
+    if cached and cached.exists():
+        root = json.loads(cached.read_text(encoding="utf-8"))
+    else:
+        root = _api(app_id, "getStatsList", statsCode=STATS_CODE, limit=PAGE_LIMIT)
+        if cached:
+            cached.write_text(json.dumps(root, ensure_ascii=False), encoding="utf-8")
     if root.get("DATALIST_INF", {}).get("RESULT_INF", {}).get("NEXT_KEY"):
         raise RuntimeError(f"getStatsList: {STATS_CODE} が {PAGE_LIMIT} 件に収まらない")
     tables = {
@@ -380,7 +386,7 @@ def build_crop(dest_dir: str, app_id: str, cache_dir: str | None = None) -> None
     if cache:
         cache.mkdir(parents=True, exist_ok=True)
 
-    tables = catalog(app_id)
+    tables = catalog(app_id, cache)
     years = {y for y, _, _ in tables}
     rows: list[dict] = []
     for year, id_, title in tables:
