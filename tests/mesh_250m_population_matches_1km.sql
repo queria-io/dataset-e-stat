@@ -13,8 +13,8 @@ WITH m250 AS (
     GROUP BY 1
 ),
 m1k AS (
-    SELECT SUBSTR(area, 1, 4) AS mesh1_code, SUM(TRY_CAST(value AS DOUBLE)) AS population
-    FROM {{ ref('raw_mesh_population') }}
+    SELECT mesh1_code, SUM(value) AS population
+    FROM {{ ref('population_mesh_1km') }}
     WHERE cat01 = '0010'
     GROUP BY 1
 )

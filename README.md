@@ -342,6 +342,7 @@ https://www.e-stat.go.jp/
 | テーブル | 内容 | 主なカラム |
 |---------|------|-----------|
 | daytime_population_mesh_1km | 1kmメッシュ別 昼間人口・夜間人口・昼夜間人口比率 | mesh_code / city_code / nighttime_population / daytime_population / daytime_ratio |
+| population_mesh_1km | 1kmメッシュ別の人口と世帯（令和2年国勢調査・縦持ち）。昼間人口の推計が按分に使う夜間人口の元の表 | mesh_code / mesh1_code / cat01 / category / cat02 / value |
 
 夜間人口は令和2年国勢調査の実測値ですが、昼間人口は推計値です。公的統計として
 昼間人口が公表されているのは市区町村までで、それより細かい単位は存在しません。
@@ -365,6 +366,7 @@ https://www.e-stat.go.jp/
 | テーブル | 内容 | 主なカラム |
 |---------|------|-----------|
 | establishment_industry | 全国・都道府県・市区町村別、産業大分類別・経営組織別の民営事業所数・従業者数・売上（収入）金額 | area / industry_code / organization_code / establishments / employees / sales_million_yen |
+| establishment_mesh_1km | 1kmメッシュ別、産業大分類別の事業所数・従業者数（平成28年経済センサス・縦持ち）。昼間人口の推計が流入側の按分に使う従業者数の元の表 | mesh_code / mesh1_code / cat01 / category / value |
 
 令和3年経済センサス‐活動調査（2021年6月1日現在）の産業横断的集計「売上（収入）金額等」
 第2-1表です。国勢調査の census_small_area_industry が常住地ベース（住民がどの産業で働くか）
