@@ -9,6 +9,9 @@
      最大5.5円ずれうる。5円まで許す。2019年の表の実測の最大ずれは2円
    - 01〜40 の消費支出を世帯数分布で加重平均した値が平均 (00) とずれる。世帯数分布が
      推計に使う重みでなくなったら落ちる。1円まで許す。2019年の表の実測のずれは0.35円
+   - 世帯数分布が推計世帯数でない。世帯数分布は1世帯単位の推計世帯数 (2019年の 00 は 51,229,953) で、
+     01〜40 の和が 00 と一致する。40個の値の丸めで最大20ずれうるので20まで許す (実測のずれは1世帯)。
+     1万分比に変わっても和は 00 (10000) と一致するので、00 が100万世帯に満たないときも落とす
    - 付帯値 (集計世帯数・世帯数分布・世帯人員・18歳未満人員・65歳以上人員・有業人員・
      世帯主の年齢) のどれかが NULL の年間収入階級。表章項目のコードが変わって取れなくなったら落ちる #}
 {% set items = [
@@ -100,6 +103,20 @@ weighted AS (
     HAVING difference IS NULL OR ABS(difference) > 1
 ),
 
+households_total AS (
+    SELECT
+        'households_total' AS check_name,
+        year || '/' || area AS key,
+        MAX(households) FILTER (WHERE income_class_code = '00')
+            - SUM(households) FILTER (WHERE NOT is_reclassified AND income_class_code <> '00') AS difference
+    FROM t
+    WHERE item_code = '2101'
+    GROUP BY year, area
+    HAVING difference IS NULL
+        OR ABS(difference) > 20
+        OR MAX(households) FILTER (WHERE income_class_code = '00') < 1000000
+),
+
 attributes_missing AS (
     SELECT
         'attributes_missing' AS check_name,
@@ -118,4 +135,5 @@ UNION ALL SELECT * FROM missing
 UNION ALL SELECT * FROM unexpected
 UNION ALL SELECT * FROM major_groups
 UNION ALL SELECT * FROM weighted
+UNION ALL SELECT * FROM households_total
 UNION ALL SELECT * FROM attributes_missing
