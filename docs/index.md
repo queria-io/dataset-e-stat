@@ -31,6 +31,7 @@ e-Stat（政府統計の総合窓口）の API と統計GIS から取得した�
 | school | 学校基本調査 小学校・中学校の学年別児童生徒数 enrollment_by_grade |
 | school_health | 学校保健統計調査 都道府県別・年齢別の身長・体重の平均値と標準偏差 growth_by_prefecture |
 | building_starts | 建築着工統計調査 市区町村別・用途別の建築着工 municipality_use |
+| housing_survey | 住宅・土地統計調査 市区町村別の世帯の年間収入階級・住宅の所有の関係別主世帯数 municipality_income_tenure |
 
 11分野（A〜K）の詳細は各カテゴリのガイドを参照してください。市区町村・都道府県を並べて比べたいときは[市区町村別 基本集計](/cookbook/e_stat/census-municipality)、働いているかどうかや働き方で比べたいときは[就業状態等基本集計](/cookbook/e_stat/census-employment)、昼間に人が集まる街を見たいときや通勤・通学の行き先を見たいときは[昼夜間人口と通勤・通学流動](/cookbook/e_stat/census-commuting)、市区町村より細かい粒度で見たいときは[小地域集計](/cookbook/e_stat/census)、昼と夜で人の分布を見分けたいときは[1kmメッシュ別 昼間人口](/cookbook/e_stat/mesh-daytime)、地図に載せるときは[境界データ](/cookbook/e_stat/boundary)、市区町村の製造業を産業別に見たいときは[市区町村別 製造業統計](/cookbook/e_stat/manufacture)、街に人が入ってきているか出ていっているかを見たいときは[市区町村別 転入・転出](/cookbook/e_stat/migration)、自治体そのものの決算規模や財政力を見たいときは[決算収支と財政力](/cookbook/e_stat/local-finance)、品物の値段を市どうしで比べたいときは[調査品目の年平均価格](/cookbook/e_stat/retail-price)、保育所や障害者支援施設がどれだけあるかを見たいときは[社会福祉施設の施設数・定員・従事者数](/cookbook/e_stat/welfare-facility)、特別養護老人ホームや介護老人保健施設が市区町村ごとにどれだけあるかを見たいときは[介護保険施設の施設数・定員](/cookbook/e_stat/kaigo-service)、都道府県や大きな市で有業率や非正規の割合を比べたいときは[有業率と非正規の割合](/cookbook/e_stat/employment-structure)、都道府県や産業ごとの賃金水準を比べたいときは[都道府県・産業別の賃金](/cookbook/e_stat/wage-structure)、学年ごとの子どもの数や私立に通う割合を都道府県で比べたいときは[学年別の児童生徒数](/cookbook/e_stat/school)、子どもの身長・体重を年齢ごとに都道府県で見たいときは[都道府県別の身長・体重](/cookbook/e_stat/school-health)、工場や住宅がどの市区町村でどれだけ建ち始めているかを見たいときは[市区町村別・用途別の建築着工](/cookbook/e_stat/building-starts)を参照してください。
 

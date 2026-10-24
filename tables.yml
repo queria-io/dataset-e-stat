@@ -295,3 +295,12 @@ tables:
     statsDataId: "0004009620"
     merge_keys: [tab, cat01, cat02, cat03, time]
     incremental: true
+
+  # 令和5年住宅・土地統計調査 世帯の年間収入階級(10区分)・住宅の所有の関係(5区分)別主世帯数。
+  # 市区町村の表は全市と人口1.5万人以上の町村などだけで、全町村は載らない。
+  - name: housing_survey_income_tenure
+    description: 住宅・土地統計調査 世帯の年間収入階級・住宅の所有の関係別主世帯数（全国・都道府県・市区町村、2023年）
+    statsDataId: "0004021668"
+    merge_keys: [tab, cat01, cat02, area, time]
+    incremental: true
+

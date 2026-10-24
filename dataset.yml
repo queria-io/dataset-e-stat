@@ -183,3 +183,5 @@ schemas:
     title: 建築着工統計調査
   - name: private_salary
     title: 民間給与実態統計調査
+  - name: housing_survey
+    title: 住宅・土地統計調査

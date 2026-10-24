@@ -1,0 +1,28 @@
+version: 2
+
+models:
+  - name: municipality_income_tenure
+    description: |
+      令和5年住宅・土地統計調査 全国・都道府県・市区町村別の、世帯の年間収入階級(10区分)・
+      住宅の所有の関係別主世帯数（縦持ち）。市区町村は全市と一部の町村だけ。
+      出典: 総務省統計局 令和5年住宅・土地統計調査。
+      https://www.e-stat.go.jp/
+    access: public
+    columns:
+      - name: area
+        description: "標準地域コード（5桁）"
+        data_tests:
+          - not_null
+      - name: area_level
+        description: "national=全国、prefecture=都道府県、municipality=市町村（政令指定都市は市全体）、ward=政令指定都市の区"
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [national, prefecture, municipality, ward]
+      - name: tenure_code
+        description: "住宅の所有の関係。0 総数、1 持ち家、2 借家、21 公営の借家、22 UR・公社の借家、23 民営借家、24 給与住宅"
+      - name: income_class_code
+        description: "世帯の年間収入階級。00 総数、01〜11 は10区分（04 は欠番）"
+      - name: households
+        description: "主世帯数（世帯）。原典の「-」は NULL"

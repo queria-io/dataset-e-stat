@@ -46,6 +46,11 @@ models:
         +materialized: table
       stg:
         +materialized: table
+    housing_survey:
+      raw:
+        +materialized: table
+      stg:
+        +materialized: table
     kaigo_service:
       raw:
         +materialized: table
