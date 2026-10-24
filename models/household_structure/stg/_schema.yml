@@ -1,0 +1,5 @@
+version: 2
+
+models:
+  - name: stg_household_structure_income_class
+    description: 全国家計構造調査の年間収入階級別の消費支出・10大費目に、同じ収入階級の世帯数分布と世帯人員などを並べたもの

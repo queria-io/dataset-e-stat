@@ -88,6 +88,8 @@ keywords:
   - 収穫量
   - 出荷量
   - 作付面積
+  - 全国家計構造調査
+  - 年間収入階級
 homepage: https://github.com/queria-io/dataset-e-stat
 language: ja
 
@@ -127,6 +129,8 @@ sources:
     path: https://www.nta.go.jp/publication/statistics/kokuzeicho/minkan/toukei.htm
   - title: 作物統計調査 作況調査（野菜）（農林水産省）
     path: https://www.e-stat.go.jp/statistics/00500215
+  - title: 全国家計構造調査（総務省統計局）
+    path: https://www.stat.go.jp/data/zenkokukakei/2019/index.html
 
 contributors:
   - title: 総務省統計局
@@ -199,3 +203,5 @@ schemas:
     title: 住宅・土地統計調査
   - name: crop
     title: 作物統計調査
+  - name: household_structure
+    title: 全国家計構造調査
