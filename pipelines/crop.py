@@ -288,7 +288,11 @@ def parse_table(data: dict, year: int, title: str, years: set[int]) -> list[dict
     }
     crops = {_norm(n) for n in axes.get("item", {}).get("codes", {}).values()}
     # 令和3年産以降は作型・うち内訳が項目名の接頭辞にあるので、表題からは品目だけ取る。
-    prefixed = any("_" in n for n in axes["measure"]["codes"].values())
+    # 平成22年産〜令和2年産の「対前年産比_作付面積」も「_」を含むので、取る項目
+    # (measure_of が読めるもの) に接頭辞があるかで見分ける。
+    prefixed = any(
+        "_" in n and measure_of(n) for n in axes["measure"]["codes"].values()
+    )
     title_item = (
         None
         if "item" in axes
