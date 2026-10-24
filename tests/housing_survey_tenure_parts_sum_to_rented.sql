@@ -5,6 +5,7 @@ WITH t AS (
     SELECT
         area,
         income_class_code,
+        COUNT(*) FILTER (WHERE tenure_code = '2') AS rented_rows,
         MAX(households) FILTER (WHERE tenure_code = '2') AS rented,
         SUM(COALESCE(households, 0)) FILTER (WHERE tenure_code IN ('21', '22', '23', '24')) AS parts
     FROM {{ ref('municipality_income_tenure') }}
@@ -13,4 +14,6 @@ WITH t AS (
 
 SELECT *
 FROM t
-WHERE rented IS NOT NULL AND ABS(rented - parts) > 20
+-- 借家の行そのものが無い、または内訳の行が1つも無い (parts が NULL) ときも落とす。
+-- 「-」(NULL) は 0 として比べる。
+WHERE rented_rows = 0 OR ABS(COALESCE(rented, 0) - COALESCE(parts, 0)) > 20
