@@ -36,6 +36,9 @@ models:
         +materialized: table
       stg:
         +materialized: table
+    crop:
+      raw:
+        +materialized: table
     economic_census:
       raw:
         +materialized: table
