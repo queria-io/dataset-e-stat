@@ -38,7 +38,7 @@ fields:
   - name: mesh_code
     title: 250mメッシュコード（10桁）
     description: 4分の1地域メッシュのコード（10桁）。上8桁が3次メッシュ（1km）、9桁目が2分の1地域メッシュ（500m）、10桁目が4分の1地域メッシュ（250m）の位置
-    semantic: { role: entity, name: mesh_250m }
+    semantic: { role: entity, name: mesh }
   - name: mesh_1km_code
     title: 3次メッシュコード（8桁）
     description: mesh_code の上8桁。境界データ mesh_1km の mesh_code と結合できる
