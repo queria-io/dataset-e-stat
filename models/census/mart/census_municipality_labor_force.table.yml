@@ -30,6 +30,7 @@ keywords:
   - 完全失業者
   - 非労働力人口
 published: true
+themes: [population]
 sources:
   - path: https://www.e-stat.go.jp/statistics/00200521
 fields:

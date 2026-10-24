@@ -46,6 +46,7 @@ keywords:
 - キャベツ
 - 都道府県
 published: true
+themes: [agriculture]
 sources:
 - path: https://www.e-stat.go.jp/statistics/00500215
 - path: https://www.maff.go.jp/j/tokei/kouhyou/sakumotu/sakkyou_yasai/

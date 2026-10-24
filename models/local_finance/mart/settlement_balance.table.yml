@@ -38,6 +38,7 @@ keywords:
   - 都道府県
   - 一部事務組合
 published: true
+themes: [government_finance]
 sources:
   - path: https://www.e-stat.go.jp/stat-search/files?toukei=00200251
 fields:

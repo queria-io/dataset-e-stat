@@ -35,6 +35,7 @@ keywords:
   - 年間収入階級
   - 10大費目
 published: true
+themes: [economy]
 sources:
   - path: https://www.e-stat.go.jp/dbview?sid=0003424577
 fields:

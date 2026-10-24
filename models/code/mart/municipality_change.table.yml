@@ -24,6 +24,7 @@ keywords:
   - 廃置分合
   - 市町村合併
 published: true
+themes: [land_climate]
 sources:
   - path: https://www.soumu.go.jp/toukei_toukatsu/index/seido/9-5.htm
 fields:

@@ -15,6 +15,7 @@ keywords:
   - GIS
   - 地域メッシュ統計
 published: true
+themes: [land_climate]
 sources:
   - path: https://www.e-stat.go.jp/gis/statmap-search?page=1&type=2&aggregateUnitForBoundary=S&coordsys=1&format=gml
 fields:

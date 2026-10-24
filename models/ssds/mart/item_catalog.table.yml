@@ -10,6 +10,7 @@ keywords:
   - e-stat
   - 社会・人口統計体系
 published: true
+themes: [other]
 sources:
   - path: https://www.stat.go.jp/data/ssds/2.html
 fields:

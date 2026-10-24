@@ -53,6 +53,7 @@ keywords:
   - 市区町村
   - 都道府県
 published: true
+themes: [economy]
 sources:
   - path: https://www.e-stat.go.jp/statistics/00200553
 fields:

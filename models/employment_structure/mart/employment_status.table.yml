@@ -29,6 +29,7 @@ keywords:
 - 雇用形態
 - 労働
 published: true
+themes: [labour]
 sources:
 - path: https://www.e-stat.go.jp/dbview?sid=0003222786
 - path: https://www.e-stat.go.jp/dbview?sid=0004008431

@@ -11,6 +11,7 @@ keywords:
   - 統計表
   - カタログ
 published: true
+themes: [other]
 sources:
   - path: https://www.e-stat.go.jp/stat-search/database
 fields:
