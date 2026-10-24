@@ -49,6 +49,11 @@ models:
         +materialized: table
       stg:
         +materialized: table
+    household_structure:
+      raw:
+        +materialized: table
+      stg:
+        +materialized: table
     housing_survey:
       raw:
         +materialized: table

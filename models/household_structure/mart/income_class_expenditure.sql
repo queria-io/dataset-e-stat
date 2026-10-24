@@ -1,0 +1,21 @@
+SELECT
+    area,
+    area_name,
+    year,
+    income_class_code,
+    income_class,
+    income_lower,
+    income_upper,
+    is_reclassified,
+    item_code,
+    item_name,
+    item_parent,
+    expenditure,
+    sample_households,
+    households,
+    household_members,
+    members_under_18,
+    members_65_and_over,
+    earners,
+    head_age
+FROM {{ ref('stg_household_structure_income_class') }}

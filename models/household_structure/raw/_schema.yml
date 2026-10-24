@@ -1,0 +1,5 @@
+version: 2
+
+models:
+  - name: raw_household_structure_income_class
+    description: 2019年全国家計構造調査 年間収入階級別 1世帯当たり1か月間の収入と支出（e-Stat API の取得結果そのまま）

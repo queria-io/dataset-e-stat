@@ -1,0 +1,95 @@
+schema: household_structure
+name: income_class_expenditure
+title: 年間収入階級別 1世帯当たり1か月間の消費支出（2019年全国家計構造調査）
+description: |-
+  2019年全国家計構造調査（家計総合集計）の、総世帯の1世帯当たり1か月間の消費支出と10大費目を、
+  世帯の年間収入階級（44区分）で分けた表。全国の値で、都道府県別の行は無い。縦持ちで、
+  44区分 × 11項目（消費支出と10大費目）の484行。世帯区分は全世帯、世帯主の性別は平均。
+
+  年間収入階級（income_class_code）は 00 平均、01 100万円未満、02〜39 は100万円から2000万円まで
+  50万円刻み、40 2000万円以上の40区分と、R1〜R3 の再掲（1000〜1250万円、1250〜1500万円、
+  1500万円以上）。再掲は 01〜40 の一部を束ねたものなので、収入階級を足し上げるときは
+  is_reclassified が false の 01〜40 だけを使う。
+
+  収支項目（item_code）は 2101 消費支出と、その内訳の10大費目（210101 食料 〜 210110 その他の消費支出）。
+  消費支出と10大費目が同じ列に並ぶので、item_code を絞らずに足すと二重に数える。
+  10大費目の和と消費支出は円未満の丸めで最大2円ずれる。
+
+  同じ収入階級の付帯値（集計世帯数・世帯数分布・世帯人員・18歳未満人員・65歳以上人員・有業人員・
+  世帯主の年齢）を列に持つ。この値は収入階級ごとに1つで、11項目の行に同じ値が入る。
+  世帯数分布（households）は抽出率で調整した推計世帯数で、01〜40 の消費支出を households で
+  加重平均すると平均（00）の消費支出に一致する。
+
+  2019年の総世帯の消費支出は平均で月 237,091円。収入階級別では 100万円未満の 104,417円から、
+  1900〜1950万円の 586,217円まで。
+
+  出典: 総務省統計局 2019年全国家計構造調査 家計総合集計 第1-21-1表（統計表 0003424577）。
+  https://www.e-stat.go.jp/dbview?sid=0003424577
+keywords:
+  - e-stat
+  - 全国家計構造調査
+  - 家計
+  - 消費支出
+  - 年収
+  - 年間収入階級
+  - 10大費目
+published: true
+sources:
+  - path: https://www.e-stat.go.jp/dbview?sid=0003424577
+fields:
+  - name: area
+    title: 地域コード（5桁）
+    description: 標準地域コード。全国 00000 だけ
+    semantic: { role: entity, name: city }
+  - name: area_name
+    title: 地域名
+  - name: year
+    title: 調査年
+    description: 西暦4桁（2019）
+  - name: income_class_code
+    title: 年間収入階級コード
+    description: 00 平均、01 100万円未満 〜 40 2000万円以上の40区分、R1〜R3 は再掲。足し上げるときは is_reclassified が false の 01〜40 だけを使う
+  - name: income_class
+    title: 年間収入階級
+  - name: income_lower
+    title: 年間収入階級の下限（万円）
+    description: この金額以上。平均の行は NULL
+  - name: income_upper
+    title: 年間収入階級の上限（万円）
+    description: この金額未満。2000万円以上・1500万円以上（R3）と平均の行は NULL
+  - name: is_reclassified
+    title: 再掲か
+    description: R1〜R3 の再掲の行は true。01〜40 の一部を束ねたもの
+  - name: item_code
+    title: 収支項目コード
+    description: 2101 消費支出、210101 食料、210102 住居、210103 光熱・水道、210104 家具・家事用品、210105 被服及び履物、210106 保健医療、210107 交通・通信、210108 教育、210109 教養娯楽、210110 その他の消費支出。10大費目の和が消費支出
+  - name: item_name
+    title: 収支項目
+  - name: item_parent
+    title: 上位の収支項目コード
+    description: 10大費目は 2101（消費支出）、消費支出の行は NULL
+  - name: expenditure
+    title: 支出額（円）
+    description: 1世帯当たり1か月間の支出（円）
+  - name: sample_households
+    title: 集計世帯数（概数）
+    description: 集計に使った標本の世帯数。10世帯単位の概数
+  - name: households
+    title: 世帯数分布（推計世帯数）
+    description: 抽出率で調整した推計世帯数。01〜40 の expenditure をこれで加重平均すると平均（00）の値になる
+    semantic: { role: measure, agg: sum }
+  - name: household_members
+    title: 世帯人員（人）
+    description: 1世帯当たりの平均世帯人員
+  - name: members_under_18
+    title: 18歳未満人員（人）
+    description: 1世帯当たりの平均
+  - name: members_65_and_over
+    title: 65歳以上人員（人）
+    description: 1世帯当たりの平均
+  - name: earners
+    title: 有業人員（人）
+    description: 1世帯当たりの平均
+  - name: head_age
+    title: 世帯主の年齢（歳）
+    description: 世帯主の平均年齢
