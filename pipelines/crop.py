@@ -56,8 +56,9 @@ STATS_CODE = "00500215"
 PAGE_LIMIT = 100000
 
 FIRST_YEAR = 2003
-# N 年産の確報は N+2 年の春までに出る (令和6年産は 2026 年)。
-LATEST_LAG_YEARS = 2
+# N 年産の確報は N+2 年か N+3 年の春に出る (令和6年産は 2026 年、令和4年産は
+# 2025-02-28、平成21年産は 2012-03-30)。遅い方に合わせる。
+LATEST_LAG_YEARS = 3
 
 STATISTICS_NAME_RE = re.compile(
     r"^作物統計調査 作況調査\(野菜\) 確報 (平成|令和)(\d+|元)年産野菜生産出荷統計$"
@@ -95,6 +96,13 @@ TOTAL = "計"
 # 年で表記が揺れる品目名をそろえる。
 CROP_ALIASES = {"ばれいしょ(じゃがいも)": "ばれいしょ"}
 NUMBER_RE = re.compile(r"^\*?(\d+(?:\.\d+)?)$")
+# 値の無いことを表す記号。…=事実不詳・調査を欠く、-=事実のないもの、X=秘匿、nc=計算不能。
+# NFKC 後の形。ほかの文字が来たら読み違いなので止める。
+MISSING_VALUES = {"…", "...", "..", "-", "－", "X", "x", "nc"}
+# 原典の誤りで値が使えない (年産, 品目)。平成16年産の表の 2004 年しょうがは列が
+# 1 つずつずれていて、全国の作付面積「…」・収穫量 2,020t・出荷量 38,400t、和歌山県の
+# 10a当たり収量 38kg のように前後の年 (全国の収穫量は 2003 年 31,200t) とつながらない。
+BROKEN = {(2004, "しょうが")}
 SUBSET_RE = re.compile(r"(?:の)?うち、?")
 
 
@@ -263,8 +271,12 @@ def parse_title(title: str) -> tuple[str, str, str | None]:
 
 
 def parse_value(s: str) -> float | None:
-    m = NUMBER_RE.match(_norm(s).replace(",", ""))
-    return float(m[1]) if m else None
+    t = _norm(s).replace(",", "")
+    if t in MISSING_VALUES:
+        return None
+    if m := NUMBER_RE.match(t):
+        return float(m[1])
+    raise ValueError(f"値が読めない: {s!r}")
 
 
 def _axes(class_inf: dict) -> dict[str, dict]:
@@ -355,6 +367,8 @@ def parse_table(data: dict, year: int, title: str, years: set[int]) -> list[dict
             season = m_season if m_season != TOTAL else t_season
             subset = m_subset or t_subset
         crop, season, subset = canonical(crop, season, subset)
+        if (value_year, crop) in BROKEN:
+            continue
         rows.append(
             {
                 "year": value_year,
