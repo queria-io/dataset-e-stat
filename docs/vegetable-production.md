@@ -7,7 +7,7 @@ order: 31
 
 キャベツ・だいこん・トマトなど41品目の野菜について、作付面積・10a当たり収量・収穫量・出荷量を都道府県別・年産別に収録します。
 
-- `e_stat.crop.vegetable_production`: 87,540行
+- `e_stat.crop.vegetable_production`: 87,492行
 
 収録は2003〜2024年産です。地域は全国と47都道府県です。
 

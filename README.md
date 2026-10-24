@@ -1739,7 +1739,7 @@ https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004021668
 | vegetable_production | 野菜41品目の作付面積・10a当たり収量・収穫量・出荷量。都道府県別・作型別。2003〜2024年産 | year / crop / season / subset / area / area_name / prefecture_code / planted_area_ha / yield_kg_per_10a / harvest_t / shipment_t |
 
 農林水産省の作物統計調査 作況調査（野菜）の確報「野菜生産出荷統計」のうち、都道府県別の
-作付面積・10a当たり収量・収穫量・出荷量の表です。年産・品目・作型・地域（全国と47都道府県）ごとに1行で、87,540行です。
+作付面積・10a当たり収量・収穫量・出荷量の表です。年産・品目・作型・地域（全国と47都道府県）ごとに1行で、87,492行です。
 
 ```sql
 -- 群馬県と茨城県のキャベツの収穫量
