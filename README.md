@@ -1732,6 +1732,40 @@ area_level = 'municipality' は政令指定都市を市全体で、東京の23�
 出典: 総務省統計局 令和5年住宅・土地統計調査。
 https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004021668
 
+## 作物統計調査 都道府県別の野菜の作付面積・収穫量・出荷量（crop スキーマ）
+
+| テーブル | 内容 | 主なカラム |
+|---------|------|-----------|
+| vegetable_production | 野菜41品目の作付面積・10a当たり収量・収穫量・出荷量。都道府県別・作型別。2003〜2024年産 | year / crop / season / subset / area / area_name / prefecture_code / planted_area_ha / yield_kg_per_10a / harvest_t / shipment_t |
+
+農林水産省の作物統計調査 作況調査（野菜）の確報「野菜生産出荷統計」のうち、都道府県別の
+作付面積・10a当たり収量・収穫量・出荷量の表です。年産・品目・作型・地域（全国と47都道府県）ごとに1行で、87,540行です。
+
+```sql
+-- 群馬県と茨城県のキャベツの収穫量
+SELECT year, area_name, harvest_t
+FROM e_stat.crop.vegetable_production
+WHERE crop = 'キャベツ' AND season = '計' AND subset IS NULL
+  AND area IN ('10000', '08000')
+ORDER BY year, area;
+```
+
+1品目に `計` と作型（春・夏秋・冬 など）の行が並び、`subset` が入る行は「うち」の内数です。
+品目の年間の量は `season = '計' AND subset IS NULL` で見ます。
+
+全都道府県を調べるのは2003・2004・2007・2010・2013・2016・2022年産だけで、ほかの年産は主産県だけを
+調べます。調べていない県は NULL で、都道府県を足しても全国になりません。
+
+### 表の形が年代で違う
+
+e-Stat の表は年代で3通りに分かれます。平成16年産と令和元年産は全品目で1表、平成17〜30年産と令和2年産は
+1品目1作型1表（品目と作型は表題にしか無い）、令和3年産以降は1品目1表で作型が項目名の接頭辞に入ります。
+地域コードも年代で変わる（茨城が 08000 → 1020、N0001 が関東農政局 → 全国）ので、パイプラインは地域を
+名前から当てて標準地域コードを振り直しています。
+
+出典: 農林水産省 作物統計調査 作況調査（野菜）。
+https://www.e-stat.go.jp/statistics/00500215
+
 ## ライセンス
 
 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
