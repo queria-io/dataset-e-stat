@@ -14,7 +14,7 @@ models:
         data_tests:
           - not_null
       - name: area_level
-        description: "national=全国、prefecture=都道府県、municipality=市町村（政令指定都市は市全体）、ward=政令指定都市の区"
+        description: "national=全国、prefecture=都道府県、municipality=市町村（政令指定都市は市全体、東京の23区は特別区部 13100 の1行）、ward=政令指定都市の区と東京の特別区（13101〜13123）"
         data_tests:
           - not_null
           - accepted_values:

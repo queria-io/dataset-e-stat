@@ -9,7 +9,8 @@ description: |-
   住宅・土地統計調査は標本調査で、値は推定値（10世帯単位に丸めてある）。
   市区町村の行は、全市・特別区・政令指定都市の区と、人口1万5千人以上の町村などだけで、全町村は載らない。
   都道府県の全域を覆うのは都道府県の行だけで、市区町村の行を足しても都道府県の値にはならない。
-  area_level が municipality の行（政令指定都市は市全体）と ward の行（政令指定都市の区）を両方足すと二重に数える。
+  area_level が municipality の行（政令指定都市は市全体、東京の23区は特別区部 13100）と ward の行（政令指定都市の区・特別区）を
+  両方足すと二重に数える。
 
   年収階級に「不詳」の区分は無く、10区分の合計は総数（income_class_code = '00'）より小さい。
   所有の関係も、総数（0）・持ち家（1）・借家（2）と、借家の内訳（21〜24）が同じ列に並ぶ。
@@ -40,7 +41,7 @@ fields:
     title: 地域名
   - name: area_level
     title: 地域の粒度
-    description: national=全国、prefecture=都道府県、municipality=市町村（政令指定都市は市全体）、ward=政令指定都市の区。特別区は municipality
+    description: national=全国、prefecture=都道府県、municipality=市町村（政令指定都市は市全体、東京の23区は特別区部 13100 の1行）、ward=政令指定都市の区と東京の特別区（13101〜13123）
   - name: parent_area
     title: 1つ上の地域コード
   - name: tenure_code

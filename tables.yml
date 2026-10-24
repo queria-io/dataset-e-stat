@@ -303,4 +303,6 @@ tables:
     statsDataId: "0004021668"
     merge_keys: [tab, cat01, cat02, area, time]
     incremental: true
-
+    # 表章項目は主世帯数 (13-2023) だけを使う。1世帯当たり人員などは取らない。
+    api_params:
+      cdTab: "13-2023"

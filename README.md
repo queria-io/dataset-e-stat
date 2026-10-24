@@ -1711,7 +1711,10 @@ SELECT area, area_name,
     round(100.0 * sum(households) FILTER (WHERE income_lower >= 1000)
         / max(households) FILTER (WHERE income_class_code = '00'), 1) AS over_10m_pct
 FROM e_stat.housing_survey.municipality_income_tenure
-WHERE area_level = 'municipality' AND tenure_code = '0'
+-- 東京の23区は ward なので、特別区部 (13100) の代わりに23区を並べる
+WHERE tenure_code = '0'
+    AND ((area_level = 'municipality' AND area <> '13100')
+        OR (area_level = 'ward' AND area LIKE '131%'))
 GROUP BY area, area_name
 ORDER BY over_10m_pct DESC
 LIMIT 10;
@@ -1722,9 +1725,9 @@ LIMIT 10;
 所有の関係は総数（0）・持ち家（1）・借家（2）と借家の内訳（21〜24）が、年収階級は総数（00）と10区分が同じ列にあります。
 年収階級に「不詳」の区分は無いので、10区分の合計は総数より小さくなります。割合は総数を分母にするか、10区分の合計を分母にするかを決めてから出します。
 
-### 政令指定都市は市全体と区の両方がある
+### 政令指定都市と東京23区は全体と区の両方がある
 
-area_level = 'municipality' は政令指定都市を市全体で、area_level = 'ward' はその区を持ちます。両方を足すと二重に数えます。
+area_level = 'municipality' は政令指定都市を市全体で、東京の23区を特別区部（13100）の1行で持ちます。area_level = 'ward' は政令指定都市の区と特別区です。両方を足すと二重に数えます。
 
 出典: 総務省統計局 令和5年住宅・土地統計調査。
 https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004021668

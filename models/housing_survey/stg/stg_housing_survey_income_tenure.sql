@@ -1,16 +1,21 @@
 {# 主世帯数 (tab=13-2023) だけを取り、地域の粒度と年収階級の金額の幅を付ける。
 
    地域のメタ情報の level は、この表では 1=全国・都道府県、2=市町村 (政令指定都市は市全体、
-   特別区を含む)、3=政令指定都市の区。小地域集計や社会・人口統計体系とは level の振り方が違う。
+   東京の23区は特別区部 13100)、3=政令指定都市の区と特別区。parent_code は区・特別区なら
+   市・特別区部、市町村なら都道府県を指す。小地域集計や社会・人口統計体系とは level の振り方が違い、
+   経済センサスの産業横断的集計と同じなので e_stat_economic_census_area_level で分ける。
    市町村の行は全市と一部の町村だけで、都道府県の全域は覆わない。
 
    年収階級のコードは 04 が欠番。「不詳」の区分は無く、10区分の合計は総数 (00) より小さい。
-   原典の「-」(該当なし、または数字が得られない) は value が NULL で入る。 #}
+   原典の「-」(該当なし、または数字が得られない) は value が NULL で入る。
+
+   取得は tables.yml の api_params で主世帯数に絞っているが、merge で積むので絞る前に
+   取った他の表章項目の行が raw に残る。ここの tab の絞り込みは外さない。 #}
 WITH s AS (
     SELECT
         area,
         area_metadata->>'$.name' AS area_name,
-        area_metadata->>'$.level' AS area_meta_level,
+        {{ e_stat_economic_census_area_level('area', 'area_metadata') }} AS area_level,
         area_metadata->>'$.parent_code' AS parent_area,
         cat01 AS tenure_code,
         cat01_metadata->>'$.name' AS tenure,
@@ -33,12 +38,7 @@ bounds AS (
 SELECT
     s.area,
     s.area_name,
-    CASE
-        WHEN s.area = '00000' THEN 'national'
-        WHEN s.area_meta_level = '1' THEN 'prefecture'
-        WHEN s.area_meta_level = '2' THEN 'municipality'
-        WHEN s.area_meta_level = '3' THEN 'ward'
-    END AS area_level,
+    s.area_level,
     s.parent_area,
     s.tenure_code,
     s.tenure,
