@@ -7,12 +7,15 @@
    市町村の行は全市と一部の町村だけで、都道府県の全域は覆わない。
 
    年収階級のコードは 04 が欠番。「不詳」の区分は無く、10区分の合計は総数 (00) より小さい。
-   原典の「-」(該当なし、または数字が得られない) は value が NULL で入る。 #}
+   原典の「-」(該当なし、または数字が得られない) は value が NULL で入る。
+
+   取得は tables.yml の api_params で主世帯数に絞っているが、merge で積むので絞る前に
+   取った他の表章項目の行が raw に残る。ここの tab の絞り込みは外さない。 #}
 WITH s AS (
     SELECT
         area,
         area_metadata->>'$.name' AS area_name,
-        area_metadata,
+        {{ e_stat_economic_census_area_level('area', 'area_metadata') }} AS area_level,
         area_metadata->>'$.parent_code' AS parent_area,
         cat01 AS tenure_code,
         cat01_metadata->>'$.name' AS tenure,
@@ -35,7 +38,7 @@ bounds AS (
 SELECT
     s.area,
     s.area_name,
-    {{ e_stat_economic_census_area_level('s.area', 's.area_metadata') }} AS area_level,
+    s.area_level,
     s.parent_area,
     s.tenure_code,
     s.tenure,

@@ -1711,7 +1711,10 @@ SELECT area, area_name,
     round(100.0 * sum(households) FILTER (WHERE income_lower >= 1000)
         / max(households) FILTER (WHERE income_class_code = '00'), 1) AS over_10m_pct
 FROM e_stat.housing_survey.municipality_income_tenure
-WHERE area_level = 'municipality' AND tenure_code = '0'
+-- 東京の23区は ward なので、特別区部 (13100) の代わりに23区を並べる
+WHERE tenure_code = '0'
+    AND ((area_level = 'municipality' AND area <> '13100')
+        OR (area_level = 'ward' AND area LIKE '131%'))
 GROUP BY area, area_name
 ORDER BY over_10m_pct DESC
 LIMIT 10;

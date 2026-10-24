@@ -14,6 +14,8 @@ WITH t AS (
 
 SELECT *
 FROM t
--- 借家の行そのものが無い、または内訳の行が1つも無い (parts が NULL) ときも落とす。
--- 「-」(NULL) は 0 として比べる。
-WHERE rented_rows = 0 OR ABS(COALESCE(rented, 0) - COALESCE(parts, 0)) > 20
+-- 借家の行がちょうど1つでない、または内訳の行が1つも無い (parts が NULL) ときは
+-- 値によらず落とす。「-」(NULL) は 0 として比べる。
+WHERE rented_rows <> 1
+    OR parts IS NULL
+    OR ABS(COALESCE(rented, 0) - parts) > 20
