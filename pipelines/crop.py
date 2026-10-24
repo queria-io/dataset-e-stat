@@ -14,8 +14,9 @@
 
 ■ 表の形は年代で 3 通り
 
-- 平成16年産・令和元年産: 全品目で 1 表。品目 (cat02) に「春キャベツ」
-  「夏秋レタスのうち、サラダ菜」のように作型とうち内訳が入る。平成16年産は time に
+- 平成16年産・令和元年産: 全品目で 1 表。品目 (cat02) に作型とうち内訳が入る。
+  平成16年産は「春キャベツ」「夏秋レタスのうち、サラダ菜」、令和元年産は
+  「キャベツ_春」「レタス_春_うちサラダ菜」の形。平成16年産は time に
   2003 年も持ち、平成15年産の都道府県別はここにしか無い (平成15年産の表は上位5位だけ)
 - 平成17〜30年産・令和2年産: 1 品目 1 作型 1 表。品目と作型は表題の末尾
   「… キャベツ 夏秋」にしか無い。2005〜2009 年は「春キャベツ」、以降は「春」
@@ -201,13 +202,41 @@ def season_of(word: str, crop: str) -> str:
 
 
 def parse_item(name: str, crops: set[str]) -> tuple[str, str, str | None]:
-    """全品目の表の品目名「春キャベツ」を (品目, 作型, うち内訳) にする。"""
+    """全品目の表の品目名を (品目, 作型, うち内訳) にする。
+
+    平成16年産は「春キャベツ」「夏秋トマトのうち、加工用トマト」、令和元年産は
+    「キャベツ_春」「やまのいも_計_うちながいも」の形。
+    """
+    if "_" in _norm(name):
+        crop, *parts = [p for p in _norm(name).split("_") if p]
+        subsets = [p.removeprefix("うち") for p in parts if p.startswith("うち")]
+        seasons = [season_of(p, crop) for p in parts if not p.startswith("うち")]
+        season = next((x for x in seasons if x != TOTAL), TOTAL)
+        return CROP_ALIASES.get(crop, crop), season, subsets[0] if subsets else None
     head, subset = split_subset(_norm(name))
     for season in SEASONS:
         if head.startswith(season) and head[len(season) :] in crops:
             crop = head[len(season) :]
             return CROP_ALIASES.get(crop, crop), season, subset
     return CROP_ALIASES.get(head, head), TOTAL, subset
+
+
+def canonical(
+    crop: str, season: str, subset: str | None
+) -> tuple[str, str, str | None]:
+    """年で書き方の違う作型・うち内訳をそろえる。
+
+    - 温室メロンは平成17年産〜令和2年産が作型「温室」、令和3年産以降が
+      「うち温室メロン(アールスフェボリット系)」。作型「温室」にそろえる
+    - 平成17年産の「トマト 計 うち、加工用トマトミニトマト」は、値が前後の年の
+      ミニトマトとつながり (全国の収穫量 2004 年 91,600t、2005 年 97,100t、
+      2006 年 96,100t)、加工用トマト (2005 年 42,700t) とは桁が違うのでミニトマト
+    """
+    if crop == "メロン" and subset and subset.startswith("温室メロン"):
+        return crop, "温室", None
+    if subset == "加工用トマトミニトマト":
+        return crop, season, "ミニトマト"
+    return crop, season, subset
 
 
 def _title_tokens(title: str) -> list[str]:
@@ -324,6 +353,7 @@ def parse_table(data: dict, year: int, title: str, years: set[int]) -> list[dict
             crop, t_season, t_subset = title_item
             season = m_season if m_season != TOTAL else t_season
             subset = m_subset or t_subset
+        crop, season, subset = canonical(crop, season, subset)
         rows.append(
             {
                 "year": value_year,
