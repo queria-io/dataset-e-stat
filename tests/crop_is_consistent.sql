@@ -10,7 +10,14 @@
 -- 計 = 春 + 夏秋 + 冬（公表の丸めで 1% 以内）が成り立つことで見る。
 --
 -- 突き合わせだけだと年産が丸ごと消えたときに 0 行で成功してしまうので、
--- 2003年産から最新年産まで年産が連続することも見る。
+-- 2003年産から最新年産まで年産が連続することも見る。キャベツの検査も年産ごとに
+-- 行を立て、キャベツの行が年産ごと消えたときに素通りしないようにする。
+--
+-- 地域名が当たらない行はパイプラインが黙って捨てる（全国農業地域・農政局を捨てる
+-- のと同じ道）。表は調べていない県も「…」で並べるので、どの年産にも全国と
+-- 47都道府県の 48 地域がそろうことを見る。
+--
+-- mart は BIGINT に丸めるので、原典が整数で公表される前提を raw で確かめる。
 
 WITH v AS (
     SELECT * FROM {{ ref('vegetable_production') }}
@@ -23,27 +30,39 @@ prefecture_max AS (
     GROUP BY ALL
 ),
 
+-- 品目で WHERE を掛けず FILTER で絞るので、キャベツの行が無い年産も 1 行になる。
 cabbage AS (
     SELECT
         year,
-        MAX(harvest_t) FILTER (WHERE season = '計') AS total,
-        SUM(harvest_t) FILTER (WHERE season IN ('春', '夏秋', '冬')) AS seasons
+        MAX(harvest_t) FILTER (
+            WHERE crop = 'キャベツ' AND area = '00000' AND subset IS NULL
+                AND season = '計'
+        ) AS total,
+        SUM(harvest_t) FILTER (
+            WHERE crop = 'キャベツ' AND area = '00000' AND subset IS NULL
+                AND season IN ('春', '夏秋', '冬')
+        ) AS seasons,
+        COUNT(harvest_t) FILTER (
+            WHERE crop = 'キャベツ' AND season = '計' AND subset IS NULL
+                AND area IN ('00000', '10000', '23000')
+        ) AS main_n,
+        COUNT(DISTINCT area) AS area_n
     FROM v
-    WHERE crop = 'キャベツ' AND area = '00000' AND subset IS NULL
-    GROUP BY ALL
-),
-
-cabbage_main AS (
-    SELECT year, COUNT(harvest_t) AS n
-    FROM v
-    WHERE crop = 'キャベツ' AND season = '計' AND subset IS NULL
-        AND area IN ('00000', '10000', '23000')
-    GROUP BY ALL
+    GROUP BY year
 ),
 
 years AS (
     SELECT MIN(year) AS first_year, MAX(year) AS last_year, COUNT(DISTINCT year) AS n
     FROM v
+),
+
+non_integer AS (
+    SELECT year, area
+    FROM {{ ref('raw_crop_vegetable_prefecture') }}
+    WHERE planted_area_ha <> ROUND(planted_area_ha)
+        OR yield_kg_per_10a <> ROUND(yield_kg_per_10a)
+        OR harvest_t <> ROUND(harvest_t)
+        OR shipment_t <> ROUND(shipment_t)
 )
 
 SELECT 'duplicate_key' AS check_name, year, area, COUNT(*) AS difference
@@ -54,7 +73,10 @@ HAVING COUNT(*) > 1
 UNION ALL
 SELECT 'national_below_prefecture', v.year, v.crop, NULL
 FROM v
-JOIN prefecture_max p USING (year, crop, season, subset)
+-- subset は NULL が大半なので USING (= で突き合わせ) では品目全体の行が素通りする。
+JOIN prefecture_max p
+    ON p.year = v.year AND p.crop = v.crop AND p.season = v.season
+    AND p.subset IS NOT DISTINCT FROM v.subset
 WHERE v.area = '00000' AND v.harvest_t < p.max_harvest
 
 UNION ALL
@@ -69,9 +91,18 @@ FROM cabbage
 WHERE total IS NULL OR seasons IS NULL OR ABS(total - seasons) > total * 0.01
 
 UNION ALL
-SELECT 'cabbage_main_missing', year, NULL, 3 - n
-FROM cabbage_main
-WHERE n <> 3
+SELECT 'cabbage_main_missing', year, NULL, 3 - main_n
+FROM cabbage
+WHERE main_n <> 3
+
+UNION ALL
+SELECT 'area_missing', year, NULL, 48 - area_n
+FROM cabbage
+WHERE area_n <> 48
+
+UNION ALL
+SELECT 'non_integer_value', year, area, NULL
+FROM non_integer
 
 UNION ALL
 SELECT 'negative_value', year, area, NULL

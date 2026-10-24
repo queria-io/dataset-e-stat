@@ -138,14 +138,15 @@ def catalog(app_id: str, cache_dir: Path | None = None) -> list[tuple[int, str, 
     if root.get("DATALIST_INF", {}).get("RESULT_INF", {}).get("NEXT_KEY"):
         raise RuntimeError(f"getStatsList: {STATS_CODE} が {PAGE_LIMIT} 件に収まらない")
     tables = {
-        t["@id"]: (
-            year,
-            _norm(t["TITLE"]["$"] if isinstance(t["TITLE"], dict) else t["TITLE"]),
-        )
+        t["@id"]: (year, title)
         for t in _as_list(root["DATALIST_INF"].get("TABLE_INF"))
         if (year := survey_year(t.get("STATISTICS_NAME")))
         and TITLE_KEY
-        in _norm(t["TITLE"]["$"] if isinstance(t["TITLE"], dict) else t["TITLE"])
+        in (
+            title := _norm(
+                t["TITLE"]["$"] if isinstance(t["TITLE"], dict) else t["TITLE"]
+            )
+        )
     }
     found = sorted((year, id_, title) for id_, (year, title) in tables.items())
     years = sorted({y for y, _, _ in found})
@@ -207,13 +208,14 @@ def parse_item(name: str, crops: set[str]) -> tuple[str, str, str | None]:
     平成16年産は「春キャベツ」「夏秋トマトのうち、加工用トマト」、令和元年産は
     「キャベツ_春」「やまのいも_計_うちながいも」の形。
     """
-    if "_" in _norm(name):
-        crop, *parts = [p for p in _norm(name).split("_") if p]
+    name = _norm(name)
+    if "_" in name:
+        crop, *parts = [p for p in name.split("_") if p]
         subsets = [p.removeprefix("うち") for p in parts if p.startswith("うち")]
         seasons = [season_of(p, crop) for p in parts if not p.startswith("うち")]
         season = next((x for x in seasons if x != TOTAL), TOTAL)
         return CROP_ALIASES.get(crop, crop), season, subsets[0] if subsets else None
-    head, subset = split_subset(_norm(name))
+    head, subset = split_subset(name)
     for season in SEASONS:
         if head.startswith(season) and head[len(season) :] in crops:
             crop = head[len(season) :]
@@ -254,9 +256,8 @@ def parse_title(title: str) -> tuple[str, str, str | None]:
 
     令和3年産以降の末尾「キャベツ 計、春、夏秋、冬」は parse_title_crop で読む。
     """
-    tokens = _title_tokens(title)
-    crop = CROP_ALIASES.get(tokens[0], tokens[0])
-    head, subset = split_subset(" ".join(tokens[1:]))
+    crop = parse_title_crop(title)
+    head, subset = split_subset(" ".join(_title_tokens(title)[1:]))
     words = head.split()
     return crop, season_of(words[-1], crop) if words else TOTAL, subset
 
