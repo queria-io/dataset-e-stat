@@ -332,40 +332,64 @@ KEY = ("year", "crop", "season", "subset", "area", "prefecture_code", "area_name
 
 
 def widen(rows: list[dict]) -> list[dict]:
-    """1 値 1 行を、キーごとに 4 項目を列に並べた 1 行にする。"""
+    """1 値 1 行を、キーごとに 4 項目を列に並べた 1 行にする。
+
+    同じ地域が 1 つの表に 2 回現れることがある (農業地域の北海道・沖縄と都道府県の
+    北海道・沖縄が同じ名前で並ぶ年)。値が同じならどちらを取っても同じなので 1 つに
+    する。値が違えば当て違いなので、食い違いをすべて挙げて止める。
+    """
     out: dict[tuple, dict] = {}
+    source: dict[tuple, str] = {}
+    conflicts = []
     for r in rows:
         key = tuple(r[k] for k in KEY)
         rec = out.setdefault(key, dict(zip(KEY, key)))
-        if r["column"] in rec:
-            raise RuntimeError(f"キーが重複する: {key} {r['column']}")
-        rec[r["column"]] = r["value"]
+        if r["column"] in rec and rec[r["column"]] != r["value"]:
+            conflicts.append(
+                f"{key} {r['column']}: {rec[r['column']]} ({source[key + (r['column'],)]})"
+                f" / {r['value']} ({r['table']})"
+            )
+        rec.setdefault(r["column"], r["value"])
+        source.setdefault(key + (r["column"],), r["table"])
+    if conflicts:
+        raise RuntimeError(
+            f"同じキーに違う値が {len(conflicts)} 件:\n" + "\n".join(conflicts[:50])
+        )
     return [{c: None for c, _ in MEASURES.values()} | rec for rec in out.values()]
 
 
-def fetch_table(app_id: str, stats_data_id: str) -> dict:
+def fetch_table(app_id: str, stats_data_id: str, cache_dir: Path | None = None) -> dict:
+    """統計表を取得する。cache_dir を渡すと応答を保存し、次からはそれを読む (手元の試行用)。"""
+    cached = cache_dir / f"{stats_data_id}.json" if cache_dir else None
+    if cached and cached.exists():
+        return json.loads(cached.read_text(encoding="utf-8"))
     root = _api(app_id, "getStatsData", statsDataId=stats_data_id, limit=PAGE_LIMIT)
     data = root["STATISTICAL_DATA"]
     if data.get("RESULT_INF", {}).get("NEXT_KEY"):
         raise RuntimeError(f"getStatsData {stats_data_id}: {PAGE_LIMIT} 件に収まらない")
+    if cached:
+        cached.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
     return data
 
 
-def build_crop(dest_dir: str, app_id: str) -> None:
+def build_crop(dest_dir: str, app_id: str, cache_dir: str | None = None) -> None:
     """野菜の都道府県別の表を取得し、NDJSON に整形する。"""
     dest = Path(dest_dir)
     dest.mkdir(parents=True, exist_ok=True)
+    cache = Path(cache_dir) if cache_dir else None
+    if cache:
+        cache.mkdir(parents=True, exist_ok=True)
 
     tables = catalog(app_id)
     years = {y for y, _, _ in tables}
     rows: list[dict] = []
     for year, id_, title in tables:
-        parsed = parse_table(fetch_table(app_id, id_), year, title, years)
+        parsed = parse_table(fetch_table(app_id, id_, cache), year, title, years)
         if not parsed:
             raise RuntimeError(
                 f"{year} {id_} {title}: 全国・都道府県の値が 1 つも読めない"
             )
-        rows += parsed
+        rows += [r | {"table": id_} for r in parsed]
     records = widen(rows)
 
     with (dest / "vegetable_prefecture.ndjson").open("w", encoding="utf-8") as f:
