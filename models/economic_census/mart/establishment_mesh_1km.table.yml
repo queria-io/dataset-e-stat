@@ -1,0 +1,48 @@
+schema: economic_census
+name: establishment_mesh_1km
+title: 1kmメッシュ別 産業大分類別の事業所数・従業者数（平成28年経済センサス）
+description: |-
+  平成28年経済センサス‐活動調査の地域メッシュ統計のうち、1kmメッシュ（3次メッシュ）別の
+  産業大分類別の事業所数と従業者数を縦持ちで収録する。
+  事業所の所在地で数えるので、どこで人が働いているか（従業地ベース）の分布になる。
+  cat01 に産業と「事業所数／従業者数」の別が入る。0010 が全産業の事業所数、0200 が全産業の従業者数で、
+  全産業は A～R（S 公務を除く）。官公庁は含まない。
+
+  経済センサスのメッシュ統計は、e-Stat の API には平成28年までしか登録されていない。
+
+  mesh_code で同データセットの境界データ mesh_1km と結合できる。
+
+  出典: 総務省・経済産業省 平成28年経済センサス‐活動調査に関する地域メッシュ統計。
+  https://www.e-stat.go.jp/
+keywords:
+  - e-stat
+  - 経済センサス
+  - メッシュ
+  - 地域メッシュ統計
+  - 事業所
+  - 従業者
+  - GIS
+published: true
+sources:
+  - path: https://www.e-stat.go.jp/
+fields:
+  - name: mesh_code
+    title: 3次メッシュコード（8桁）
+    description: 境界データ mesh_1km の mesh_code と同じ体系
+    semantic: { role: entity, name: mesh }
+  - name: mesh1_code
+    title: 1次メッシュコード（4桁）
+    description: mesh_code の上4桁。統計表の配布単位で、約80km四方
+    semantic: { role: dimension }
+  - name: cat01
+    title: 区分コード
+    description: 産業大分類×事業所数／従業者数の区分コード。0010 全産業の事業所数、0200 全産業の従業者数。総数と内訳が同じ列に並ぶので、cat01 を絞らずに value を合計すると重複する
+  - name: category
+    title: 区分名
+    description: cat01 に対応する区分名
+  - name: unit
+    title: 単位
+    description: 事業所または人
+  - name: value
+    title: 値
+    description: 事業所数または従業者数

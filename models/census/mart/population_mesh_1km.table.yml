@@ -1,0 +1,56 @@
+schema: census
+name: population_mesh_1km
+title: 1kmメッシュ別 人口・世帯（令和2年国勢調査）
+description: |-
+  令和2年国勢調査の地域メッシュ統計のうち、1kmメッシュ（3次メッシュ）別の人口と世帯を縦持ちで収録する。
+  cat01 が区分で、0010 が人口総数。
+
+  cat02 は秘匿・合算区分だが、人口総数（0010）の扱いは町丁・字等の集計と逆になる。人口総数は、秘匿のメッシュも
+  合算先のメッシュもそれぞれ実値を持ち、合算先に秘匿分は含まれない。人口総数を cat02 を問わず合計すると、
+  全国の総人口に一致する。
+  これを確かめたのは人口総数だけで、年齢などの内訳は確かめていない。250mメッシュ（population_mesh_250m）では
+  秘匿のメッシュの内訳が0で、その人数が合算先のメッシュの内訳に足し込まれている。1メッシュごとに内訳を
+  使うときは cat02 = '1' のメッシュに絞るか、範囲で合計してから使う。
+
+  mesh_code で同データセットの境界データ mesh_1km と結合できる。
+
+  出典: 総務省統計局 令和2年国勢調査に関する地域メッシュ統計。
+  https://www.e-stat.go.jp/
+keywords:
+  - e-stat
+  - 国勢調査
+  - メッシュ
+  - 地域メッシュ統計
+  - 人口
+  - 世帯
+  - GIS
+published: true
+sources:
+  - path: https://www.e-stat.go.jp/
+fields:
+  - name: mesh_code
+    title: 3次メッシュコード（8桁）
+    description: 境界データ mesh_1km の mesh_code と同じ体系
+    semantic: { role: entity, name: mesh }
+  - name: mesh1_code
+    title: 1次メッシュコード（4桁）
+    description: mesh_code の上4桁。統計表の配布単位で、約80km四方
+    semantic: { role: dimension }
+  - name: cat01
+    title: 区分コード
+    description: 年齢別人口・世帯の種類別世帯数等の区分コード（4桁）。0010 が人口総数。総数と内訳が同じ列に並ぶので、cat01 を絞らずに value を合計すると重複する
+  - name: category
+    title: 区分名
+    description: cat01 に対応する区分名
+  - name: cat02
+    title: 秘匿・合算区分コード
+    description: 1=無し、2=合算、3=秘匿。人口総数（0010）は秘匿・合算のメッシュもそれぞれ実値を持つので、cat02 を問わず合計してよい。年齢などの内訳は確かめていないので、1メッシュごとに使うときは cat02 = '1' に絞る
+  - name: suppression
+    title: 秘匿・合算区分名
+    description: cat02 に対応する区分名（無し／合算／秘匿）
+  - name: unit
+    title: 単位
+    description: 人または世帯
+  - name: value
+    title: 値
+    description: 人口（人）または世帯数（世帯）

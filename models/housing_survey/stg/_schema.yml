@@ -1,0 +1,5 @@
+version: 2
+
+models:
+  - name: stg_housing_survey_income_tenure
+    description: 住宅・土地統計調査の主世帯数を、地域・所有の関係・年間収入階級で1行にしたもの

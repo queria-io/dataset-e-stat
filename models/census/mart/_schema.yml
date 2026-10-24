@@ -254,6 +254,33 @@ models:
       - name: establishments
         description: "事業所数。平成28年経済センサス‐活動調査のA～R全産業（S公務を除く）"
 
+  - name: population_mesh_1km
+    description: |
+      令和2年国勢調査 1kmメッシュ（3次メッシュ）別の人口と世帯（縦持ち）。
+      cat02 は秘匿・合算区分だが、小地域集計と違い、人口総数（0010）は秘匿のメッシュも
+      合算先のメッシュもそれぞれ実値を持つ。人口総数を cat02 を問わず合計すると全国の総人口に一致する。
+      年齢などの内訳は確かめていないので、1メッシュごとに使うときは cat02 = '1' に絞る。
+      出典: 総務省統計局 令和2年国勢調査に関する地域メッシュ統計。
+      https://www.e-stat.go.jp/
+    access: public
+    columns:
+      - name: mesh_code
+        description: "3次メッシュコード（8桁）。境界データ mesh_1km の mesh_code と結合できる"
+      - name: mesh1_code
+        description: "mesh_code の上4桁（1次メッシュ）"
+      - name: cat01
+        description: "年齢別人口・世帯の種類別世帯数等の区分コード（4桁）。0010 が人口総数"
+      - name: category
+        description: "cat01 に対応する区分名"
+      - name: cat02
+        description: "秘匿・合算区分のコード。1=無し、2=合算、3=秘匿"
+      - name: suppression
+        description: "cat02 に対応する区分名"
+      - name: unit
+        description: "単位（人または世帯）"
+      - name: value
+        description: "人口（人）または世帯数（世帯）"
+
   - name: population_mesh_250m
     description: |
       令和2年国勢調査 250mメッシュ（4分の1地域メッシュ）別の人口と世帯（縦持ち・50区分）。
