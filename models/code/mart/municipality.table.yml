@@ -23,6 +23,7 @@ keywords:
   - 市区町村コード
   - 都道府県
 published: true
+themes: [land_climate]
 sources:
   - path: https://www.soumu.go.jp/toukei_toukatsu/index/seido/9-5.htm
 fields:

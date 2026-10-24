@@ -24,6 +24,7 @@ keywords:
 - 労働時間
 - 都道府県
 published: true
+themes: [labour]
 sources:
 - path: https://www.e-stat.go.jp/stat-search/files?toukei=00450091
 fields:

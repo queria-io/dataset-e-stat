@@ -15,6 +15,7 @@ keywords:
   - 社会・人口統計体系
   - 都道府県
 published: true
+themes: [education_culture]
 sources:
   - path: https://www.e-stat.go.jp/statistics/00200502
 fields:

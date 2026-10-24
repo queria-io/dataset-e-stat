@@ -92,6 +92,7 @@ keywords:
   - 年間収入階級
 homepage: https://github.com/queria-io/dataset-e-stat
 language: ja
+themes: [population, economy, labour, social_security_health, education_culture, land_climate, government_finance, housing_land, justice_safety_environment, agriculture, mining_manufacturing]
 
 licenses:
   - JP-GOV-STD-2.0

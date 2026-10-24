@@ -29,6 +29,7 @@ keywords:
 - 生徒
 - 都道府県
 published: true
+themes: [education_culture]
 sources:
 - path: https://www.e-stat.go.jp/stat-search/files?toukei=00400002
 fields:

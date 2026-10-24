@@ -38,6 +38,7 @@ keywords:
   - 都道府県
   - 外国人住民
 published: true
+themes: [population]
 sources:
   - path: https://www.soumu.go.jp/main_sosiki/jichi_gyousei/daityo/jinkou_jinkoudoutai-setaisuu.html
 fields:

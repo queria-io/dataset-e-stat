@@ -32,6 +32,7 @@ keywords:
   - 購入数量
   - 品目
 published: true
+themes: [economy]
 sources:
   - path: https://www.e-stat.go.jp/dbview?sid=0004023602
   - path: https://www.e-stat.go.jp/dbview?sid=0004023606

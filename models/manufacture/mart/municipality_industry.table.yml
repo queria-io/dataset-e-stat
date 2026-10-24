@@ -67,6 +67,7 @@ keywords:
   - 市区町村
   - 都道府県
 published: true
+themes: [mining_manufacturing]
 sources:
   - path: https://www.e-stat.go.jp/statistics/00550010
 fields:

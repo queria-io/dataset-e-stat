@@ -13,6 +13,7 @@ keywords:
   - 社会・人口統計体系
   - 市区町村
 published: true
+themes: [government_finance]
 sources:
   - path: https://www.e-stat.go.jp/statistics/00200502
 fields:

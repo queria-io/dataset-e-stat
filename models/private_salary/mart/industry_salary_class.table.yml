@@ -30,6 +30,7 @@ keywords:
 - 給与階級
 - 業種
 published: true
+themes: [labour]
 sources:
 - path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004009620
 fields:
