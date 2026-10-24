@@ -33,4 +33,4 @@ models:
       - name: expenditure
         description: "1世帯当たり1か月間の支出（円）"
       - name: households
-        description: "世帯数分布（抽出率調整後の推計世帯数）"
+        description: "世帯数分布（抽出率調整後の推計世帯数、世帯）。00 平均の行が全体の 51,229,953世帯で、01〜40 の和と1世帯の差で一致する"
