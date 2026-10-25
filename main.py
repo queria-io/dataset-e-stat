@@ -80,14 +80,18 @@ from pipelines.welfare_facility import build_welfare_facility
 logger = logging.getLogger("pipelines")
 
 
-def dbt_build():
+def dbt_build(select: str | None = None):
+    """dbt をビルドする。select を渡すとそのノードだけをビルドする。
+
+    docs generate は公開に要る catalog.json を作るので、select の有無によらず回す。
+    """
     dbt = dbtRunner()
 
     result = dbt.invoke(["deps"])
     if not result.success:
         raise SystemExit("dbt deps failed")
 
-    result = dbt.invoke(["build"])
+    result = dbt.invoke(["build"] + (["--select", select] if select else []))
     if not result.success:
         raise SystemExit("dbt build failed")
 
