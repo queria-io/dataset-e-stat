@@ -832,12 +832,19 @@ https://www.soumu.go.jp/toukei_toukatsu/index/seido/9-5.htm
 
 このテーブルは毎日の更新（CI）では取り込みません。量が多く、CI のメモリに収まらないためです。
 CI は前回ロードした分を参照するビューを作り直すだけです。ロードした分がカタログに無いとき
-（カタログを空から作り直した直後など）は、0 行のまま公開されます。そのときは、CI の更新が
-通った後に、手元で次のコマンドを回して取り込み直します。2〜3 時間かかります。
+（カタログを空から作り直した直後など）は、0 行のまま公開されます。そのときは、手元で
+次の 2 つを順に回して取り込み直します。
 
 ```bash
+# 1. e-Stat から取得して data/mesh/ に保存する。2〜3 時間かかる。止まっても続きから回せる
+uv run --env-file .env python load_local_mesh.py fetch
+# 2. 保存した分をロードし、250m のモデルだけビルドして公開する。数分で終わる
 QUERIA_TOKEN=... uv run --env-file .env queria sync -- uv run --env-file .env python load_local_mesh.py
 ```
+
+2 は CI の Sync が走っていないときに回します。sync は始めた時点の公開カタログを
+条件に公開するので、途中で CI が公開すると push が断られます。そのときは 2 だけ
+回し直せば済みます。
 
 出典: 総務省統計局 令和2年国勢調査に関する地域メッシュ統計。
 https://www.e-stat.go.jp/
