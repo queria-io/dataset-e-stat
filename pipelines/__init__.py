@@ -64,7 +64,7 @@ logging.config.dictConfig(
 SOURCE_SCHEMA = "_source"
 
 
-def create_pipeline():
+def create_pipeline(pipeline_name: str = "estat"):
     """dlt パイプラインを queria の DuckLake (SQLite + R2) で構成する。
 
     queria run が注入する QUERIA_* 環境変数を使う:
@@ -123,7 +123,7 @@ def create_pipeline():
     }
 
     return dlt.pipeline(
-        pipeline_name="estat",
+        pipeline_name=pipeline_name,
         destination=ducklake(credentials=credentials, override_data_path=True),
         dataset_name=SOURCE_SCHEMA,
     )
