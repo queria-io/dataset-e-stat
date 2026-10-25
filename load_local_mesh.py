@@ -100,7 +100,12 @@ def main():
             fetch(app_id, spec)
         return
 
-    pipeline = create_pipeline()
+    # 宛先から dlt の状態を読み戻さない。_source._dlt_pipeline_state は CI の実行ごとに
+    # 大きな行が積もり (2026-10 時点で 60 ファイル・約 2GB)、手元から R2 越しに読むと
+    # タイムアウトする。replace で全件を入れ直すので状態は要らない。CI の estat の
+    # スキーマと状態に混ざらないよう、パイプライン名も分ける
+    os.environ["RESTORE_FROM_DESTINATION"] = "false"
+    pipeline = create_pipeline("estat_mesh_local")
     for spec in LOCAL_MESH_STATS_TABLES:
         info = pipeline.run(cached_resource(spec))
         logger.info(f"  {spec['name']}: {info}")
