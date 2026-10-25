@@ -27,6 +27,7 @@ keywords:
   - 非就業者世帯
 published: true
 themes: [population]
+temporal_coverage: { start: "2020", end: "2020" }
 sources:
   - path: https://www.e-stat.go.jp/gis
 fields:

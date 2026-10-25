@@ -18,6 +18,7 @@ keywords:
   - 小地域
 published: true
 themes: [land_climate]
+temporal_coverage: { start: "2020", end: "2020" }
 sources:
   - path: https://www.e-stat.go.jp/gis/statmap-search?page=1&type=2&aggregateUnitForBoundary=A&toukeiCode=00200521&toukeiYear=2020&serveyId=A002005212020&coordsys=1&format=gml&datum=2011
 fields:
