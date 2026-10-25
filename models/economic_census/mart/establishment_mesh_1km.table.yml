@@ -24,6 +24,7 @@ keywords:
   - GIS
 published: true
 themes: [economy]
+temporal_coverage: { start: "2016", end: "2016" }
 sources:
   - path: https://www.e-stat.go.jp/
 fields:
