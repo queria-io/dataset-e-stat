@@ -99,7 +99,9 @@ A110101    総人口（男）    （副区分。親は A1101）
 SELECT DISTINCT cat01, item_name
 FROM e_stat.ssds.j_pref_welfare
 WHERE cat01_parent IS NULL
+```
 
+```sql
 -- 生活保護扶助世帯数（J1104）の副区分だけ
 SELECT DISTINCT cat01, item_name
 FROM e_stat.ssds.j_pref_welfare
