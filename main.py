@@ -3,24 +3,25 @@
 1. census_boundary:    国勢調査境界データ取得 (Shapefile DL)
 2. mesh_boundary:      1kmメッシュ境界データ取得 (統計GIS GML DL)
 3. municipality_code:  統計に用いる標準地域コード取得 (総務省統計局 CSV/Excel DL)
-4. stats_list:         統計表カタログ取得 (getStatsList)
-5. meta_info:          メタ情報取得 (getMetaInfo) — 直近更新分のみ
-6. ssds:               社会・人口統計体系データ取得 (getStatsData)
-7. census_small_area:  国勢調査小地域(町丁・字等)統計取得 (searchKind=2 + getStatsData)
-8. mesh_stats:         1kmメッシュ統計取得 (searchKind=2 + getStatsData)
-9. census_municipality: 国勢調査 市区町村・都道府県別 基本集計取得 (getStatsData)
-10. resident_registry: 住民基本台帳 人口・世帯数・人口動態取得 (getDataCatalog + Excel DL)
-11. economic_census:   経済センサス‐活動調査 産業横断的集計取得 (getStatsData)
-12. census_commuting:  国勢調査 従業地・通学地集計取得 (getStatsData)
-13. manufacture:       工業統計調査 市区町村別・産業中分類別統計取得 (getStatsData)
-14. local_finance:     地方財政状況調査 決算収支・財政力取得 (getDataCatalog + CSV DL)
-15. welfare_facility:  社会福祉施設等調査 施設数・定員・在所者数・従事者数取得 (getDataCatalog + CSV DL)
-16. kaigo_service:     介護サービス施設・事業所調査 介護保険施設数・定員・事業所数取得 (getDataCatalog + CSV DL)
-17. wage_structure:    賃金構造基本統計調査 都道府県別・産業別の賃金取得 (getDataCatalog + Excel DL)
-18. school:            学校基本調査 小学校・中学校の学年別児童生徒数取得 (getDataCatalog + Excel DL)
-19. school_health:     学校保健統計調査 都道府県別の身長・体重取得 (getDataCatalog + Excel DL)
-20. crop:              作物統計調査 野菜の都道府県別の収穫量・出荷量取得 (getStatsList + getStatsData)
-21. dbt:               dbt ビルド
+4. industry_code:      日本標準産業分類取得 (e-Stat 統計分類 CSV DL)
+5. stats_list:         統計表カタログ取得 (getStatsList)
+6. meta_info:          メタ情報取得 (getMetaInfo) — 直近更新分のみ
+7. ssds:               社会・人口統計体系データ取得 (getStatsData)
+8. census_small_area:  国勢調査小地域(町丁・字等)統計取得 (searchKind=2 + getStatsData)
+9. mesh_stats:         1kmメッシュ統計取得 (searchKind=2 + getStatsData)
+10. census_municipality: 国勢調査 市区町村・都道府県別 基本集計取得 (getStatsData)
+11. resident_registry: 住民基本台帳 人口・世帯数・人口動態取得 (getDataCatalog + Excel DL)
+12. economic_census:   経済センサス‐活動調査 産業横断的集計取得 (getStatsData)
+13. census_commuting:  国勢調査 従業地・通学地集計取得 (getStatsData)
+14. manufacture:       工業統計調査 市区町村別・産業中分類別統計取得 (getStatsData)
+15. local_finance:     地方財政状況調査 決算収支・財政力取得 (getDataCatalog + CSV DL)
+16. welfare_facility:  社会福祉施設等調査 施設数・定員・在所者数・従事者数取得 (getDataCatalog + CSV DL)
+17. kaigo_service:     介護サービス施設・事業所調査 介護保険施設数・定員・事業所数取得 (getDataCatalog + CSV DL)
+18. wage_structure:    賃金構造基本統計調査 都道府県別・産業別の賃金取得 (getDataCatalog + Excel DL)
+19. school:            学校基本調査 小学校・中学校の学年別児童生徒数取得 (getDataCatalog + Excel DL)
+20. school_health:     学校保健統計調査 都道府県別の身長・体重取得 (getDataCatalog + Excel DL)
+21. crop:              作物統計調査 野菜の都道府県別の収穫量・出荷量取得 (getStatsList + getStatsData)
+22. dbt:               dbt ビルド
 
 250mメッシュ統計はここでは取り込まない。量が多く CI のメモリに収まらないので、
 手元で load_local_mesh.py を回してロードする (README「手元でだけ取り込むテーブル」)。
@@ -55,6 +56,7 @@ from pipelines.economic_census import (
     create_economic_census_source,
     fetch_economic_census_ids,
 )
+from pipelines.industry_code import build_industry_code
 from pipelines.kaigo_service import build_kaigo_service
 from pipelines.local_finance import build_local_finance
 from pipelines.manufacture import (
@@ -105,27 +107,31 @@ def main():
         tables_config = yaml.safe_load(f)
 
     # 1. 国勢調査境界データ (Shapefile DL)
-    logger.info("1/21: census_boundary (国勢調査境界データ)")
+    logger.info("1/22: census_boundary (国勢調査境界データ)")
     download_boundary("data/census_boundary")
 
     # 2. 1kmメッシュ境界データ (統計GIS GML DL、API 不要)
-    logger.info("2/21: mesh_boundary (1kmメッシュ境界データ)")
+    logger.info("2/22: mesh_boundary (1kmメッシュ境界データ)")
     download_mesh_boundary("data/mesh_boundary")
 
     # 3. 統計に用いる標準地域コード (総務省統計局 CSV/Excel DL、API 不要)
-    logger.info("3/21: municipality_code (統計に用いる標準地域コード)")
+    logger.info("3/22: municipality_code (統計に用いる標準地域コード)")
     build_municipality_code("data/municipality_code")
+
+    # 4. 日本標準産業分類 (e-Stat 統計分類 CSV DL、API 不要)
+    logger.info("4/22: industry_code (日本標準産業分類)")
+    build_industry_code("data/industry_code")
 
     pipeline = create_pipeline()
     app_id = os.environ["ESTAT_API_KEY"]
 
-    # 4. 統計表カタログ (全件取得)
-    logger.info("4/21: stats_list (統計表カタログ)")
+    # 5. 統計表カタログ (全件取得)
+    logger.info("5/22: stats_list (統計表カタログ)")
     info = pipeline.run(stats_list_resource(app_id))
     logger.info(f"  {info}")
 
-    # 5. メタ情報 (直近3日間に更新された統計表のみ)
-    logger.info("5/21: meta_info (メタ情報)")
+    # 6. メタ情報 (直近3日間に更新された統計表のみ)
+    logger.info("6/22: meta_info (メタ情報)")
     updated_ids = fetch_updated_ids(app_id, days=3)
     if updated_ids:
         info = pipeline.run(meta_info_resource(app_id, updated_ids))
@@ -133,13 +139,13 @@ def main():
     else:
         logger.info("  skip (no updates)")
 
-    # 6. 社会・人口統計体系(SSDS) データ
-    logger.info("6/21: ssds (社会・人口統計体系)")
+    # 7. 社会・人口統計体系(SSDS) データ
+    logger.info("7/22: ssds (社会・人口統計体系)")
     info = pipeline.run(create_source(app_id, tables_config))
     logger.info(f"  {info}")
 
-    # 7. 国勢調査 小地域(町丁・字等)統計データ
-    logger.info("7/21: census_small_area (小地域統計)")
+    # 8. 国勢調査 小地域(町丁・字等)統計データ
+    logger.info("8/22: census_small_area (小地域統計)")
     for spec in SMALL_AREA_TABLES:
         ids = fetch_small_area_ids(app_id, spec["title_prefix"])
         if ids:
@@ -152,8 +158,8 @@ def main():
         else:
             logger.info(f"  skip {spec['name']} (no tables)")
 
-    # 8. 国勢調査・経済センサス 1kmメッシュ統計データ
-    logger.info("8/21: mesh_stats (1kmメッシュ統計)")
+    # 9. 国勢調査・経済センサス 1kmメッシュ統計データ
+    logger.info("9/22: mesh_stats (1kmメッシュ統計)")
     # fetch_mesh_ids は 0 件のとき例外を投げる。表題が変わってロードが飛ばされても
     # dbt は前回分でビルドが通ってしまい、CI が緑のままテーブルが更新されなくなるため。
     for spec in MESH_STATS_TABLES:
@@ -165,64 +171,64 @@ def main():
         )
         logger.info(f"  {spec['name']}: {info}")
 
-    # 9. 国勢調査 市区町村・都道府県別 基本集計
-    logger.info("9/21: census_municipality (市区町村・都道府県別 基本集計)")
+    # 10. 国勢調査 市区町村・都道府県別 基本集計
+    logger.info("10/22: census_municipality (市区町村・都道府県別 基本集計)")
     ids = fetch_municipality_ids(app_id, MUNICIPALITY_TABLES)
     info = pipeline.run(create_municipality_source(app_id, ids))
     logger.info(f"  {info}")
 
-    # 10. 住民基本台帳に基づく人口・世帯数・人口動態
-    logger.info("10/21: resident_registry (住民基本台帳 人口・世帯数・人口動態)")
+    # 11. 住民基本台帳に基づく人口・世帯数・人口動態
+    logger.info("11/22: resident_registry (住民基本台帳 人口・世帯数・人口動態)")
     build_resident_registry("data/resident_registry", app_id)
 
-    # 11. 経済センサス‐活動調査 産業横断的集計
-    logger.info("11/21: economic_census (経済センサス 産業横断的集計)")
+    # 12. 経済センサス‐活動調査 産業横断的集計
+    logger.info("12/22: economic_census (経済センサス 産業横断的集計)")
     ids = fetch_economic_census_ids(app_id, ECONOMIC_CENSUS_TABLES)
     info = pipeline.run(create_economic_census_source(app_id, ids))
     logger.info(f"  {info}")
 
-    # 12. 国勢調査 従業地・通学地による人口・就業状態等集計
-    logger.info("12/21: census_commuting (従業地・通学地集計)")
+    # 13. 国勢調査 従業地・通学地による人口・就業状態等集計
+    logger.info("13/22: census_commuting (従業地・通学地集計)")
     ids = fetch_municipality_ids(app_id, COMMUTING_TABLES, context="census_commuting")
     info = pipeline.run(create_commuting_source(app_id, ids))
     logger.info(f"  {info}")
 
-    # 13. 工業統計調査 市区町村別、産業中分類別統計
-    logger.info("13/21: manufacture (工業統計調査 市区町村別・産業中分類別)")
+    # 14. 工業統計調査 市区町村別、産業中分類別統計
+    logger.info("14/22: manufacture (工業統計調査 市区町村別・産業中分類別)")
     manufacture_ids = fetch_manufacture_ids(app_id)
     info = pipeline.run(create_manufacture_source(app_id, manufacture_ids))
     logger.info(f"  {info}")
 
-    # 14. 地方財政状況調査 決算収支・財政力
-    logger.info("14/21: local_finance (地方財政状況調査)")
+    # 15. 地方財政状況調査 決算収支・財政力
+    logger.info("15/22: local_finance (地方財政状況調査)")
     build_local_finance("data/local_finance", app_id)
 
-    # 15. 社会福祉施設等調査 施設数・定員・在所者数・従事者数
-    logger.info("15/21: welfare_facility (社会福祉施設等調査)")
+    # 16. 社会福祉施設等調査 施設数・定員・在所者数・従事者数
+    logger.info("16/22: welfare_facility (社会福祉施設等調査)")
     build_welfare_facility("data/welfare_facility", app_id)
 
-    # 16. 介護サービス施設・事業所調査 介護保険施設数・定員・居宅サービス等の事業所数
-    logger.info("16/21: kaigo_service (介護サービス施設・事業所調査)")
+    # 17. 介護サービス施設・事業所調査 介護保険施設数・定員・居宅サービス等の事業所数
+    logger.info("17/22: kaigo_service (介護サービス施設・事業所調査)")
     build_kaigo_service("data/kaigo_service", app_id)
 
-    # 17. 賃金構造基本統計調査 都道府県別・産業別の賃金
-    logger.info("17/21: wage_structure (賃金構造基本統計調査)")
+    # 18. 賃金構造基本統計調査 都道府県別・産業別の賃金
+    logger.info("18/22: wage_structure (賃金構造基本統計調査)")
     build_wage_structure("data/wage_structure", app_id)
 
-    # 18. 学校基本調査 小学校・中学校の学年別児童生徒数
-    logger.info("18/21: school (学校基本調査)")
+    # 19. 学校基本調査 小学校・中学校の学年別児童生徒数
+    logger.info("19/22: school (学校基本調査)")
     build_school("data/school", app_id)
 
-    # 19. 学校保健統計調査 都道府県別の身長・体重
-    logger.info("19/21: school_health (学校保健統計調査)")
+    # 20. 学校保健統計調査 都道府県別の身長・体重
+    logger.info("20/22: school_health (学校保健統計調査)")
     build_school_health("data/school_health", app_id)
 
-    # 20. 作物統計調査 野菜の都道府県別 (getStatsList + getStatsData)
-    logger.info("20/21: crop (作物統計調査 野菜)")
+    # 21. 作物統計調査 野菜の都道府県別 (getStatsList + getStatsData)
+    logger.info("21/22: crop (作物統計調査 野菜)")
     build_crop("data/crop", app_id)
 
-    # 21. dbt ビルド
-    logger.info("21/21: dbt build")
+    # 22. dbt ビルド
+    logger.info("22/22: dbt build")
     dbt_build()
 
 

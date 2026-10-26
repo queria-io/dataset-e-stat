@@ -1,0 +1,61 @@
+schema: code
+name: industry
+title: 日本標準産業分類
+description: |-
+  日本標準産業分類の分類項目の一覧。令和5年7月改定（第14回）・平成25年10月改定・
+  平成19年11月改定・平成14年3月改定の4改定を、改定年 (revision) と分類コード (code)
+  の組で1行ずつ収録する。大分類・中分類・小分類・細分類が同じ表に並び、どの階層かは
+  level で分かる。統計や店舗データが持つ産業分類コードから名称を引いたり、細分類を
+  中分類・大分類にまとめたりするときに結合する。
+
+  同じコードでも改定によって中身が違う。令和5年改定で新しくできた細分類（5621〜5661
+  の総合スーパー・コンビニエンスストア・ドラッグストアなど）もあれば、無くなった細分類も
+  ある。大分類の文字も平成14年改定（A〜S）とそれ以降（A〜T）で指す産業が違う。結合する
+  ときは必ず revision で改定を揃える。名称の区切りも平成25年改定までは全角カンマ「，」、
+  令和5年改定は読点「、」で、名称で突き合わせると外れる。
+
+  出典: 政府統計の総合窓口(e-Stat)（https://www.e-stat.go.jp/）統計分類・用語の検索
+  「日本標準産業分類」をもとに作成。
+  https://www.e-stat.go.jp/classifications/terms/10
+keywords:
+  - e-stat
+  - 日本標準産業分類
+  - 産業分類
+  - 産業コード
+  - 大分類
+  - 中分類
+  - 小分類
+  - 細分類
+published: true
+themes: [economy]
+primary_key: [revision, code]
+sources:
+  - path: https://www.e-stat.go.jp/classifications/terms/10
+fields:
+  - name: revision
+    title: 改定年（2023 / 2013 / 2007 / 2002）
+    description: 日本標準産業分類の改定年。2023=令和5年7月改定、2013=平成25年10月改定、2007=平成19年11月改定、2002=平成14年3月改定。コードの意味は改定ごとに違うので、結合では必ずこの列を揃える
+  - name: level
+    title: 階層（major / middle / minor / detail）
+    description: 分類の階層。major=大分類、middle=中分類、minor=小分類、detail=細分類。4つの階層が同じ表に並ぶので、件数を数えるときはこの列で1つの階層に絞る
+  - name: code
+    title: 分類コード
+    description: 分類コード。大分類は英字1文字、中分類は数字2桁、小分類は3桁、細分類は4桁の文字列で、先頭のゼロ（01、010、0100 など）を保つ。数値に変換すると先頭のゼロが落ちて結合できなくなる
+  - name: name
+    title: 項目名
+    description: 分類項目の名称
+  - name: parent_code
+    title: 1つ上の階層のコード（大分類は NULL）
+    description: 1つ上の階層の分類コード。中分類なら大分類の英字、小分類なら中分類の2桁、細分類なら小分類の3桁が入る。大分類は NULL
+  - name: major_code
+    title: 大分類のコード
+    description: その行が属する大分類の英字。大分類の行では自分自身。中分類以下を大分類にまとめるときのキー。大分類の文字は平成14年改定とそれ以降で指す産業が違う
+  - name: description
+    title: 項目の説明
+    description: 分類項目の説明の原文。何を含み何を含まないかが書かれている。大分類の行には総説が入る
+  - name: examples
+    title: 事例
+    description: この分類に含まれる事業の例の原文。「；」で区切られている
+  - name: non_examples
+    title: 不適合事例
+    description: この分類に含まれない事業の例の原文。「；」で区切られ、移る先の分類コードが「［2423］」のように全角の角括弧で添えられている

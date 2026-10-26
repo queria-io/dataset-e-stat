@@ -3,3 +3,4 @@ version: 2
 models:
   - name: stg_municipality
   - name: stg_municipality_change
+  - name: stg_industry
