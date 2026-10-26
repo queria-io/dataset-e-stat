@@ -1475,12 +1475,15 @@ FROM e_stat.medical_facility.municipality_facility f
 JOIN e_stat.medical_facility.municipality_facility m
     ON m.survey_year = f.survey_year AND m.area_level = 'municipality'
     AND m.medical_area_code = f.medical_area_code
-JOIN e_stat.census.census_municipality c ON c.area = m.area_code
+JOIN e_stat.census.census_municipality_2025 c ON c.area = m.area_code
 WHERE f.survey_year = 2024 AND f.area_level = 'medical_area'
 GROUP BY ALL
 ORDER BY beds_per_100k DESC
 LIMIT 10;
 ```
+
+人口は区の再編（浜松市、2024年）を反映した令和7年の census_municipality_2025 と結合します。
+令和2年の census_municipality では浜松市の新しい区のコードが当たらず、西部の人口が欠けます。
 
 `area_code` は各年の標準地域コードのままです。合併で無くなった市町村の行は、今の
 `code.municipality` とはつながりません。`survey_kind` は静態調査の年（3年ごと）と動態調査だけの

@@ -59,7 +59,8 @@ def issue_body(name: str, group: dict, lines: list[str]) -> str:
             "",
             "1. local_tables.yml の updated_date を新しい日付に直す",
             f"2. `uv run --env-file .env python load_local.py fetch {name}`",
-            f"3. CI の Sync が走っていないときに `uv run queria sync -- uv run --env-file .env python load_local.py load {name}`",
+            "3. CI の Sync が走っていないときに `uv lock --upgrade-package queria && uv sync` のあと "
+            f"`QUERIA_TOKEN=... uv run --env-file .env queria sync -- uv run --env-file .env python load_local.py load {name}`",
             "4. 1 の変更を PR にする",
         ]
     )
@@ -79,8 +80,16 @@ def main() -> None:
     dry_run = "--dry-run" in sys.argv[1:]
     app_id = os.environ["ESTAT_API_KEY"]
     groups = yaml.safe_load((ROOT / "local_tables.yml").read_text())["groups"]
+    # 1 つのグループで e-Stat が答えなくても (障害、表の差し替えで ID が消えた など)、
+    # 残りのグループは見て issue を立てる。失敗は最後に終了コードで知らせる
+    failed = []
     for name, group in groups.items():
-        lines = changed_tables(app_id, group)
+        try:
+            lines = changed_tables(app_id, group)
+        except Exception as e:
+            print(f"{name}: 更新日を取れなかった: {e}", file=sys.stderr)
+            failed.append(name)
+            continue
         if not lines:
             print(f"{name}: 変わりなし")
             continue
@@ -90,6 +99,8 @@ def main() -> None:
         if dry_run or open_issue_exists(title):
             continue
         subprocess.run(["gh", "issue", "create", "--title", title, "--body", body], check=True)
+    if failed:
+        raise SystemExit(f"更新日を取れなかったグループ: {failed}")
 
 
 if __name__ == "__main__":

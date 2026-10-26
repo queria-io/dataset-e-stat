@@ -17,7 +17,12 @@
 -- 6) 総数が0に倒れていない。値の読み込みが崩れると全部0（原典の「-」を0にしている）に
 --    なって足し算を素通りする。全国の病院数は8,000を下回ったことが無い（実測の最小は
 --    2024年の8,060）。
+-- 7) 原典の項目がどれも列に当たっている。名称が変わって当たらなくなった項目は、列が
+--    NULL になるだけで 1)〜3) を素通りする（NULL どうしは一致し、NULL との比較は落ちない）。
 
+-- 元表が揃っていないカタログ (手元で取り込む前) では検査しない。0 行の表を検査して落とすと
+-- 他のテーブルの更新まで止まるため。
+{% if medical_facility_sources_loaded() %}
 {% set measures = [
     'hospitals', 'psychiatric_hospitals', 'tuberculosis_sanatoriums', 'general_hospitals',
     'general_hospitals_with_long_term_care_beds', 'regional_support_hospitals',
@@ -145,6 +150,15 @@ value_failures AS (
 empty_failures AS (
     SELECT 'table_is_empty' AS check_name, '0 行' AS detail
     WHERE (SELECT COUNT(*) FROM f) = 0
+),
+
+-- 7) 項目の当て漏れ
+unmapped_failures AS (
+    SELECT DISTINCT
+        'unmapped_item' AS check_name,
+        survey_year || ' ' || table_kind || ' ' || item AS detail
+    FROM {{ ref('stg_medical_facility') }}
+    WHERE measure IS NULL
 )
 
 SELECT * FROM rollup_failures
@@ -155,3 +169,7 @@ UNION ALL SELECT * FROM membership_failures
 UNION ALL SELECT * FROM key_failures
 UNION ALL SELECT * FROM value_failures
 UNION ALL SELECT * FROM empty_failures
+UNION ALL SELECT * FROM unmapped_failures
+{% else %}
+SELECT NULL AS check_name, NULL AS detail WHERE FALSE
+{% endif %}

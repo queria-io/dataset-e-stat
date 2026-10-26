@@ -28,7 +28,7 @@ import yaml
 from estat_api_dlt_helper import EstatApiClient, estat_table
 
 from main import dbt_build
-from pipelines import create_pipeline
+from pipelines import EstatStatus, create_pipeline
 from pipelines.ssds import drop_stat_inf
 
 logger = logging.getLogger("pipelines")
@@ -56,9 +56,18 @@ def class_order(app_id: str, stats_data_id: str) -> dict[str, dict[str, int]]:
         root = client.get_stats_data(stats_data_id=stats_data_id, limit=1)
     finally:
         client.close()
-    objs = root["GET_STATS_DATA"]["STATISTICAL_DATA"]["CLASS_INF"]["CLASS_OBJ"]
+    body = root["GET_STATS_DATA"]
+    if int(body["RESULT"]["STATUS"]) != EstatStatus.OK:
+        raise RuntimeError(
+            f"{stats_data_id}: メタ情報の取得で e-Stat がエラー {body['RESULT']['STATUS']} を返した: "
+            f"{body['RESULT'].get('ERROR_MSG')}"
+        )
+    objs = body["STATISTICAL_DATA"]["CLASS_INF"]["CLASS_OBJ"]
     order = {}
     for obj in objs if isinstance(objs, list) else [objs]:
+        # CLASS を持たない分類軸がある (pipelines/meta_info.py)。並びが無いので飛ばす
+        if "CLASS" not in obj:
+            continue
         classes = obj["CLASS"] if isinstance(obj["CLASS"], list) else [obj["CLASS"]]
         order[obj["@id"]] = {c["@code"]: i for i, c in enumerate(classes)}
     return order

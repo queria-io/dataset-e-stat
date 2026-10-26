@@ -6,26 +6,30 @@
    名称は「01202 函館市」のようにコードを前置するので、名称が数字で始まる軸を地域とみる。
    年と表の種類は統計表そのものが表すので、元表の名前から付ける。
    地域の並び (area_order) は取得時に残したメタ情報の順。二次医療圏の所属を読むのに使う。
-   2013 年の表は取り込んでいない (local_tables.yml)。 #}
-{% set first_year = 2008 %}
-{% set last_year = 2024 %}
-{% set years = range(first_year, last_year + 1) | reject('equalto', 2013) | list %}
-{% for year in years %}
-{% for kind in ['hospital', 'clinic'] %}
+   2013 年の表は取り込んでいない (local_tables.yml)。
+   元表が揃っていないカタログ (手元で取り込む前) では 0 行にする。 #}
+{% if medical_facility_sources_loaded() %}
+{% for year, kind, name in medical_facility_sources() %}
 SELECT
     {{ year }} AS survey_year,
     '{{ kind }}' AS table_kind,
-    CASE WHEN regexp_matches(cat01_metadata->>'$.name', '^[0-9]') THEN cat01_order ELSE cat02_order END
-        AS area_order,
-    CASE WHEN regexp_matches(cat01_metadata->>'$.name', '^[0-9]')
-        THEN cat01_metadata->>'$.name' ELSE cat02_metadata->>'$.name' END AS area_label,
-    CASE WHEN regexp_matches(cat01_metadata->>'$.name', '^[0-9]') THEN cat02 ELSE cat01 END
-        AS item_code,
-    CASE WHEN regexp_matches(cat01_metadata->>'$.name', '^[0-9]')
-        THEN cat02_metadata->>'$.name' ELSE cat01_metadata->>'$.name' END AS item_name,
+    CASE WHEN area_in_cat01 THEN cat01_order ELSE cat02_order END AS area_order,
+    CASE WHEN area_in_cat01 THEN cat01_metadata->>'$.name' ELSE cat02_metadata->>'$.name' END
+        AS area_label,
+    CASE WHEN area_in_cat01 THEN cat02 ELSE cat01 END AS item_code,
+    CASE WHEN area_in_cat01 THEN cat02_metadata->>'$.name' ELSE cat01_metadata->>'$.name' END
+        AS item_name,
     value
-FROM {{ source('estat_source', 'medical_facility_' ~ year ~ '_' ~ kind) }}
+FROM (
+    SELECT *, regexp_matches(cat01_metadata->>'$.name', '^[0-9]') AS area_in_cat01
+    FROM {{ source('estat_source', name) }}
+)
 {{ 'UNION ALL' if not loop.last }}
 {% endfor %}
-{{ 'UNION ALL' if not loop.last }}
-{% endfor %}
+{% else %}
+SELECT
+    NULL::INTEGER AS survey_year, NULL::VARCHAR AS table_kind, NULL::INTEGER AS area_order,
+    NULL::VARCHAR AS area_label, NULL::VARCHAR AS item_code, NULL::VARCHAR AS item_name,
+    NULL::DOUBLE AS value
+WHERE FALSE
+{% endif %}
