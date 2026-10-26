@@ -32,22 +32,28 @@ selected AS (
             source_table = 'city'
             OR (source_table = 'town' AND (area_metadata->>'$.parent_code') LIKE '__29A')
         )
+),
+
+leveled AS (
+    SELECT
+        *,
+        CASE
+            WHEN area = '00000' THEN 'national'
+            WHEN area LIKE '%000' THEN 'prefecture'
+            WHEN source_table = 'city' AND (area_metadata->>'$.level') = '4' THEN 'ward'
+            ELSE 'municipality'
+        END AS area_level
+    FROM selected
 )
 
 SELECT
     area,
     area_metadata->>'$.name' AS area_name,
-    CASE
-        WHEN area = '00000' THEN 'national'
-        WHEN area LIKE '%000' THEN 'prefecture'
-        WHEN source_table = 'city' AND (area_metadata->>'$.level') = '4' THEN 'ward'
-        ELSE 'municipality'
-    END AS area_level,
-    CASE
-        WHEN area = '00000' THEN NULL
-        WHEN area LIKE '%000' THEN '00000'
-        WHEN source_table = 'city' AND (area_metadata->>'$.level') = '4'
-            THEN area_metadata->>'$.parent_code'
+    area_level,
+    CASE area_level
+        WHEN 'national' THEN NULL
+        WHEN 'prefecture' THEN '00000'
+        WHEN 'ward' THEN area_metadata->>'$.parent_code'
         ELSE SUBSTR(area, 1, 2) || '000'
     END AS parent_area,
     cat01 AS industry_code,
@@ -56,4 +62,4 @@ SELECT
     CASE WHEN cat01 = 'I2' THEN NULL ELSE 'I2' END AS parent_industry,
     tab,
     value
-FROM selected
+FROM leveled
