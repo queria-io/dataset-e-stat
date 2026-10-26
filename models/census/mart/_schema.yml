@@ -524,3 +524,28 @@ models:
         description: "単位。この表では常に「人」"
       - name: value
         description: "通勤者・通学者数（人）。2020年10月1日現在。自宅外で従業・通学する人が対象。原典が「-」の組み合わせは NULL で、294,750行のうち175,672行。その常住地からその従業地・通学地へ通う人がいない（0人）ことを表す"
+
+  - name: census_small_area_trade_area
+    description: |
+      商圏分析（queria.io の /gis と、ページの gis ブロック）が町丁目ごとに引く値を、
+      小地域の年齢・世帯の家族類型・世帯人員・住宅の所有の関係・住宅の建て方の 5 つの表から
+      1 本に積んだもの。分析が使う cat01 の行だけを、元の表の行のまま持つ。
+      source が元の表の名前で、area・cat01・cat02・value の意味は元の表と同じ。
+      出典: 総務省統計局 令和2年国勢調査 小地域集計（統計GIS）。
+      https://www.e-stat.go.jp/gis
+    access: public
+    columns:
+      - name: area
+        description: "地域コード。元の表の area と同じで、市区町村（5桁）・町丁・字等（9桁）・その内訳区画（11桁）の3階層が同じ列に混在する"
+      - name: source
+        description: "行を取った表の名前（census_small_area_age・census_small_area_household・census_small_area_household_size・census_small_area_housing・census_small_area_building_type）。cat01 の意味は表ごとに違うので、必ず source で絞ってから使う"
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [census_small_area_age, census_small_area_household, census_small_area_household_size, census_small_area_housing, census_small_area_building_type]
+      - name: cat01
+        description: "元の表の cat01（4桁）。分析が使うコードだけを持つ"
+      - name: cat02
+        description: "秘匿・合算区分のコード。1=無し、2=合算、3=秘匿"
+      - name: value
+        description: "元の表の value。年齢の表は人、それ以外は世帯（世帯人員の 0070 は人）。cat02=3（秘匿）の行は 0 が入るが非公表で、実数は cat02=2（合算）の地域に含まれている"
