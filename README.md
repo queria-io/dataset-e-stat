@@ -1983,7 +1983,9 @@ area_code は code.municipality と同じ標準地域コード（5桁）で、�
 （01100）に直してあります。
 
 ```sql
--- 市区町村の出生数の 2015年→2024年 の変化（全域を覆い、重複しない）
+-- 市区町村の出生数の 2015年→2024年 の変化（全域を覆い、重複しない）。
+-- area_code は各年のコードなので、途中でコードが変わった市（富谷市・那珂川市）は
+-- 2015年と2024年が別の行に分かれる
 SELECT area_code, area_name,
        MAX(births) FILTER (WHERE year = 2015) AS births_2015,
        MAX(births) FILTER (WHERE year = 2024) AS births_2024

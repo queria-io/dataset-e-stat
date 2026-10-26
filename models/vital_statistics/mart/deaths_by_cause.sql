@@ -1,5 +1,6 @@
 {# 選択死因分類は総数 (Se00)・死因 (level 2)・その内訳 (level 3) と再掲が同じ列に並ぶ。
-   cause_level に段を出し、再掲 (大腸・路上交通事故) は is_restatement で印を付ける。 #}
+   cause_level に段を出し、再掲 (大腸・路上交通事故) は 'restatement' にする。
+   どれにも当たらない段は NULL になり、_schema.yml の not_null で止まる。 #}
 SELECT
     year,
     area_code,

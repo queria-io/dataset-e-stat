@@ -8,6 +8,11 @@
 -- 4. 母の年齢別の出生数の合計が vital_events の出生数に、年齢別・死因別の死亡数の
 --    合計 (死因は総数 Se00) が vital_events の死亡数に一致する
 -- 5. 2015年から最新年まで年が連続し、最新年が 2024 年より前に下がっていない
+-- 6. 地域が stg_vital_statistics_area に1回だけ出る。4表の地域を名前・階層ごと UNION して
+--    いるので、表によって名前か階層が違うと同じ area が2行になり、結合で行が倍になる
+--    (vital_events の区は 3・4 の検査に入らないので、倍になっても気付けない)
+-- 7. 男女の和が総数に一致する (births_by_mother_age・deaths_by_age の説明に書いてある)、
+--    全国が都道府県・外国・不詳の和に一致する
 --
 -- 元表は手元でだけ取り込む (load_local.py vital_statistics)。元表が無いカタログ (CI で
 -- まだ公開していないとき) では 0 行の表になるので検査しない。
@@ -62,6 +67,23 @@ totals AS (
     FROM {{ ref('deaths_by_cause') }} WHERE cause_code = 'Se00' GROUP BY ALL
 ),
 
+nationwide_check AS (
+    SELECT 'births_by_mother_age' AS t, year,
+        SUM(births) FILTER (WHERE area_kind = 'nationwide') AS nationwide,
+        SUM(births) FILTER (WHERE area_kind IN ('prefecture', 'foreign', 'unknown')) AS parts
+    FROM {{ ref('births_by_mother_age') }} GROUP BY ALL
+    UNION ALL
+    SELECT 'deaths_by_age', year,
+        SUM(deaths) FILTER (WHERE area_kind = 'nationwide'),
+        SUM(deaths) FILTER (WHERE area_kind IN ('prefecture', 'foreign', 'unknown'))
+    FROM {{ ref('deaths_by_age') }} GROUP BY ALL
+    UNION ALL
+    SELECT 'deaths_by_cause', year,
+        SUM(deaths) FILTER (WHERE area_kind = 'nationwide'),
+        SUM(deaths) FILTER (WHERE area_kind IN ('prefecture', 'foreign', 'unknown'))
+    FROM {{ ref('deaths_by_cause') }} WHERE cause_code = 'Se00' GROUP BY ALL
+),
+
 years AS (
     SELECT 'vital_events' AS t, MIN(year) AS first_year, MAX(year) AS last_year,
         COUNT(DISTINCT year) AS n FROM ev
@@ -78,6 +100,9 @@ years AS (
 
 SELECT 'area_kind or area_code is null' AS failure, area AS detail
 FROM area WHERE area_kind IS NULL OR area_code IS NULL
+UNION ALL
+SELECT 'area appears more than once', area
+FROM area GROUP BY area HAVING COUNT(*) > 1
 UNION ALL
 SELECT 'summary cells missing', year || ' ' || area_code
 FROM {{ ref('stg_vital_statistics_summary') }} WHERE cells <> 12
@@ -103,6 +128,15 @@ SELECT 'total does not match vital_events: ' || t.t, t.year || ' ' || t.area_cod
 FROM totals AS t
 INNER JOIN ev AS e USING (year, area_code)
 WHERE t.t IN ('deaths_by_age', 'deaths_by_cause') AND t.v <> e.deaths
+UNION ALL
+SELECT 'male + female != total: births_by_mother_age', year || ' ' || area_code || ' ' || mother_age_code
+FROM {{ ref('births_by_mother_age') }} WHERE births <> births_male + births_female
+UNION ALL
+SELECT 'male + female != total: deaths_by_age', year || ' ' || area_code || ' ' || age_code
+FROM {{ ref('deaths_by_age') }} WHERE deaths <> deaths_male + deaths_female
+UNION ALL
+SELECT 'nationwide != prefecture + foreign + unknown: ' || t, year || ' ' || nationwide || ' / ' || parts
+FROM nationwide_check WHERE nationwide IS DISTINCT FROM parts
 UNION ALL
 SELECT 'years are not continuous: ' || t, first_year || '-' || last_year || ' ' || n
 FROM years WHERE first_year IS DISTINCT FROM 2015 OR COALESCE(last_year, 0) < 2024

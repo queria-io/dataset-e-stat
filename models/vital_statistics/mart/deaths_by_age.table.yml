@@ -11,8 +11,9 @@ description: |-
   地域は全国・都道府県・市町村と特別区・政令指定都市の区と、住所が外国・不詳の行が同じ表に
   並ぶ。日本全域をちょうど1回覆うのは area_kind = 'prefecture' か
   area_kind IN ('municipality', 'ward') のいずれかで、絞らずに合計すると何重にも数える。
-  政令指定都市そのものの行は無いので、市でまとめるときは code.municipality の
-  municipality_code で区を束ねる（市の値は vital_events にもある）。
+  政令指定都市そのものの行は無いので、市の値は vital_events の designated_city の行を
+  使う（code.municipality は現行のコードだけなので、2023年までの浜松市の区 22131〜22137
+  などは当たらない）。
   area_code は code.municipality の area_code と同じ標準地域コード（5桁）で、各年のコードの
   まま入る。全国地方公共団体コード（6桁）とは別体系。
   原典の「-」（計数のない場合）は0にしてある。秘匿は無い。
