@@ -48,3 +48,6 @@ jobs:
           print(p.run([load_local.cached_resource("vital_statistics", t) for t in spec["tables"]]))
           dbt_build(select="+municipality path:models/vital_statistics test_name:vital_statistics_is_consistent")
           PY
+      - name: diagnose
+        if: always()
+        run: uv run python scripts/diagnose_vital.py
