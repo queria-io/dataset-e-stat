@@ -823,13 +823,24 @@ https://www.soumu.go.jp/toukei_toukatsu/index/seido/9-5.htm
 中分類や大分類にまとめるときはこの2列で寄せます。
 
 ```sql
--- 店舗データの産業中分類コードに名称と大分類を付ける
+-- 店舗データ（overturemaps の places.place）の産業中分類コードに名称と大分類を付ける
 SELECT p.name, p.industry_code, m.name AS industry_name, j.name AS major_name
 FROM overturemaps.places.place p
 JOIN e_stat.code.industry m
     ON m.revision = 2023 AND m.level = 'middle' AND m.code = p.industry_code
 JOIN e_stat.code.industry j
     ON j.revision = 2023 AND j.code = m.major_code
+```
+
+```sql
+-- 工業統計の産業中分類コードに名称と大分類を付ける（工業統計は平成19年改定以降のコード）
+SELECT f.survey_year, f.area, f.industry_code, m.name AS industry_name, j.name AS major_name, f.establishments
+FROM e_stat.manufacture.municipality_industry f
+JOIN e_stat.code.industry m
+    ON m.revision = 2013 AND m.level = 'middle' AND m.code = f.industry_code
+JOIN e_stat.code.industry j
+    ON j.revision = 2013 AND j.code = m.major_code
+WHERE f.industry_level = 2
 ```
 
 同じコードでも改定によって中身が違います。令和5年改定では総合スーパー・
