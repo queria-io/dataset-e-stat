@@ -181,6 +181,53 @@ LIMIT 10;
 
 出典: 総務省統計局 令和2年国勢調査 人口等基本集計。https://www.e-stat.go.jp/
 
+## 国勢調査 市区町村別 基本集計 令和7年（census スキーマ）
+
+令和7年国勢調査 人口等基本集計（2026年9月公表）から作った2表です。
+
+| テーブル | 内容 |
+|---------|------|
+| census_municipality_2025 | 人口・男女別人口・世帯数・世帯人員・5年前（2020年）との増減・人口性比・面積・人口密度（地域1行） |
+| census_municipality_age_2025 | 男女・年齢（5歳階級）別人口。うち日本人の列も持つ（地域 × 年齢22区分） |
+
+census_municipality_2025 は令和2年の census_municipality と列が同じで、5年前の列だけが
+population_2020・households_2020 になります。area も同じ標準地域コード（5桁）で、
+area_level の切り分けも同じです（2025年は ward が 194）。2つの表は area で結合して
+比べられます。2020年から変わった地域コードは浜松市の区だけです（2024年の区の再編で
+7区から中央区・浜名区・天竜区の3区になった）。
+
+```sql
+-- 市区町村の 2020年→2025年 の人口の変化（全域を覆い、重複しない）
+SELECT n.area_name, o.population AS population_2020, n.population AS population_2025,
+       n.population_change_rate_5y
+FROM e_stat.census.census_municipality_2025 n
+JOIN e_stat.census.census_municipality o USING (area)
+WHERE n.area_level IN ('city', 'town_village')
+ORDER BY n.population_change_rate_5y
+LIMIT 10;
+```
+
+census_municipality_age_2025 は原典の年齢の総数と再掲（15歳未満・65歳以上など）を持たず、
+5歳階級21区分と年齢不詳だけを持ちます。22行を足すと census_municipality_2025 の
+population に一致します。65歳以上は `age_from >= 65` で足します。
+
+```sql
+-- 市区町村の高齢化率（年齢不詳を分母から除く）
+SELECT area_name,
+       SUM(population) FILTER (WHERE age_from >= 65)
+           / SUM(population) FILTER (WHERE age_from IS NOT NULL) AS aging_rate
+FROM e_stat.census.census_municipality_age_2025
+WHERE area_level IN ('city', 'town_village')
+GROUP BY area, area_name
+ORDER BY aging_rate DESC
+LIMIT 10;
+```
+
+この2表は毎日の更新（CI）では e-Stat から取らず、手元で1回だけ取り込んでいます
+（下の「手元で1回だけ取り込む統計表」）。
+
+出典: 総務省統計局 令和7年国勢調査 人口等基本集計。https://www.e-stat.go.jp/
+
 ## 国勢調査 市区町村別 就業状態等基本集計（census スキーマ）
 
 令和2年国勢調査 就業状態等基本集計から、市区町村・都道府県の粒度で労働力状態と
@@ -1407,6 +1454,49 @@ LIMIT 5;
 出典: 厚生労働省 介護サービス施設・事業所調査。
 https://www.e-stat.go.jp/stat-search/files?toukei=00450042
 
+## 医療施設調査 市区町村別の病院・診療所の数と病床数（medical_facility スキーマ）
+
+病院・一般診療所・歯科診療所の数と病床数を、都道府県・二次医療圏・市区町村ごとに年1行で
+収録した表です。2008年から2024年まで（2013年を除く）の36,660行で、毎年10月1日現在の数です。
+
+| テーブル | 内容 | 主なカラム |
+|---------|------|-----------|
+| municipality_facility | 地域別の病院数（種類別）・病床数（種類別）・一般診療所数（有床・無床）・歯科診療所数 | survey_year / survey_kind / area_level / area_code / area_name / prefecture_code / medical_area_code / medical_area_name / hospitals / hospital_beds / general_clinics / dental_clinics ほか |
+
+都道府県・二次医療圏・市区町村が同じ表に並び、どの粒度も全域を1回ずつ覆います。
+`area_level` で1つに絞ってから合計します。市区町村の行には、その市区町村が属する二次医療圏の
+コードと名称が入ります。政令指定都市は区ごとの行だけで、市の行はありません。
+
+```sql
+-- 2024年の人口10万人あたりの病院の病床数（二次医療圏別、上位10）
+SELECT f.medical_area_name, f.hospital_beds,
+       f.hospital_beds * 100000.0 / SUM(c.population) AS beds_per_100k
+FROM e_stat.medical_facility.municipality_facility f
+JOIN e_stat.medical_facility.municipality_facility m
+    ON m.survey_year = f.survey_year AND m.area_level = 'municipality'
+    AND m.medical_area_code = f.medical_area_code
+JOIN e_stat.census.census_municipality_2025 c ON c.area = m.area_code
+WHERE f.survey_year = 2024 AND f.area_level = 'medical_area'
+GROUP BY ALL
+ORDER BY beds_per_100k DESC
+LIMIT 10;
+```
+
+人口は区の再編（浜松市、2024年）を反映した令和7年の census_municipality_2025 と結合します。
+令和2年の census_municipality では浜松市の新しい区のコードが当たらず、西部の人口が欠けます。
+
+`area_code` は各年の標準地域コードのままです。合併で無くなった市町村の行は、今の
+`code.municipality` とはつながりません。`survey_kind` は静態調査の年（3年ごと）と動態調査だけの
+年を分けますが、施設数・病床数はどちらの年も全数なので、そのまま年で並べられます。
+
+2013年（平成25年）は取り込んでいません。e-Stat の市町村別の表で市町村と値の対応が崩れていて
+（宇都宮市の病院数が前後の年の31に対して5など）、市町村の和が都道府県の値に合わないためです。
+
+この表は毎日の更新（CI）では e-Stat から取らず、手元で1回だけ取り込んでいます
+（下の「手元で1回だけ取り込む統計表」）。
+
+出典: 厚生労働省 医療施設調査。https://www.e-stat.go.jp/statistics/00450021
+
 ## 就業構造基本調査 就業状態・雇用形態別の15歳以上人口（employment_structure スキーマ）
 
 | テーブル | 内容 | 主なカラム |
@@ -1860,6 +1950,29 @@ ORDER BY income_class_code;
 
 出典: 総務省統計局 2019年全国家計構造調査。
 https://www.e-stat.go.jp/dbview?sid=0003424577
+
+## 手元で1回だけ取り込む統計表（local_tables.yml）
+
+数年に1度しか出ない統計は、毎日の更新（CI）で e-Stat から取り直しません。Sync の時間を
+食うためです。`local_tables.yml` に載せた表は手元で1回だけ取得・公開し、CI は公開済みの
+元表を読んでビルドするだけです。
+
+```bash
+# 1. e-Stat から取得して data/local/<グループ>/ に保存する
+uv run --env-file .env python load_local.py fetch census_2025
+# 2. CI の Sync が走っていないときに、ロードして対象のモデルだけビルドし、公開する
+uv lock --upgrade-package queria && uv sync
+QUERIA_TOKEN=... uv run --env-file .env queria sync -- uv run --env-file .env python load_local.py load census_2025
+```
+
+`local_tables.yml` の `updated_date` は取り込んだときの e-Stat の更新日です。毎週
+Check updates のワークフローが e-Stat の更新日と比べ、変わっていたら issue を立てます。
+取り込み直すときは `updated_date` を直してから 1 と 2 を回します（fetch は食い違うと止まります）。
+
+表を足すときは `local_tables.yml` にグループ（`tables` と、ロード後にビルドする `dbt_select`）を
+書き、`models/*/raw/_sources.yml` に元表を足します。分類の並び順にしか入っていない情報
+（医療施設調査の二次医療圏と市区町村の所属など）を読むグループは `class_order: true` を付けます。
+fetch が分類軸ごとの並び順を `<軸>_order` 列（cat01_order など）として残します。
 
 ## ライセンス
 

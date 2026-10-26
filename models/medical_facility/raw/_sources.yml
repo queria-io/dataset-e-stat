@@ -1,0 +1,41 @@
+version: 2
+
+sources:
+  - name: estat_source
+    database: e_stat
+    schema: _source
+    tables:
+      # 手元でだけ取り込む (load_local.py の medical_facility)。CI の main.py はロードしない。
+      # 年ごとに病院の表と診療所の表が 1 つずつ。2013 年は無い (local_tables.yml)
+      - name: medical_facility_2008_hospital
+      - name: medical_facility_2008_clinic
+      - name: medical_facility_2009_hospital
+      - name: medical_facility_2009_clinic
+      - name: medical_facility_2010_hospital
+      - name: medical_facility_2010_clinic
+      - name: medical_facility_2011_hospital
+      - name: medical_facility_2011_clinic
+      - name: medical_facility_2012_hospital
+      - name: medical_facility_2012_clinic
+      - name: medical_facility_2014_hospital
+      - name: medical_facility_2014_clinic
+      - name: medical_facility_2015_hospital
+      - name: medical_facility_2015_clinic
+      - name: medical_facility_2016_hospital
+      - name: medical_facility_2016_clinic
+      - name: medical_facility_2017_hospital
+      - name: medical_facility_2017_clinic
+      - name: medical_facility_2018_hospital
+      - name: medical_facility_2018_clinic
+      - name: medical_facility_2019_hospital
+      - name: medical_facility_2019_clinic
+      - name: medical_facility_2020_hospital
+      - name: medical_facility_2020_clinic
+      - name: medical_facility_2021_hospital
+      - name: medical_facility_2021_clinic
+      - name: medical_facility_2022_hospital
+      - name: medical_facility_2022_clinic
+      - name: medical_facility_2023_hospital
+      - name: medical_facility_2023_clinic
+      - name: medical_facility_2024_hospital
+      - name: medical_facility_2024_clinic

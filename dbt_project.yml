@@ -77,6 +77,11 @@ models:
         +materialized: table
       stg:
         +materialized: table
+    medical_facility:
+      raw:
+        +materialized: table
+      stg:
+        +materialized: table
     migration:
       raw:
         +materialized: table

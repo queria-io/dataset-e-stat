@@ -19,6 +19,11 @@ sources:
       - name: census_municipality_employment_status
       - name: census_municipality_daytime_population
       - name: census_commuting_flow
+      # 令和7年国勢調査。手元でだけ取り込む (load_local.py census_2025)。CI の main.py はロードしない
+      - name: census_2025_municipality_population
+      - name: census_2025_municipality_household
+      - name: census_2025_municipality_change
+      - name: census_2025_municipality_age
       - name: mesh_population
       - name: mesh_establishment
       # 手元でだけ取り込む (load_local_mesh.py)。CI の main.py はロードしない
