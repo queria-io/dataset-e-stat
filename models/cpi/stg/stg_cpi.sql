@@ -6,8 +6,11 @@
    price_index を引くたびに、ビューのままだと _source.cpi (1350 万行・37MB) を頭から
    最後まで読んでいた。行が並んでいないので行グループの統計で読み飛ばせず、名前は JSON から
    取り出すので条件がファイルの読みまで届かない。並べて名前を列に持てば、
-   tab_name = '指数' AND area_name = '全国' のような条件でも読む行グループが数個に絞れる。
-   追記で増えた _source.cpi の小さいファイルも、ここで 1 つにまとまる。 #}
+   tab_name = '指数' AND area_name = '全国' のような条件でも読む行グループが数個に絞れる
+   (名前は min/max の範囲だけでは落ちず、DuckDB が書く bloom filter で落ちる)。
+   追記で増えた _source.cpi の小さいファイルも、ここで 1 つにまとまる。
+   2026-10-26 に本番の _source.cpi から作って記事 cpi-category-inflation の 5 本で実測:
+   読むバイトは 1 本あたり 37〜38MB → 1.3〜2.3MB、結果の行は一致。 #}
 SELECT
     tab,
     tab_metadata->>'$.name' AS tab_name,
