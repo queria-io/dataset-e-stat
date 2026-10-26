@@ -42,6 +42,8 @@ _LEVELS = [
     (re.compile(r"^\d{4}$"), "detail"),
 ]
 
+_HEADER = ["分類コード", "項目名", "項目の説明", "事例", "不適合事例"]
+
 
 def _download_params(kaitei_code: str) -> dict[str, str]:
     return {
@@ -85,21 +87,27 @@ def _parse(text: str, revision: int) -> list[dict]:
     """
     rows = list(csv.reader(io.StringIO(text)))
     header = rows[1] if len(rows) > 1 else rows
-    if header[:2] != ["分類コード", "項目名"]:
-        raise SystemExit(f"{revision} 年改定の産業分類 CSV のヘッダーが想定外: {header}")
+    if header != _HEADER:
+        raise SystemExit(
+            f"{revision} 年改定の産業分類 CSV のヘッダーが想定外: {header}"
+        )
+    if len(rows) < 3 or not rows[2] or re.sub(r"[\r\n\"]", "", rows[2][0]).strip():
+        raise SystemExit(
+            f"{revision} 年改定の産業分類 CSV の3行目が注記行でない: {rows[2:3]}"
+        )
 
     records = []
     major = None
-    for r in rows[2:]:
+    for r in rows[3:]:
         if not r:
             continue  # 空行
+        if len(r) != len(_HEADER):
+            raise SystemExit(f"{revision} 年改定で列数が想定外の行: {r}")
         # 令和5年・平成25年版の細分類 2425 はコードの引用符の中に改行が入って
         # 崩れている（'\r\n2425"'）。改行と引用符を落として読む。
         code = re.sub(r'[\r\n"]', "", r[0]).strip()
         if not code:
-            continue  # 注記行（コードが全角スペース）
-        if len(r) < 5:
-            raise SystemExit(f"{revision} 年改定の {code} の列が足りない: {r}")
+            raise SystemExit(f"{revision} 年改定でコードの空の行: {r}")
         level = _level(code)
         if level == "major":
             major = code
