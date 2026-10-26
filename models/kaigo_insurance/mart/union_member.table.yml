@@ -1,0 +1,43 @@
+schema: kaigo_insurance
+name: union_member
+title: 介護保険の広域連合・一部事務組合の構成市町村
+description: |-
+  介護保険の保険者のうち、複数の市町村でつくる広域連合・一部事務組合（39団体）と、
+  それを構成する市町村（207）の対応。2024年度末の時点。
+  kaigo_insurance.insured_persons・certified_persons の insurer_kind = 'union' の行を、
+  insurer_name と prefecture_code で結合して市町村に展開する。広域連合の値は構成市町村の
+  合計で、市町村ごとの内訳は原典に無い。
+
+  原典（介護保険事業状況報告）には構成市町村が無いので、2024年度の保険者の一覧と現行の
+  標準地域コードから起こした。現行の市区町村（北方領土の6村を除く）は、単独の保険者か
+  この表の広域連合のどちらか1つにちょうど入る。2023年度以前は広域連合の顔ぶれが違う
+  （2001年度は62団体）ので、過去の年度には当てない。
+keywords:
+  - 介護保険
+  - 広域連合
+  - 一部事務組合
+  - 保険者
+  - 市区町村
+published: true
+themes: [social_security_health]
+temporal_coverage: { start: "2024", end: "2024" }
+sources:
+  - path: https://www.e-stat.go.jp/stat-search/files?toukei=00450351
+fields:
+  - name: insurer_name
+    title: 保険者名
+    description: "広域連合・一部事務組合の名前。insured_persons・certified_persons の insurer_name と同じ表記"
+  - name: prefecture_code
+    title: 都道府県コード
+    description: "都道府県コード（2桁）"
+    semantic: { role: entity, name: prefecture }
+  - name: prefecture_name
+    title: 都道府県名
+    description: "都道府県名"
+  - name: area_code
+    title: 地域コード
+    description: "構成市町村の統計に用いる標準地域コード（5桁）。この表の一意キー"
+    semantic: { role: entity, name: city }
+  - name: municipality_name
+    title: 市町村名
+    description: "構成市町村の名前。code.municipality の名前"

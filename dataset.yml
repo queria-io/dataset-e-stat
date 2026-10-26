@@ -76,6 +76,11 @@ keywords:
   - 保育所
   - 介護サービス施設・事業所調査
   - 介護保険施設
+  - 介護保険事業状況報告
+  - 要介護認定
+  - 要支援
+  - 第1号被保険者
+  - 広域連合
   - 特別養護老人ホーム
   - 介護
   - 福祉
@@ -138,6 +143,8 @@ sources:
     path: https://www.e-stat.go.jp/statistics/00450021
   - title: 介護サービス施設・事業所調査（厚生労働省）
     path: https://www.e-stat.go.jp/stat-search/files?toukei=00450042
+  - title: 介護保険事業状況報告（厚生労働省）
+    path: https://www.e-stat.go.jp/stat-search/files?toukei=00450351
   - title: 就業構造基本調査（総務省統計局）
     path: https://www.stat.go.jp/data/shugyou/
   - title: 賃金構造基本統計調査（厚生労働省）
@@ -210,6 +217,8 @@ schemas:
     title: 介護サービス施設・事業所調査
   - name: medical_facility
     title: 医療施設調査
+  - name: kaigo_insurance
+    title: 介護保険事業状況報告
   - name: employment_structure
     title: 就業構造基本調査
   - name: wage_structure

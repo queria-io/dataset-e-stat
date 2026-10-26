@@ -23,6 +23,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
 API = "https://api.e-stat.go.jp/rest/3.0/app/json/getStatsData"
+CATALOG_API = "https://api.e-stat.go.jp/rest/3.0/app/json/getDataCatalog"
 
 
 def updated_date(app_id: str, stats_data_id: str) -> str:
@@ -38,7 +39,46 @@ def updated_date(app_id: str, stats_data_id: str) -> str:
     return body["STATISTICAL_DATA"]["TABLE_INF"]["UPDATED_DATE"]
 
 
+def catalog_modified_date(app_id: str, stats_code: str) -> str:
+    """統計表ファイルで配られる統計の、全ファイルの最終更新日の最大。
+
+    新しい年度のファイルが出ても、過去のファイルが直っても進む。
+    pipelines/kaigo_insurance.py の catalog_modified_date と同じ定義。
+    """
+    latest = ""
+    start = 1
+    while True:
+        query = urllib.parse.urlencode(
+            {"appId": app_id, "statsCode": stats_code, "limit": 100, "startPosition": start}
+        )
+        with urllib.request.urlopen(f"{CATALOG_API}?{query}", timeout=120) as res:
+            body = json.load(res)["GET_DATA_CATALOG"]
+        status = int(body["RESULT"]["STATUS"])
+        if status not in (0, 2):
+            raise RuntimeError(f"{stats_code}: e-Stat がエラー {status} を返した: {body['RESULT']['ERROR_MSG']}")
+        listing = body["DATA_CATALOG_LIST_INF"]
+        items = listing["DATA_CATALOG_INF"]
+        for item in [items] if isinstance(items, dict) else items:
+            resources = item["RESOURCES"]["RESOURCE"]
+            for r in [resources] if isinstance(resources, dict) else resources:
+                latest = max(latest, r["LAST_MODIFIED_DATE"])
+        next_key = listing.get("RESULT_INF", {}).get("NEXT_KEY")
+        if not next_key:
+            return latest
+        if int(next_key) <= start:
+            raise RuntimeError(f"{stats_code}: NEXT_KEY {next_key} が startPosition {start} から進まない")
+        start = int(next_key)
+
+
 def changed_tables(app_id: str, group: dict) -> list[str]:
+    if "stats_code" in group:
+        # 統計表ファイルで配られる統計 (fetcher のあるグループ)。表ごとの更新日が無いので
+        # 統計全体の最終更新日で見る
+        now = catalog_modified_date(app_id, group["stats_code"])
+        # YAML で引用符を落とすと date になるので、文字列に揃えて比べる
+        if now == str(group["catalog_modified_date"]):
+            return []
+        return [f"- 統計表ファイル（{group['stats_code']}）: {group['catalog_modified_date']} → {now}"]
     lines = []
     for t in group["tables"]:
         now = updated_date(app_id, t["stats_data_id"])
@@ -57,7 +97,7 @@ def issue_body(name: str, group: dict, lines: list[str]) -> str:
             "",
             "取り込み直す手順:",
             "",
-            "1. local_tables.yml の updated_date を新しい日付に直す",
+            "1. local_tables.yml の updated_date（統計表ファイルのグループは catalog_modified_date と各表の updated_date）を新しい日付に直す",
             f"2. `uv run --env-file .env python load_local.py fetch {name}`",
             "3. CI の Sync が走っていないときに `uv lock --upgrade-package queria && uv sync` のあと "
             f"`QUERIA_TOKEN=... uv run --env-file .env queria sync -- uv run --env-file .env python load_local.py load {name}`",

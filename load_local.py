@@ -13,8 +13,12 @@ fetch は表ごとに Parquet を書き、書き終えた表は次から飛ば�
 更新日が local_tables.yml の updated_date と食い違うと止まる (見張りの基準がずれるため)。
 Parquet の名前に updated_date を入れるので、yml の日付を直すと前の取得分は読まれず、
 fetch は取り直し、load は取り直す前なら止まる。
+
+fetcher を書いたグループ (ファイルで配られる統計) は pipelines/<fetcher>.py の fetch_local が
+取得し、表ごとの updated_date の代わりに catalog_modified_date で食い違いを見る。
 """
 
+import importlib
 import logging
 import os
 import sys
@@ -41,7 +45,23 @@ def load_group(name: str) -> dict:
     groups = yaml.safe_load((ROOT / "local_tables.yml").read_text())["groups"]
     if name not in groups:
         raise SystemExit(f"local_tables.yml に {name} が無い (あるのは {sorted(groups)})")
-    return groups[name]
+    spec = groups[name]
+    if "fetcher" in spec:
+        # Parquet の名前は表の updated_date から付く。catalog_modified_date だけ進めて表の日付を
+        # 直し忘れると、fetch は前の取得分を「取得済み」として飛ばし、load は古い表を入れ直す
+        if stale := [
+            t["name"]
+            for t in spec["tables"]
+            if str(t["updated_date"]) != str(spec["catalog_modified_date"])
+        ]:
+            raise SystemExit(
+                f"{name}: {stale} の updated_date が catalog_modified_date "
+                f"{spec['catalog_modified_date']} と違う。同じ日付にそろえる"
+            )
+    elif missing := [t["name"] for t in spec["tables"] if "primary_key" not in t]:
+        # 主キーを置かないのは、NULL の入る列しか無い fetcher のグループだけ
+        raise SystemExit(f"{name}: {missing} に primary_key が無い")
+    return spec
 
 
 def class_order(app_id: str, stats_data_id: str) -> dict[str, dict[str, int]]:
@@ -124,7 +144,8 @@ def cached_resource(group: str, spec: dict):
     @dlt.resource(
         name=spec["name"],
         write_disposition="replace",
-        primary_key=spec["primary_key"],
+        # 全国の行の保険者名のように NULL の入る列は主キーにできないので、無いグループもある
+        primary_key=spec.get("primary_key"),
         # estat_table と同じ契約。列の型が変わったら黙って広げずに落とす
         schema_contract={"tables": "evolve", "columns": "evolve", "data_type": "freeze"},
     )
@@ -143,6 +164,12 @@ def main():
 
     if command == "fetch":
         app_id = os.environ["ESTAT_API_KEY"]
+        if "fetcher" in spec:
+            # e-Stat のデータベースに無く、統計表ファイルで配られる統計。
+            # pipelines/<fetcher>.py の fetch_local が表ごとの Parquet を書く
+            module = importlib.import_module(f"pipelines.{spec['fetcher']}")
+            module.fetch_local(app_id, spec, lambda t: cache_path(group, t))
+            return
         for table in spec["tables"]:
             fetch(app_id, group, table, keep_order=spec.get("class_order", False))
         return

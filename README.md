@@ -1951,6 +1951,66 @@ ORDER BY income_class_code;
 出典: 総務省統計局 2019年全国家計構造調査。
 https://www.e-stat.go.jp/dbview?sid=0003424577
 
+## 介護保険事業状況報告 保険者別の第1号被保険者数・要介護認定者数（kaigo_insurance スキーマ）
+
+厚生労働省の介護保険事業状況報告（年報）から作った3表です。介護サービスの事業所を数える
+kaigo_service とは別の統計で、こちらは保険者（介護保険を運営する市区町村や広域連合）ごとの
+被保険者と認定者の人数です。どの年度も年度末（3月末）現在です。
+
+| テーブル | 内容 |
+|---------|------|
+| insured_persons | 第1号被保険者数（65歳以上）。保険者 × 年齢の区分・再掲（2001〜2024年度・224,121行） |
+| certified_persons | 要介護（要支援）認定者数（男女計）。保険者 × 被保険者の区分 × 年齢 × 要介護度（2001〜2024年度・2,230,160行） |
+| union_member | 広域連合・一部事務組合（39団体）と構成市町村（207）の対応（2024年度末） |
+
+### 保険者と市区町村コード
+
+保険者は市区町村と、複数の市町村でつくる広域連合・一部事務組合が混ざります
+（`insurer_kind` が `municipality` / `union`、全国の行が `nationwide`）。原典に保険者番号は
+無く、都道府県名と保険者名だけが並ぶので、市区町村が単独で保険者の行は現行の
+`code.municipality` に名前で当てた標準地域コード（5桁）を `area_code` に持ちます。
+合併で無くなった市町村は当たらず NULL です（2001年度は1,476、2019年度以降は0）。
+
+広域連合の値は構成市町村の合計で、市町村ごとの内訳は原典にありません。市町村の単位で
+見るときは `union_member` で広域連合を構成市町村に展開し、広域連合の値をそのまま付けます。
+現行の市区町村（北方領土の6村を除く）は、単独の保険者か `union_member` の広域連合の
+どちらか1つにちょうど入ります。`union_member` は2024年度の顔ぶれなので、過去の年度には
+当てません。
+
+都道府県の行はありません。保険者を足すと、2002年度以降は全国の行とすべての区分で一致します。
+
+```sql
+-- 2024年度の第1号被保険者の認定率（市区町村が単独で保険者の行）
+SELECT c.area_code, c.insurer_name, c.value AS certified, i.value AS insured,
+       c.value / i.value AS certification_rate
+FROM e_stat.kaigo_insurance.certified_persons c
+JOIN e_stat.kaigo_insurance.insured_persons i
+  USING (fiscal_year, prefecture_code, insurer_name)
+WHERE c.fiscal_year = 2024 AND c.insurer_kind = 'municipality'
+  AND c.insured_category = '第1号被保険者' AND c.age_group IS NULL AND c.care_level = '合計'
+  AND i.category = '計'
+ORDER BY certification_rate DESC
+LIMIT 10;
+```
+
+### 二重に数える軸と区分の変わり目
+
+`certified_persons` は被保険者の区分（総数 = 第1号 + 第2号）、第1号の年齢の内訳
+（`age_group` が NULL の行が合計）、要介護度（「合計」が内訳の合計）の3つで二重に数えます。
+`insured_persons` の外国人被保険者・住所地特例被保険者は計の内数（再掲）です。
+
+要介護度は2006年度に要支援が要支援1・2に分かれ、2009年度まで経過的要介護があります。
+年齢の内訳は、認定者が2014年度から5歳刻み、被保険者が2018年度から85歳以上を分けます。
+値は原典の「-」を0にしています。2013年度の長野県平谷村の要支援1に負の値が3セルあり、
+そのまま持ちます。
+
+この3表は毎日の更新（CI）では取らず、手元で1回だけ取り込んでいます
+（下の「手元で1回だけ取り込む統計表」）。`union_member` は seed（`seeds/kaigo_insurance_union_member.csv`）で、
+広域連合の顔ぶれが変わったら手で直します（`tests/kaigo_insurance_union_member_is_exhaustive.sql` が
+最新年度の保険者とずれると落ちます）。
+
+出典: 厚生労働省 介護保険事業状況報告（年報）。https://www.e-stat.go.jp/stat-search/files?toukei=00450351
+
 ## 人口動態調査 市区町村別の出生・死亡・死因（vital_statistics スキーマ）
 
 厚生労働省 人口動態調査 人口動態統計（確定数）から作った4表です。収録は2015〜2024年で、
@@ -2036,6 +2096,10 @@ Check updates のワークフローが e-Stat の更新日と比べ、変わっ�
 書き、`models/*/raw/_sources.yml` に元表を足します。分類の並び順にしか入っていない情報
 （医療施設調査の二次医療圏と市区町村の所属など）を読むグループは `class_order: true` を付けます。
 fetch が分類軸ごとの並び順を `<軸>_order` 列（cat01_order など）として残します。
+
+統計表データベース（API）に無く、ファイル（Excel）でだけ配られる統計は、グループに `fetcher` と
+`stats_code` を書きます。fetch は `pipelines/<fetcher>.py` の `fetch_local` に取得を任せ、
+Check updates は表の更新日の代わりに、その政府統計コードのファイルの最終更新日（`catalog_modified_date`）を比べます。
 
 ## ライセンス
 
