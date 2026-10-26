@@ -55,7 +55,7 @@ vital_events:
 births_by_mother_age・deaths_by_age・deaths_by_cause:
 
 - 政令指定都市そのものの行はありません。日本全域を1回覆うのは `prefecture` か、`municipality` と `ward` の組です
-- `nationwide`（全国）は都道府県と `foreign`（住所が外国）・`unknown`（住所が不詳）の和です
+- 死亡の2表は `nationwide`（全国）・`foreign`（住所が外国）・`unknown`（住所が不詳）の行も持ち、全国は都道府県・外国・不詳の和です。出生の表は全国の行を持たないので、都道府県を足します
 
 `area_code` は各年のコードのままです。たとえば富谷市は2015年が富谷町（04423）、2016年からが富谷市（04216）です。浜松市の区は2024年の再編で 22138〜22140 になりました。
 

@@ -12,7 +12,7 @@
 --    いるので、表によって名前か階層が違うと同じ area が2行になり、結合で行が倍になる
 --    (vital_events の区は 3・4 の検査に入らないので、倍になっても気付けない)
 -- 7. 男女の和が総数に一致する (births_by_mother_age・deaths_by_age の説明に書いてある)、
---    全国が都道府県・外国・不詳の和に一致する
+--    全国が都道府県・外国・不詳の和に一致する (死亡の2表。出生の表は全国の行を持たない)
 --
 -- 元表は手元でだけ取り込む (load_local.py vital_statistics)。元表が無いカタログ (CI で
 -- まだ公開していないとき) では 0 行の表になるので検査しない。
@@ -68,14 +68,9 @@ totals AS (
 ),
 
 nationwide_check AS (
-    SELECT 'births_by_mother_age' AS t, year,
-        SUM(births) FILTER (WHERE area_kind = 'nationwide') AS nationwide,
-        SUM(births) FILTER (WHERE area_kind IN ('prefecture', 'foreign', 'unknown')) AS parts
-    FROM {{ ref('births_by_mother_age') }} GROUP BY ALL
-    UNION ALL
-    SELECT 'deaths_by_age', year,
-        SUM(deaths) FILTER (WHERE area_kind = 'nationwide'),
-        SUM(deaths) FILTER (WHERE area_kind IN ('prefecture', 'foreign', 'unknown'))
+    SELECT 'deaths_by_age' AS t, year,
+        SUM(deaths) FILTER (WHERE area_kind = 'nationwide') AS nationwide,
+        SUM(deaths) FILTER (WHERE area_kind IN ('prefecture', 'foreign', 'unknown')) AS parts
     FROM {{ ref('deaths_by_age') }} GROUP BY ALL
     UNION ALL
     SELECT 'deaths_by_cause', year,

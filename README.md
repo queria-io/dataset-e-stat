@@ -1973,9 +1973,10 @@ e-Stat のデータベースにある市区町村別の表がこの10年だけ�
 area_kind で粒度を見分けます。vital_events は都道府県（prefecture）・政令指定都市
 （designated_city）・それ以外の市町村と特別区（municipality）・政令指定都市の区（ward）を持ち、
 日本全域を1回覆うのは `prefecture` か `municipality` と `designated_city` の組です。
-ほかの3表は政令指定都市そのものの行を持たず、代わりに全国（nationwide）・住所が外国
-（foreign）・不詳（unknown）を持ちます。日本全域を1回覆うのは `prefecture` か
-`municipality` と `ward` の組で、全国は都道府県・外国・不詳の和です。原典の市部・郡部などの
+ほかの3表は政令指定都市そのものの行を持ちません。日本全域を1回覆うのは `prefecture` か
+`municipality` と `ward` の組です。死亡の2表は全国（nationwide）・住所が外国（foreign）・
+不詳（unknown）も持ち、全国は都道府県・外国・不詳の和です。母の年齢別の出生の表は全国の行を
+持たないので、都道府県を足します。原典の市部・郡部などの
 集計行は持ちません。
 
 area_code は code.municipality と同じ標準地域コード（5桁）で、各年のコードのまま入ります。
