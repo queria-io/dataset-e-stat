@@ -181,6 +181,53 @@ LIMIT 10;
 
 出典: 総務省統計局 令和2年国勢調査 人口等基本集計。https://www.e-stat.go.jp/
 
+## 国勢調査 市区町村別 基本集計 令和7年（census スキーマ）
+
+令和7年国勢調査 人口等基本集計（2026年9月公表）から作った2表です。
+
+| テーブル | 内容 |
+|---------|------|
+| census_municipality_2025 | 人口・男女別人口・世帯数・世帯人員・5年前（2020年）との増減・人口性比・面積・人口密度（地域1行） |
+| census_municipality_age_2025 | 男女・年齢（5歳階級）別人口。うち日本人の列も持つ（地域 × 年齢22区分） |
+
+census_municipality_2025 は令和2年の census_municipality と列が同じで、5年前の列だけが
+population_2020・households_2020 になります。area も同じ標準地域コード（5桁）で、
+area_level の切り分けも同じです（2025年は ward が 194）。2つの表は area で結合して
+比べられます。2020年から変わった地域コードは浜松市の区だけです（2024年の区の再編で
+7区から中央区・浜名区・天竜区の3区になった）。
+
+```sql
+-- 市区町村の 2020年→2025年 の人口の変化（全域を覆い、重複しない）
+SELECT n.area_name, o.population AS population_2020, n.population AS population_2025,
+       n.population_change_rate_5y
+FROM e_stat.census.census_municipality_2025 n
+JOIN e_stat.census.census_municipality o USING (area)
+WHERE n.area_level IN ('city', 'town_village')
+ORDER BY n.population_change_rate_5y
+LIMIT 10;
+```
+
+census_municipality_age_2025 は原典の年齢の総数と再掲（15歳未満・65歳以上など）を持たず、
+5歳階級21区分と年齢不詳だけを持ちます。22行を足すと census_municipality_2025 の
+population に一致します。65歳以上は `age_from >= 65` で足します。
+
+```sql
+-- 市区町村の高齢化率（年齢不詳を分母から除く）
+SELECT area_name,
+       SUM(population) FILTER (WHERE age_from >= 65)
+           / SUM(population) FILTER (WHERE age_from IS NOT NULL) AS aging_rate
+FROM e_stat.census.census_municipality_age_2025
+WHERE area_level IN ('city', 'town_village')
+GROUP BY area, area_name
+ORDER BY aging_rate DESC
+LIMIT 10;
+```
+
+この2表は毎日の更新（CI）では e-Stat から取らず、手元で1回だけ取り込んでいます
+（下の「手元で1回だけ取り込む統計表」）。
+
+出典: 総務省統計局 令和7年国勢調査 人口等基本集計。https://www.e-stat.go.jp/
+
 ## 国勢調査 市区町村別 就業状態等基本集計（census スキーマ）
 
 令和2年国勢調査 就業状態等基本集計から、市区町村・都道府県の粒度で労働力状態と
@@ -1860,6 +1907,27 @@ ORDER BY income_class_code;
 
 出典: 総務省統計局 2019年全国家計構造調査。
 https://www.e-stat.go.jp/dbview?sid=0003424577
+
+## 手元で1回だけ取り込む統計表（local_tables.yml）
+
+数年に1度しか出ない統計は、毎日の更新（CI）で e-Stat から取り直しません。Sync の時間を
+食うためです。`local_tables.yml` に載せた表は手元で1回だけ取得・公開し、CI は公開済みの
+元表を読んでビルドするだけです。
+
+```bash
+# 1. e-Stat から取得して data/local/<グループ>/ に保存する
+uv run --env-file .env python load_local.py fetch census_2025
+# 2. CI の Sync が走っていないときに、ロードして対象のモデルだけビルドし、公開する
+uv lock --upgrade-package queria && uv sync
+QUERIA_TOKEN=... uv run --env-file .env queria sync -- uv run --env-file .env python load_local.py load census_2025
+```
+
+`local_tables.yml` の `updated_date` は取り込んだときの e-Stat の更新日です。毎週
+Check updates のワークフローが e-Stat の更新日と比べ、変わっていたら issue を立てます。
+取り込み直すときは `updated_date` を直してから 1 と 2 を回します（fetch は食い違うと止まります）。
+
+表を足すときは `local_tables.yml` にグループ（`tables` と、ロード後にビルドする `dbt_select`）を
+書き、`models/*/raw/_sources.yml` に元表を足します。
 
 ## ライセンス
 

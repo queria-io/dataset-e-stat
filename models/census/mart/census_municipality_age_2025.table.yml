@@ -1,0 +1,75 @@
+schema: census
+name: census_municipality_age_2025
+title: 市区町村別 男女・年齢（5歳階級）別人口（令和7年国勢調査）
+description: |-
+  令和7年国勢調査 人口等基本集計から、全国・都道府県・市区町村ごとの男女・年齢（5歳階級）別
+  人口。1地域につき 0〜4歳から100歳以上までの21区分と年齢不詳の計22行で、男女と
+  「うち日本人」は列に分けてある。22行を足すとその地域の census_municipality_2025 の
+  population に一致する。原典にある年齢の総数と再掲（15歳未満・65歳以上など）は
+  二重に数えないよう持たない。65歳以上は age_from >= 65 で足す。
+  外国人と国籍不詳は population - population_japanese で、2つは分けられない。
+  area は census_municipality_2025 と同じ 4,082 地域で、全国・都道府県・市区町村・
+  政令指定都市の区・2000年（平成12年）市区町村が同じ列に縦に並ぶ。日本全域をちょうど1回
+  覆うのは area_level = 'prefecture' か area_level IN ('city', 'town_village') のいずれか。
+  area は標準地域コード（5桁）で、全国地方公共団体コード（6桁）とは別体系。
+  令和2年の市区町村別の年齢は census_small_area_age の5桁の行にある（区分の形は違う）。
+  出典: 総務省統計局 令和7年国勢調査 人口等基本集計（統計表 0004065920）。
+  https://www.e-stat.go.jp/
+keywords:
+  - e-stat
+  - 国勢調査
+  - 令和7年
+  - 市区町村
+  - 都道府県
+  - 人口
+  - 年齢
+  - 高齢化
+published: true
+themes: [population]
+temporal_coverage: { start: "2025", end: "2025" }
+sources:
+  - path: https://www.e-stat.go.jp/statistics/00200521
+fields:
+  - name: area
+    title: 標準地域コード（5桁）
+    description: 標準地域コード。census_municipality_2025 の area と同じ体系。全国地方公共団体コード（6桁）とは別体系
+    semantic: { role: entity, name: city }
+  - name: area_name
+    title: 地域名
+    description: 地域の名称。2000年市区町村の行は「（旧：戸井町）」のように括弧付きで入る
+  - name: area_level
+    title: 地域の粒度
+    description: 'area の粒度。census_municipality_2025 と同じで、national・prefecture・city・ward・town_village・former_municipality。日本全域をちょうど1回覆うのは prefecture だけ、または city と town_village の組だけ。ward と former_municipality は足すと二重に数える'
+  - name: parent_area
+    title: 上位地域の標準地域コード
+    description: 1つ上の階層の area。全国は NULL
+  - name: age_code
+    title: 年齢区分コード
+    description: 原典の年齢区分のコード。01=0〜4歳 … 20=95〜99歳、21=100歳以上、22=年齢不詳
+  - name: age_class
+    title: 年齢区分名
+    description: age_code に対応する区分名（0～4歳／100歳以上／年齢「不詳」）
+  - name: age_from
+    title: 年齢の下限
+    description: 区分の下限の年齢（歳）。年齢不詳は NULL
+  - name: age_to
+    title: 年齢の上限
+    description: 区分の上限の年齢（歳、その歳を含む）。100歳以上と年齢不詳は NULL
+  - name: population
+    title: 人口
+    description: 人口（人）。国籍総数（日本人・外国人・国籍不詳の合計）
+  - name: population_male
+    title: 人口（男）
+    description: 男の人口（人）
+  - name: population_female
+    title: 人口（女）
+    description: 女の人口（人）
+  - name: population_japanese
+    title: 日本人人口
+    description: うち日本人の人口（人）。population から引いた残りは外国人と国籍不詳の合計
+  - name: population_japanese_male
+    title: 日本人人口（男）
+    description: うち日本人の男の人口（人）
+  - name: population_japanese_female
+    title: 日本人人口（女）
+    description: うち日本人の女の人口（人）

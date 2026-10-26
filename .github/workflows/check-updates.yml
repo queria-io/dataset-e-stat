@@ -1,0 +1,24 @@
+name: Check updates
+
+# 手元で取り込んだ統計表 (local_tables.yml) の e-Stat 側の更新日を見張る。
+# 変わっていたら issue を立てる。数十秒で終わる
+on:
+  schedule:
+    - cron: "0 0 * * 1" # 毎週月曜 09:00 JST
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v7
+      - run: uv run --no-project --with pyyaml python scripts/check_local_updates.py
+        env:
+          ESTAT_API_KEY: ${{ secrets.ESTAT_API_KEY }}
+          GH_TOKEN: ${{ github.token }}

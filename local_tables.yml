@@ -1,0 +1,35 @@
+# 手元で 1 回だけ取り込む統計表。CI の Sync (main.py) は e-Stat から取らず、
+# 公開済みの _source の表を読んでビルドするだけにする。どれも数年に 1 度しか
+# 出ない統計で、毎日取り直すと Sync の時間 (ホステッドの上限 360 分) を食うため。
+#
+# 取り込みと公開は load_local.py、更新の見張りは scripts/check_local_updates.py
+# (.github/workflows/check-updates.yml が毎週回す)。
+#
+# updated_date は取り込んだときの e-Stat の更新日 (getStatsData の
+# TABLE_INF.UPDATED_DATE、e_stat.main.stats_catalog の updated_date と同じ値)。
+# e-Stat 側の値がこれと変わると見張りが issue を立てる。取り込み直すときは
+# ここを新しい日付に直してから fetch する (fetch は食い違うと止まる)。
+#
+# グループを足すときは tables と dbt_select を書く。dbt_select は load のあとに
+# ビルドするノードで、テストも併せて回る。
+groups:
+  census_2025:
+    title: 令和7年国勢調査 人口等基本集計（全国・都道府県・市区町村）
+    dbt_select: "+census_municipality_2025 +census_municipality_age_2025"
+    tables:
+      - name: census_2025_municipality_population
+        stats_data_id: "0004065881"
+        updated_date: "2026-09-29"
+        primary_key: [cat01, area]
+      - name: census_2025_municipality_household
+        stats_data_id: "0004065901"
+        updated_date: "2026-09-29"
+        primary_key: [tab, cat01, area]
+      - name: census_2025_municipality_change
+        stats_data_id: "0004065882"
+        updated_date: "2026-09-29"
+        primary_key: [tab, area]
+      - name: census_2025_municipality_age
+        stats_data_id: "0004065920"
+        updated_date: "2026-09-29"
+        primary_key: [cat01, cat02, cat03, area]
