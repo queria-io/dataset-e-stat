@@ -42,7 +42,8 @@ def changed_tables(app_id: str, group: dict) -> list[str]:
     lines = []
     for t in group["tables"]:
         now = updated_date(app_id, t["stats_data_id"])
-        if now != t["updated_date"]:
+        # YAML で引用符を落とすと updated_date が date になるので、文字列に揃えて比べる
+        if now != str(t["updated_date"]):
             lines.append(f"- {t['name']}（{t['stats_data_id']}）: {t['updated_date']} → {now}")
     return lines
 
@@ -57,7 +58,7 @@ def issue_body(name: str, group: dict, lines: list[str]) -> str:
             "取り込み直す手順:",
             "",
             "1. local_tables.yml の updated_date を新しい日付に直す",
-            f"2. data/local/{name}/ を消して `uv run --env-file .env python load_local.py fetch {name}`",
+            f"2. `uv run --env-file .env python load_local.py fetch {name}`",
             f"3. CI の Sync が走っていないときに `uv run queria sync -- uv run --env-file .env python load_local.py load {name}`",
             "4. 1 の変更を PR にする",
         ]

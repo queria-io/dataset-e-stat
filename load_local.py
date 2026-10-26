@@ -11,6 +11,8 @@ sync の中はファイルのロードと対象の dbt だけで数分になり�
 
 fetch は表ごとに Parquet を書き、書き終えた表は次から飛ばす。取得した表の e-Stat の
 更新日が local_tables.yml の updated_date と食い違うと止まる (見張りの基準がずれるため)。
+Parquet の名前に updated_date を入れるので、yml の日付を直すと前の取得分は読まれず、
+fetch は取り直し、load は取り直す前なら止まる。
 """
 
 import logging
@@ -20,6 +22,7 @@ from pathlib import Path
 
 import dlt
 import pyarrow as pa
+import pyarrow.compute as pc
 import pyarrow.parquet as pq
 import yaml
 from estat_api_dlt_helper import estat_table
@@ -41,34 +44,42 @@ def load_group(name: str) -> dict:
     return groups[name]
 
 
+def cache_path(group: str, spec: dict) -> Path:
+    # YAML で引用符を落とすと updated_date が date になるので、文字列に揃える
+    return CACHE_DIR / group / f"{spec['name']}.{spec['updated_date']}.parquet"
+
+
 def fetch(app_id: str, group: str, spec: dict) -> None:
-    out = CACHE_DIR / group / f"{spec['name']}.parquet"
+    out = cache_path(group, spec)
     if out.exists():
         logger.info(f"  {spec['name']}: 取得済み")
         return
     out.parent.mkdir(parents=True, exist_ok=True)
     resource = estat_table(stats_data_id=spec["stats_data_id"], app_id=app_id, timeout=300)
-    pages = list(resource)
+    pages, updated = [], set()
+    for page in resource:
+        # stat_inf は全行に同じ値が複製されるので、更新日だけ抜いてページごとに落とす
+        updated.update(pc.unique(pc.struct_field(page["stat_inf"], "updated_date")).to_pylist())
+        pages.append(drop_stat_inf(page))
     if not pages:
         raise RuntimeError(f"{spec['name']}: {spec['stats_data_id']} が 0 行で返った")
     table = pa.concat_tables(pages, promote_options="default")
-    updated = {r["updated_date"] for r in table.column("stat_inf").to_pylist()}
-    if updated != {spec["updated_date"]}:
+    if updated != {str(spec["updated_date"])}:
         raise SystemExit(
             f"{spec['name']}: e-Stat の更新日 {sorted(updated)} が local_tables.yml の "
             f"{spec['updated_date']} と違う。yml を直してから取り直す"
         )
     # 書き終えてから名前を付けるので、途中で止まった表は次の回に取り直される
     tmp = out.with_suffix(".parquet.tmp")
-    pq.write_table(drop_stat_inf(table), tmp)
+    pq.write_table(table, tmp)
     tmp.rename(out)
     logger.info(f"  {spec['name']}: {table.num_rows} 行")
 
 
 def cached_resource(group: str, spec: dict):
-    path = CACHE_DIR / group / f"{spec['name']}.parquet"
+    path = cache_path(group, spec)
     if not path.exists():
-        raise SystemExit(f"{path} が無い。先に fetch を回す")
+        raise SystemExit(f"{path} が無い。先に fetch を回す (local_tables.yml の updated_date で取得したもの)")
 
     @dlt.resource(
         name=spec["name"],
@@ -96,16 +107,15 @@ def main():
             fetch(app_id, group, table)
         return
 
-    # 全部揃っていないと、replace で一部の表だけが新しくなる
-    for table in spec["tables"]:
-        cached_resource(group, table)
+    # 全部揃っていないと、replace で一部の表だけが新しくなる。ロードより先に揃いを確かめる
+    resources = [cached_resource(group, t) for t in spec["tables"]]
 
     # 宛先から dlt の状態を読み戻さない (load_local_mesh.py と同じ理由。_source の
     # _dlt_pipeline_state が大きく、R2 越しに読むと時間切れになる)。replace で全件を
     # 入れ直すので状態は要らない。CI の estat の状態に混ざらないよう名前も分ける
     os.environ["RESTORE_FROM_DESTINATION"] = "false"
     pipeline = create_pipeline(f"estat_local_{group}")
-    info = pipeline.run([cached_resource(group, t) for t in spec["tables"]])
+    info = pipeline.run(resources)
     logger.info(f"  {group}: {info}")
     dbt_build(select=spec["dbt_select"])
 

@@ -5,7 +5,7 @@
 -- すべての行の合計が総人口になる (1kmメッシュも同じ)。
 -- source がまだ無いカタログ (初回のロード前・空から作り直した直後) では検査しない。
 -- 0 行の view と1kmメッシュを比べて落とすと、他のテーブルの更新まで止まるため。
-{% if local_mesh_source_loaded('mesh_population_250m') %}
+{% if local_source_loaded('mesh_population_250m') %}
 WITH m250 AS (
     SELECT mesh1_code, SUM(value) AS population
     FROM {{ ref('population_mesh_250m') }}

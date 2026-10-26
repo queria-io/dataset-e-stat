@@ -4,7 +4,7 @@
    ロードは手元でだけ行う (load_local_mesh.py)。source がまだ無いカタログでは 0 行の view にする。
    分類は cat01=年齢別人口・世帯の種類別世帯数等、cat02=秘匿・合算区分、area=メッシュコード(10桁)。 #}
 {{ config(materialized='view') }}
-{% if local_mesh_source_loaded('mesh_population_250m') %}
+{% if local_source_loaded('mesh_population_250m') %}
 SELECT
     cat01, cat02, area, unit, value,
     cat01_metadata, cat02_metadata
