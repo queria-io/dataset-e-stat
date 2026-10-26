@@ -1,0 +1,195 @@
+version: 2
+models:
+- name: insured_persons
+  description: |
+    介護保険事業状況報告（年報）の第1号被保険者数（65歳以上の被保険者）を、保険者別・
+    年齢の区分別に1セル1行で収録する。2001年度〜2024年度の24年度、224,121行。
+    どの年度も年度末（3月末）現在。
+
+    保険者は市区町村と、複数の市町村でつくる広域連合・一部事務組合が混ざる
+    （insurer_kind が municipality / union）。2024年度は1,573保険者のうち39が広域連合・
+    一部事務組合で、その構成市町村は kaigo_insurance.union_member にある。
+    原典に保険者番号は無く、都道府県名と保険者名だけが並ぶ。市区町村が単独で保険者の行は、
+    現行の code.municipality に名前で当てた標準地域コード（5桁）を area_code に持つ。
+    合併で無くなった市町村は当たらず NULL（{UNMATCHED}）。
+    6桁の全国地方公共団体コード（lg_code）とは別体系なので、つなぐときは桁と体系を揃える。
+
+    行は全国1行と保険者。都道府県の行は無いので、都道府県の値は保険者を足して出す
+    （保険者の合計は2002年度以降、全国の行とすべての区分で一致する）。2001年度は全国の行が無く、
+    公表を見合わせた2保険者が表に無い。平成の大合併で保険者は2001年度の2,875から
+    2010年度の1,587へ減る。
+
+    区分（category）は計・年齢の区分・再掲の3種が同じ列に並ぶ。年齢の区分は2017年度まで
+    「65歳以上75歳未満」「75歳以上」、2018年度から「65歳以上75歳未満」「75歳以上85歳未満」
+    「85歳以上」。外国人被保険者と住所地特例被保険者は計の内数（再掲）なので、足すと二重に数える。
+
+    出典: 厚生労働省 介護保険事業状況報告（年報）第2表。
+    https://www.e-stat.go.jp/stat-search/files?toukei=00450351
+  access: public
+  columns:
+  - name: fiscal_year
+    description: 年度。値は年度末（翌年3月末）現在。2001〜2024で欠けは無い
+    data_tests:
+    - not_null
+  - name: prefecture_code
+    description: 都道府県コード（2桁）。全国の行は NULL
+  - name: prefecture_name
+    description: 都道府県名。全国の行は「全国」
+    data_tests:
+    - not_null
+  - name: insurer_name
+    description: 保険者名。原典の表記のまま。全国の行は NULL
+  - name: insurer_kind
+    description: nationwide=全国の行、municipality=市区町村（東京23区・政令指定都市は1保険者）、union=広域連合・一部事務組合。足し合わせて全国になるのは municipality と union
+    data_tests:
+    - not_null
+    - accepted_values:
+        arguments:
+          values:
+          - nationwide
+          - municipality
+          - union
+  - name: area_code
+    description: 市区町村が単独で保険者の行の、統計に用いる標準地域コード（5桁）。現行の code.municipality に名前で当てたもの。広域連合・全国の行と、合併で無くなった市町村は NULL
+  - name: category
+    description: 計・年齢の区分（2017年度まで 65歳以上75歳未満／75歳以上、2018年度から 65歳以上75歳未満／75歳以上85歳未満／85歳以上）・外国人被保険者(再掲)・住所地特例被保険者(再掲)。再掲は計の内数
+    data_tests:
+    - not_null
+    - accepted_values:
+        arguments:
+          values:
+          - 計
+          - 65歳以上75歳未満
+          - 75歳以上
+          - 75歳以上85歳未満
+          - 85歳以上
+          - 外国人被保険者(再掲)
+          - 住所地特例被保険者(再掲)
+  - name: value
+    description: 第1号被保険者数（人）。原典の「-」は0
+- name: certified_persons
+  description: |
+    介護保険事業状況報告（年報）の要介護（要支援）認定者数を、保険者別・被保険者の区分別・
+    要介護度別に1セル1行で収録する（男女計）。2001年度〜2024年度の24年度、2,230,160行。
+    どの年度も年度末（3月末）現在。
+
+    保険者と地域コードの持ち方は kaigo_insurance.insured_persons と同じ。市区町村が単独で
+    保険者の行は area_code（標準地域コード5桁）を持ち、広域連合・一部事務組合は
+    kaigo_insurance.union_member で構成市町村に展開する。認定率は insured_persons の
+    第1号被保険者数（category = '計'）で、第1号被保険者の合計を割る。
+
+    二重に数える軸が3つある。
+    - 被保険者の区分（insured_category）: 総数 = 第1号被保険者 + 第2号被保険者（40〜64歳）。
+      第1号被保険者は年齢の内訳（age_group）を持ち、age_group が NULL の行がその合計
+    - 要介護度（care_level）: 「合計」が内訳の合計
+    - 地域: 全国の行（insurer_kind = 'nationwide'）と保険者が同居する。都道府県の行は無い
+    どれも、内訳の合計は上位の行とすべての年度・保険者で一致する（2001年度は全国の行が無い）。
+
+    要介護度の区分は制度改正で変わる。2005年度までは要支援・要介護1〜5、2006〜2009年度は
+    要支援1・要支援2・経過的要介護・要介護1〜5、2010年度からは要支援1・要支援2・要介護1〜5。
+    年齢の内訳は2013年度まで 65歳以上75歳未満／75歳以上、2014年度から5歳刻み
+    （65歳以上70歳未満〜90歳以上の6区分）。
+
+    値は原典の「-」を0にした。負の値が3セルある（2013年度 長野県平谷村の要支援1）。
+    原典の注のとおり、受給者台帳の提出後に要介護度が遡って変わった分の差し引きで、そのまま持つ。
+
+    出典: 厚生労働省 介護保険事業状況報告（年報）第4表。
+    https://www.e-stat.go.jp/stat-search/files?toukei=00450351
+  access: public
+  columns:
+  - name: fiscal_year
+    description: 年度。値は年度末（翌年3月末）現在。2001〜2024で欠けは無い
+    data_tests:
+    - not_null
+  - name: prefecture_code
+    description: 都道府県コード（2桁）。全国の行は NULL
+  - name: prefecture_name
+    description: 都道府県名。全国の行は「全国」
+    data_tests:
+    - not_null
+  - name: insurer_name
+    description: 保険者名。原典の表記のまま。全国の行は NULL
+  - name: insurer_kind
+    description: nationwide=全国の行、municipality=市区町村（東京23区・政令指定都市は1保険者）、union=広域連合・一部事務組合。足し合わせて全国になるのは municipality と union
+    data_tests:
+    - not_null
+    - accepted_values:
+        arguments:
+          values:
+          - nationwide
+          - municipality
+          - union
+  - name: area_code
+    description: 市区町村が単独で保険者の行の、統計に用いる標準地域コード（5桁）。現行の code.municipality に名前で当てたもの。広域連合・全国の行と、合併で無くなった市町村は NULL
+  - name: insured_category
+    description: 総数・第1号被保険者（65歳以上）・第2号被保険者（40〜64歳）。総数 = 第1号 + 第2号
+    data_tests:
+    - not_null
+    - accepted_values:
+        arguments:
+          values:
+          - 総数
+          - 第1号被保険者
+          - 第2号被保険者
+  - name: age_group
+    description: 第1号被保険者の年齢の内訳。2013年度まで 65歳以上75歳未満／75歳以上、2014年度から 65歳以上70歳未満・70歳以上75歳未満・75歳以上80歳未満・80歳以上85歳未満・85歳以上90歳未満・90歳以上。NULL の行が区分の合計
+    data_tests:
+    - accepted_values:
+        arguments:
+          values:
+          - 65歳以上75歳未満
+          - 75歳以上
+          - 65歳以上70歳未満
+          - 70歳以上75歳未満
+          - 75歳以上80歳未満
+          - 80歳以上85歳未満
+          - 85歳以上90歳未満
+          - 90歳以上
+  - name: care_level
+    description: 要支援（2005年度まで）・要支援1・要支援2・経過的要介護（2006〜2009年度）・要介護1〜5・合計。合計は内訳の合計
+    data_tests:
+    - not_null
+    - accepted_values:
+        arguments:
+          values:
+          - 要支援
+          - 要支援1
+          - 要支援2
+          - 経過的要介護
+          - 要介護1
+          - 要介護2
+          - 要介護3
+          - 要介護4
+          - 要介護5
+          - 合計
+  - name: value
+    description: 認定者数（人）。原典の「-」は0。2013年度の長野県平谷村に負の値がある
+- name: union_member
+  description: |
+    介護保険の保険者のうち、複数の市町村でつくる広域連合・一部事務組合（39団体）と、
+    それを構成する市町村（207）の対応。2024年度末の時点。
+    kaigo_insurance.insured_persons・certified_persons の insurer_kind = 'union' の行を、
+    insurer_name と prefecture_code で結合して市町村に展開する。広域連合の値は構成市町村の
+    合計で、市町村ごとの内訳は原典に無い。
+
+    原典（介護保険事業状況報告）には構成市町村が無いので、2024年度の保険者の一覧と現行の
+    標準地域コードから起こした。現行の市区町村（北方領土の6村を除く）は、単独の保険者か
+    この表の広域連合のどちらか1つにちょうど入る。2023年度以前は広域連合の顔ぶれが違う
+    （2001年度は62団体）ので、過去の年度には当てない。
+  access: public
+  columns:
+  - name: insurer_name
+    description: 広域連合・一部事務組合の名前。insured_persons・certified_persons の insurer_name と同じ表記
+    data_tests:
+    - not_null
+  - name: prefecture_code
+    description: 都道府県コード（2桁）
+  - name: prefecture_name
+    description: 都道府県名
+  - name: area_code
+    description: 構成市町村の統計に用いる標準地域コード（5桁）。この表の一意キー
+    data_tests:
+    - not_null
+    - unique
+  - name: municipality_name
+    description: 構成市町村の名前。code.municipality の名前

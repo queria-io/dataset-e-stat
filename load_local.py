@@ -15,6 +15,7 @@ Parquet の名前に updated_date を入れるので、yml の日付を直すと
 fetch は取り直し、load は取り直す前なら止まる。
 """
 
+import importlib
 import logging
 import os
 import sys
@@ -84,7 +85,8 @@ def cached_resource(group: str, spec: dict):
     @dlt.resource(
         name=spec["name"],
         write_disposition="replace",
-        primary_key=spec["primary_key"],
+        # 全国の行の保険者名のように NULL の入る列は主キーにできないので、無いグループもある
+        primary_key=spec.get("primary_key"),
         # estat_table と同じ契約。列の型が変わったら黙って広げずに落とす
         schema_contract={"tables": "evolve", "columns": "evolve", "data_type": "freeze"},
     )
@@ -103,6 +105,12 @@ def main():
 
     if command == "fetch":
         app_id = os.environ["ESTAT_API_KEY"]
+        if "fetcher" in spec:
+            # e-Stat のデータベースに無く、統計表ファイルで配られる統計。
+            # pipelines/<fetcher>.py の fetch_local が表ごとの Parquet を書く
+            module = importlib.import_module(f"pipelines.{spec['fetcher']}")
+            module.fetch_local(app_id, spec, lambda t: cache_path(group, t))
+            return
         for table in spec["tables"]:
             fetch(app_id, group, table)
         return

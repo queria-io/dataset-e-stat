@@ -33,3 +33,20 @@ groups:
         stats_data_id: "0004065920"
         updated_date: "2026-09-29"
         primary_key: [cat01, cat02, cat03, area]
+  kaigo_insurance:
+    title: 介護保険事業状況報告（年報）保険者別の第1号被保険者数・要介護（要支援）認定者数
+    # e-Stat のデータベースに無く、統計表ファイル (Excel) で配られる。取得とパースは
+    # pipelines/kaigo_insurance.py の fetch_local。表ごとの更新日が無いので、統計全体の
+    # ファイルの最終更新日 (getDataCatalog の LAST_MODIFIED_DATE の最大) を
+    # catalog_modified_date に記録して見張る。表の updated_date は保存する Parquet の名前に
+    # 使うだけなので、catalog_modified_date と同じ日付にそろえる。全国の行は保険者名が
+    # NULL なので primary_key は置かない
+    fetcher: kaigo_insurance
+    stats_code: "00450351"
+    catalog_modified_date: "2026-08-27"
+    dbt_select: "kaigo_insurance_union_member path:models/kaigo_insurance"
+    tables:
+      - name: kaigo_insurance_insured
+        updated_date: "2026-08-27"
+      - name: kaigo_insurance_certified
+        updated_date: "2026-08-27"

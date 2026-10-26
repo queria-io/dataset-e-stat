@@ -1,0 +1,81 @@
+schema: kaigo_insurance
+name: certified_persons
+title: 要介護（要支援）認定者数（保険者別）
+description: |-
+  介護保険事業状況報告（年報）の要介護（要支援）認定者数を、保険者別・被保険者の区分別・
+  要介護度別に1セル1行で収録する（男女計）。2001年度〜2024年度の24年度、2,230,160行。
+  どの年度も年度末（3月末）現在。
+
+  保険者と地域コードの持ち方は kaigo_insurance.insured_persons と同じ。市区町村が単独で
+  保険者の行は area_code（標準地域コード5桁）を持ち、広域連合・一部事務組合は
+  kaigo_insurance.union_member で構成市町村に展開する。認定率は insured_persons の
+  第1号被保険者数（category = '計'）で、第1号被保険者の合計を割る。
+
+  二重に数える軸が3つある。
+  - 被保険者の区分（insured_category）: 総数 = 第1号被保険者 + 第2号被保険者（40〜64歳）。
+    第1号被保険者は年齢の内訳（age_group）を持ち、age_group が NULL の行がその合計
+  - 要介護度（care_level）: 「合計」が内訳の合計
+  - 地域: 全国の行（insurer_kind = 'nationwide'）と保険者が同居する。都道府県の行は無い
+  どれも、内訳の合計は上位の行とすべての年度・保険者で一致する（2001年度は全国の行が無い）。
+
+  要介護度の区分は制度改正で変わる。2005年度までは要支援・要介護1〜5、2006〜2009年度は
+  要支援1・要支援2・経過的要介護・要介護1〜5、2010年度からは要支援1・要支援2・要介護1〜5。
+  年齢の内訳は2013年度まで 65歳以上75歳未満／75歳以上、2014年度から5歳刻み
+  （65歳以上70歳未満〜90歳以上の6区分）。
+
+  値は原典の「-」を0にした。負の値が3セルある（2013年度 長野県平谷村の要支援1）。
+  原典の注のとおり、受給者台帳の提出後に要介護度が遡って変わった分の差し引きで、そのまま持つ。
+
+  出典: 厚生労働省 介護保険事業状況報告（年報）第4表。
+  https://www.e-stat.go.jp/stat-search/files?toukei=00450351
+keywords:
+  - e-stat
+  - 介護保険事業状況報告
+  - 介護保険
+  - 要介護認定
+  - 要介護
+  - 要支援
+  - 認定者数
+  - 認定率
+  - 高齢者
+  - 保険者
+  - 広域連合
+  - 市区町村
+published: true
+themes: [social_security_health]
+temporal_coverage: { start: "2001", end: "2024" }
+sources:
+  - path: https://www.e-stat.go.jp/stat-search/files?toukei=00450351
+fields:
+  - name: fiscal_year
+    title: 年度
+    description: "年度。値は年度末（翌年3月末）現在。2001〜2024で欠けは無い"
+  - name: prefecture_code
+    title: 都道府県コード
+    description: "都道府県コード（2桁）。全国の行は NULL"
+    semantic: { role: entity, name: prefecture }
+  - name: prefecture_name
+    title: 都道府県名
+    description: "都道府県名。全国の行は「全国」"
+  - name: insurer_name
+    title: 保険者名
+    description: "保険者名。原典の表記のまま。全国の行は NULL"
+  - name: insurer_kind
+    title: 保険者の種類
+    description: "nationwide=全国の行、municipality=市区町村（東京23区・政令指定都市は1保険者）、union=広域連合・一部事務組合。足し合わせて全国になるのは municipality と union"
+  - name: area_code
+    title: 地域コード
+    description: "市区町村が単独で保険者の行の、統計に用いる標準地域コード（5桁）。現行の code.municipality に名前で当てたもの。広域連合・全国の行と、合併で無くなった市町村は NULL"
+    semantic: { role: entity, name: city }
+  - name: insured_category
+    title: 被保険者の区分
+    description: "総数・第1号被保険者（65歳以上）・第2号被保険者（40〜64歳）。総数 = 第1号 + 第2号"
+  - name: age_group
+    title: 年齢
+    description: "第1号被保険者の年齢の内訳。2013年度まで 65歳以上75歳未満／75歳以上、2014年度から 65歳以上70歳未満・70歳以上75歳未満・75歳以上80歳未満・80歳以上85歳未満・85歳以上90歳未満・90歳以上。NULL の行が区分の合計"
+  - name: care_level
+    title: 要介護度
+    description: "要支援（2005年度まで）・要支援1・要支援2・経過的要介護（2006〜2009年度）・要介護1〜5・合計。合計は内訳の合計"
+  - name: value
+    title: 人数
+    description: "認定者数（人）。原典の「-」は0。2013年度の長野県平谷村に負の値がある"

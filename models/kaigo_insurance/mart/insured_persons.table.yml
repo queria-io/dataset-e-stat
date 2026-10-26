@@ -1,0 +1,69 @@
+schema: kaigo_insurance
+name: insured_persons
+title: 第1号被保険者数（保険者別）
+description: |-
+  介護保険事業状況報告（年報）の第1号被保険者数（65歳以上の被保険者）を、保険者別・
+  年齢の区分別に1セル1行で収録する。2001年度〜2024年度の24年度、224,121行。
+  どの年度も年度末（3月末）現在。
+
+  保険者は市区町村と、複数の市町村でつくる広域連合・一部事務組合が混ざる
+  （insurer_kind が municipality / union）。2024年度は1,573保険者のうち39が広域連合・
+  一部事務組合で、その構成市町村は kaigo_insurance.union_member にある。
+  原典に保険者番号は無く、都道府県名と保険者名だけが並ぶ。市区町村が単独で保険者の行は、
+  現行の code.municipality に名前で当てた標準地域コード（5桁）を area_code に持つ。
+  合併で無くなった市町村は当たらず NULL（{UNMATCHED}）。
+  6桁の全国地方公共団体コード（lg_code）とは別体系なので、つなぐときは桁と体系を揃える。
+
+  行は全国1行と保険者。都道府県の行は無いので、都道府県の値は保険者を足して出す
+  （保険者の合計は2002年度以降、全国の行とすべての区分で一致する）。2001年度は全国の行が無く、
+  公表を見合わせた2保険者が表に無い。平成の大合併で保険者は2001年度の2,875から
+  2010年度の1,587へ減る。
+
+  区分（category）は計・年齢の区分・再掲の3種が同じ列に並ぶ。年齢の区分は2017年度まで
+  「65歳以上75歳未満」「75歳以上」、2018年度から「65歳以上75歳未満」「75歳以上85歳未満」
+  「85歳以上」。外国人被保険者と住所地特例被保険者は計の内数（再掲）なので、足すと二重に数える。
+
+  出典: 厚生労働省 介護保険事業状況報告（年報）第2表。
+  https://www.e-stat.go.jp/stat-search/files?toukei=00450351
+keywords:
+  - e-stat
+  - 介護保険事業状況報告
+  - 介護保険
+  - 第1号被保険者
+  - 被保険者数
+  - 高齢者
+  - 保険者
+  - 広域連合
+  - 市区町村
+published: true
+themes: [social_security_health]
+temporal_coverage: { start: "2001", end: "2024" }
+sources:
+  - path: https://www.e-stat.go.jp/stat-search/files?toukei=00450351
+fields:
+  - name: fiscal_year
+    title: 年度
+    description: "年度。値は年度末（翌年3月末）現在。2001〜2024で欠けは無い"
+  - name: prefecture_code
+    title: 都道府県コード
+    description: "都道府県コード（2桁）。全国の行は NULL"
+    semantic: { role: entity, name: prefecture }
+  - name: prefecture_name
+    title: 都道府県名
+    description: "都道府県名。全国の行は「全国」"
+  - name: insurer_name
+    title: 保険者名
+    description: "保険者名。原典の表記のまま。全国の行は NULL"
+  - name: insurer_kind
+    title: 保険者の種類
+    description: "nationwide=全国の行、municipality=市区町村（東京23区・政令指定都市は1保険者）、union=広域連合・一部事務組合。足し合わせて全国になるのは municipality と union"
+  - name: area_code
+    title: 地域コード
+    description: "市区町村が単独で保険者の行の、統計に用いる標準地域コード（5桁）。現行の code.municipality に名前で当てたもの。広域連合・全国の行と、合併で無くなった市町村は NULL"
+    semantic: { role: entity, name: city }
+  - name: category
+    title: 区分
+    description: "計・年齢の区分（2017年度まで 65歳以上75歳未満／75歳以上、2018年度から 65歳以上75歳未満／75歳以上85歳未満／85歳以上）・外国人被保険者(再掲)・住所地特例被保険者(再掲)。再掲は計の内数"
+  - name: value
+    title: 人数
+    description: "第1号被保険者数（人）。原典の「-」は0"

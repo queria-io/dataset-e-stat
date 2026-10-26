@@ -24,6 +24,9 @@ sources:
       - name: census_2025_municipality_household
       - name: census_2025_municipality_change
       - name: census_2025_municipality_age
+      # 介護保険事業状況報告。手元でだけ取り込む (load_local.py kaigo_insurance)。CI の main.py はロードしない
+      - name: kaigo_insurance_insured
+      - name: kaigo_insurance_certified
       - name: mesh_population
       - name: mesh_establishment
       # 手元でだけ取り込む (load_local_mesh.py)。CI の main.py はロードしない

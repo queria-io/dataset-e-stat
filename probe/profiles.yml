@@ -1,0 +1,8 @@
+e_stat:
+  target: default
+  outputs:
+    default:
+      type: duckdb
+      path: e_stat.duckdb
+      schema: main
+      threads: 4

@@ -1,0 +1,18 @@
+name: probe-kaigo
+on:
+  push:
+    branches: [claude/probe-kaigo-insurance]
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v7
+      - run: uv sync
+      - run: uv run python load_local.py fetch kaigo_insurance
+        env:
+          ESTAT_API_KEY: ${{ secrets.ESTAT_API_KEY }}
+      - run: uv run python probe/prepare.py
+      - run: uv run dbt deps --profiles-dir probe && uv run dbt build --profiles-dir probe --select "+path:models/kaigo_insurance kaigo_insurance_union_member"
+      - if: always()
+        run: uv run python probe/stats.py
