@@ -60,7 +60,10 @@ failures AS (
     SELECT 'latest union has no members', i.insurer_name, i.prefecture_code
     FROM insurers i
     WHERE i.insurer_kind = 'union'
-        AND NOT EXISTS (SELECT 1 FROM members m WHERE m.insurer_name = i.insurer_name)
+        AND NOT EXISTS (
+            SELECT 1 FROM members m
+            WHERE m.insurer_name = i.insurer_name AND m.prefecture_code = i.prefecture_code
+        )
     UNION ALL
     SELECT 'member area_code not in code.municipality', insurer_name, area_code
     FROM members WHERE prefecture_code IS NULL

@@ -65,6 +65,8 @@ def catalog_modified_date(app_id: str, stats_code: str) -> str:
         next_key = listing.get("RESULT_INF", {}).get("NEXT_KEY")
         if not next_key:
             return latest
+        if int(next_key) <= start:
+            raise RuntimeError(f"{stats_code}: NEXT_KEY {next_key} が startPosition {start} から進まない")
         start = int(next_key)
 
 
@@ -73,7 +75,8 @@ def changed_tables(app_id: str, group: dict) -> list[str]:
         # 統計表ファイルで配られる統計 (fetcher のあるグループ)。表ごとの更新日が無いので
         # 統計全体の最終更新日で見る
         now = catalog_modified_date(app_id, group["stats_code"])
-        if now == group["catalog_modified_date"]:
+        # YAML で引用符を落とすと date になるので、文字列に揃えて比べる
+        if now == str(group["catalog_modified_date"]):
             return []
         return [f"- 統計表ファイル（{group['stats_code']}）: {group['catalog_modified_date']} → {now}"]
     lines = []

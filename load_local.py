@@ -45,7 +45,23 @@ def load_group(name: str) -> dict:
     groups = yaml.safe_load((ROOT / "local_tables.yml").read_text())["groups"]
     if name not in groups:
         raise SystemExit(f"local_tables.yml に {name} が無い (あるのは {sorted(groups)})")
-    return groups[name]
+    spec = groups[name]
+    if "fetcher" in spec:
+        # Parquet の名前は表の updated_date から付く。catalog_modified_date だけ進めて表の日付を
+        # 直し忘れると、fetch は前の取得分を「取得済み」として飛ばし、load は古い表を入れ直す
+        if stale := [
+            t["name"]
+            for t in spec["tables"]
+            if str(t["updated_date"]) != str(spec["catalog_modified_date"])
+        ]:
+            raise SystemExit(
+                f"{name}: {stale} の updated_date が catalog_modified_date "
+                f"{spec['catalog_modified_date']} と違う。同じ日付にそろえる"
+            )
+    elif missing := [t["name"] for t in spec["tables"] if "primary_key" not in t]:
+        # 主キーを置かないのは、NULL の入る列しか無い fetcher のグループだけ
+        raise SystemExit(f"{name}: {missing} に primary_key が無い")
+    return spec
 
 
 def class_order(app_id: str, stats_data_id: str) -> dict[str, dict[str, int]]:

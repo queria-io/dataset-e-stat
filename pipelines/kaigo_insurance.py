@@ -61,7 +61,6 @@ import time
 import unicodedata
 import urllib.parse
 from http.client import IncompleteRead
-from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
@@ -335,9 +334,17 @@ def _rows(df: pd.DataFrame, pref_col: int, start: int, where: str):
     """(都道府県名, 保険者名, 行) を返す。全国の行は ('全国', None, 行)。"""
     nationwide = 0
     insurers: set[tuple[str, str]] = set()
+    note_row: int | None = None
     for r in range(start, len(df)):
         pref = _norm(df.iat[r, pref_col])
         name = _norm(df.iat[r, pref_col + 1])
+        if note_row is not None and (pref in NATIONWIDE_LABELS or pref in PREFECTURES):
+            # 都道府県のセルの結合や表記の揺れで読めない保険者の行を、注と取り違えて落とさない。
+            # 2001 年度は全国の行が無く、dbt の合計の検査でも気づけない
+            raise RuntimeError(
+                f"{where}: {note_row} 行目 {_norm(df.iat[note_row, pref_col])!r} "
+                f"{_norm(df.iat[note_row, pref_col + 1])!r} が保険者の行の間にある"
+            )
         if pref in NATIONWIDE_LABELS:
             nationwide += 1
             yield NATIONWIDE, None, r
@@ -349,8 +356,8 @@ def _rows(df: pd.DataFrame, pref_col: int, start: int, where: str):
             insurers.add((pref, name))
             yield pref, name, r
         elif pref or name:
-            # 表の下の注。保険者の行より後にしか出ない
-            continue
+            # 表の下の注。保険者の行より後にしか出ない (上で確かめる)
+            note_row = r if note_row is None else note_row
     if nationwide > 1:
         raise RuntimeError(f"{where}: 全国の行が {nationwide} 行")
     if len({p for p, _ in insurers}) != len(PREFECTURES):
@@ -396,16 +403,19 @@ def parse_insured(body: bytes, fiscal_year: int) -> list[dict]:
     ]
 
 
-def _care_levels(parts_by_col: list[tuple[int, str, str]], where: str) -> dict[int, tuple[str, str]]:
+Group = tuple[str, str | None]  # (被保険者の区分, 年齢)
+
+
+def _care_levels(parts_by_col: list[tuple[int, Group, str]], where: str) -> dict[int, tuple[Group, str]]:
     """(列, 被保険者の区分, 見出しの末尾) から、要介護度を決める。
 
     「計」は 2005 年度までは合計、2006〜2009 年度は要支援と要介護の小計 (合計は
     「合計」)。小計の列は外す。
     """
-    by_group: dict[str, list[tuple[int, str]]] = {}
+    by_group: dict[Group, list[tuple[int, str]]] = {}
     for col, group, level in parts_by_col:
         by_group.setdefault(group, []).append((col, level))
-    result: dict[int, tuple[str, str]] = {}
+    result: dict[int, tuple[Group, str]] = {}
     for group, cols in by_group.items():
         has_grand_total = any(level == "合計" for _, level in cols)
         for col, level in cols:
@@ -422,7 +432,7 @@ def _care_levels(parts_by_col: list[tuple[int, str, str]], where: str) -> dict[i
     return result
 
 
-def _group(parts: list[str], where: str) -> tuple[str, str | None]:
+def _group(parts: list[str], where: str) -> Group:
     text = "".join(parts).replace("(再掲)", "").replace("-", "")
     m = INSURED_GROUP_RE.match(text)
     if not m:
@@ -433,7 +443,7 @@ def _group(parts: list[str], where: str) -> tuple[str, str | None]:
 def parse_certified(body: bytes, fiscal_year: int) -> list[dict]:
     """要介護 (要支援) 認定者数の表を 1 セル 1 行にする。"""
     records: list[dict] = []
-    seen: set[tuple[str, str | None]] = set()
+    seen: set[Group] = set()
     for sheet, df in _read_sheets(body):
         where = f"{fiscal_year}年度 認定者数 {sheet}"
         top, pref_col, start = _layout(df, where)
@@ -444,23 +454,21 @@ def parse_certified(body: bytes, fiscal_year: int) -> list[dict]:
                 continue
             if len(parts) < 2:
                 raise RuntimeError(f"{where}: 被保険者の区分が無い列 {parts}")
-            category, age_group = _group(parts[:-1], where)
-            parts_by_col.append((pref_col + 2 + j, f"{category}|{age_group or ''}", parts[-1]))
+            parts_by_col.append((pref_col + 2 + j, _group(parts[:-1], where), parts[-1]))
         columns = _care_levels(parts_by_col, where)
         groups = {g for g, _ in columns.values()}
-        if overlap := groups & {f"{c}|{a or ''}" for c, a in seen}:
+        if overlap := groups & seen:
             raise RuntimeError(f"{where}: 区分 {overlap} がほかのシートにもある")
-        seen |= {(g.split("|")[0], g.split("|")[1] or None) for g in groups}
+        seen |= groups
         for pref, name, r in _rows(df, pref_col, start, where):
-            for c, (group, level) in columns.items():
-                category, age_group = group.split("|")
+            for c, ((category, age_group), level) in columns.items():
                 records.append(
                     {
                         "fiscal_year": fiscal_year,
                         "prefecture_name": pref,
                         "insurer_name": name,
                         "insured_category": category,
-                        "age_group": age_group or None,
+                        "age_group": age_group,
                         "care_level": level,
                         "value": _value(df.iat[r, c], f"{where} {r}行{c}列"),
                     }
@@ -520,17 +528,22 @@ def fetch_local(app_id: str, spec: dict, cache_path) -> None:
         files = out.parent / "files" / modified
         files.mkdir(parents=True, exist_ok=True)
         kind, parse, schema = TABLES[name]
-        records: list[dict] = []
+        # 認定者数は 200 万行を超える。dict のまま全年度を溜めず、年度ごとに Arrow にする
+        parts: list[pa.Table] = []
         for fiscal_year, entry_kind, url in entries:
             if entry_kind != kind:
                 continue
             path = files / f"{fiscal_year}_{kind}.xls"
             if not path.exists():
-                path.write_bytes(_fetch(url))
+                # Parquet と同じく、書き終えてから名前を付ける。途中で止まった壊れたファイルを次の回に読まない
+                tmp_file = path.with_suffix(".xls.tmp")
+                tmp_file.write_bytes(_fetch(url))
+                tmp_file.rename(path)
             parsed = parse(path.read_bytes(), fiscal_year)
             logger.info(f"  {name} {fiscal_year}年度: {len(parsed)} 行")
-            records += parsed
+            parts.append(pa.Table.from_pylist(parsed, schema=schema))
+        table = pa.concat_tables(parts)
         tmp = out.with_suffix(".parquet.tmp")
-        pq.write_table(pa.Table.from_pylist(records, schema=schema), tmp)
+        pq.write_table(table, tmp)
         tmp.rename(out)
-        logger.info(f"  {name}: {len(records)} 行")
+        logger.info(f"  {name}: {table.num_rows} 行")
