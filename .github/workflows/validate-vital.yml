@@ -1,0 +1,50 @@
+# 一時: 人口動態調査を手元と同じ手順で DuckLake に入れ、dbt build を通す (マージ前に消す)
+name: validate-vital
+on:
+  push:
+    branches: [claude/project-thread-4c9o5z]
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      ESTAT_API_KEY: ${{ secrets.ESTAT_API_KEY }}
+      QUERIA_CATALOG_URL: sqlite:///${{ github.workspace }}/lake/catalog.sqlite
+      QUERIA_CATALOG_PATH: ${{ github.workspace }}/lake/catalog.sqlite
+      QUERIA_DATA_URL: ${{ github.workspace }}/lake/data/
+      # profiles.yml の S3 secret (credential_chain: process) が作れるよう、ダミーの鍵を返す
+      AWS_CONFIG_FILE: ${{ github.workspace }}/aws-config
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: true
+      - uses: astral-sh/setup-uv@v7
+      - run: |
+          mkdir -p lake/data && uv sync
+          echo '{"Version":1,"AccessKeyId":"x","SecretAccessKey":"y"}' > aws-creds.json
+          printf '[default]\ncredential_process = cat %s/aws-creds.json\n' "$PWD" > aws-config
+      - uses: actions/cache/restore@v4
+        with:
+          path: data/local
+          key: vital-${{ hashFiles('local_tables.yml') }}
+      - name: fetch
+        run: uv run python load_local.py fetch vital_statistics
+      - uses: actions/cache/save@v4
+        with:
+          path: data/local
+          key: vital-${{ hashFiles('local_tables.yml') }}
+      - name: load and build
+        run: |
+          uv run python - <<'PY'
+          import os
+          import load_local
+          from main import dbt_build
+          from pipelines import create_pipeline
+          from pipelines.municipality_code import build_municipality_code
+          build_municipality_code("data/municipality_code")
+          spec = load_local.load_group("vital_statistics")
+          os.environ["RESTORE_FROM_DESTINATION"] = "false"
+          p = create_pipeline("estat_local_vital_statistics")
+          print(p.run([load_local.cached_resource("vital_statistics", t) for t in spec["tables"]]))
+          dbt_build(select="+municipality path:models/vital_statistics test_name:vital_statistics_is_consistent")
+          PY
