@@ -6,3 +6,6 @@ sources:
     schema: _source
     tables:
       - name: economic_census_industry
+      # 手元でだけ取り込む (load_local.py economic_census_retail)。CI の main.py はロードしない
+      - name: economic_census_retail_city
+      - name: economic_census_retail_town

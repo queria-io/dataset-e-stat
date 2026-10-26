@@ -414,6 +414,7 @@ https://www.e-stat.go.jp/
 |---------|------|-----------|
 | establishment_industry | 全国・都道府県・市区町村別、産業大分類別・経営組織別の民営事業所数・従業者数・売上（収入）金額 | area / industry_code / organization_code / establishments / employees / sales_million_yen |
 | establishment_mesh_1km | 1kmメッシュ別、産業大分類別の事業所数・従業者数（平成28年経済センサス・縦持ち）。昼間人口の推計が流入側の按分に使う従業者数の元の表 | mesh_code / mesh1_code / cat01 / category / value |
+| retail_municipality | 全国・都道府県・市区町村別、小売業の産業中分類別の事業所数・従業者数・年間商品販売額・売場面積 | area / industry_code / establishments / employees / sales_million_yen / floor_area_m2 |
 
 令和3年経済センサス‐活動調査（2021年6月1日現在）の産業横断的集計「売上（収入）金額等」
 第2-1表です。国勢調査の census_small_area_industry が常住地ベース（住民がどの産業で働くか）
@@ -485,6 +486,37 @@ LIMIT 10;
 
 出典: 総務省・経済産業省 令和3年経済センサス‐活動調査 事業所に関する集計
 産業横断的集計 売上（収入）金額等（第2-1表）。https://www.e-stat.go.jp/
+
+### 小売業の市区町村別の表（retail_municipality）
+
+establishment_industry は卸売業と小売業が1つの大分類（I）にまとまっています。小売業だけの
+年間商品販売額と売場面積は、卸売業，小売業に関する集計 産業編（市区町村表）の
+retail_municipality にあります。1地域につき小売業計（I2）と中分類6区分（56 各種商品・
+57 織物衣服身の回り品・58 飲食料品・59 機械器具・60 その他・61 無店舗）の7行で、
+地域の段（area_level）は establishment_industry と同じです。
+
+この集計は管理，補助的経済活動のみを行う事業所・格付不能の事業所などを除くので、全国の
+小売業計は事業所数 755,015・年間商品販売額 133兆2,575億円です。同じ調査の総括表
+（事業所数 880,031・年間商品販売額 138兆1,804億円）より小さく、売場面積は一致します。
+
+事業所数と従業者数は秘匿が無く、市町村の和が都道府県・全国に一致します。年間商品販売額と
+売場面積は事業所が少ない区分が秘匿されて NULL になります（小売業計の年間商品販売額が NULL の
+市町村は1,719のうち105）。事業所が無い区分は 0 です。
+
+```sql
+-- 市区町村別 飲食料品小売業の年間商品販売額（全域を覆い、重複しない）
+SELECT area, area_name, establishments, sales_million_yen, floor_area_m2
+FROM e_stat.economic_census.retail_municipality
+WHERE area_level = 'municipality' AND industry_code = '58'
+ORDER BY sales_million_yen DESC NULLS LAST
+LIMIT 10;
+```
+
+この表は毎日の更新（CI）では e-Stat から取らず、手元で1回だけ取り込んでいます
+（下の「手元で1回だけ取り込む統計表」）。
+
+出典: 総務省・経済産業省 令和3年経済センサス‐活動調査 卸売業，小売業に関する集計
+産業編（市区町村表）第1表・第2表。https://www.e-stat.go.jp/statistics/00200553
 
 ## 工業統計調査 市区町村別 産業中分類別の製造業統計（manufacture スキーマ）
 

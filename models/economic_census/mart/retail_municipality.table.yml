@@ -1,0 +1,94 @@
+schema: economic_census
+name: retail_municipality
+title: 市区町村別 小売業の事業所数・従業者数・年間商品販売額・売場面積（令和3年経済センサス）
+description: |-
+  令和3年経済センサス‐活動調査 卸売業，小売業に関する集計 産業編（市区町村表）から、
+  全国・都道府県・市区町村ごとの小売業の事業所数・従業者数・年間商品販売額・売場面積を
+  産業中分類別に収録する。2021年6月1日現在、年間商品販売額は2020年1年間。
+  1地域につき 小売業計と中分類6区分（各種商品・織物衣服身の回り品・飲食料品・機械器具・
+  その他・無店舗）の7行で、地域は1,966。
+  establishment_industry は卸売業と小売業が1つの大分類（I）にまとまっているが、
+  この表は小売業だけの値を持つ。
+
+  集計対象がほかの表と違う。この表は小売業に格付された事業所のうち、管理，補助的経済活動
+  のみを行う事業所、産業分類が格付不能の事業所、商品販売額と仲立手数料のいずれも無い法人の
+  事業所を除いて集計している。全国の小売業計は事業所数 755,015・従業者数 6,464,650・
+  年間商品販売額 133兆2,575億円で、同じ調査の総括表（全事業所を対象にした事業所数 880,031・
+  年間商品販売額 138兆1,804億円）より小さい。売場面積（136,952,597m2）は総括表と一致する。
+
+  総数と内訳が同じ列に縦に並ぶ軸が2つあるので、絞らずに合計すると二重に数える。
+  産業は industry_code = 'I2'（小売業計）が industry_level = 2 の中分類6区分の和。
+  地域は area_level = 'prefecture' だけ、または area_level = 'municipality' だけが
+  日本全域をちょうど1回覆う。特別区は 'ward' に入り、その親「特別区部」（13100）が
+  'municipality' に立つ。政令指定都市も 'municipality' に市の行があり、その区が 'ward' に入る。
+
+  事業所数と従業者数は原典に秘匿が無く、該当数字なし（「-」）は 0 で入る。都道府県・全国の値は
+  市町村の和に一致する。年間商品販売額と売場面積は、事業所が少ない区分が秘匿（「x」）されて
+  NULL になる。小売業計の年間商品販売額が NULL の市町村は1,719のうち105で、中分類では
+  さらに多い。事業所が無い区分は 0。町村の表は、事業所があっても年間商品販売額を「-」と
+  するものがあり（小売業計で14町村）、これも NULL で入る。無店舗小売業は売場を持たないので
+  売場面積が常に NULL。年間商品販売額は原典が区分ごとに丸めているため、内訳の和が
+  総数と最大5百万円ずれる。
+
+  原典は市・区の表（産業小分類別）と町村の表（産業中分類別）の2つに分かれている。
+  市・特別区部・区は前者、町村は後者から取り、産業は中分類の粒度にそろえている。
+
+  area は establishment_industry・census_municipality・code.municipality の area_code と同じ
+  標準地域コード（5桁）。全国地方公共団体コード（6桁）とは別体系なので、lg_code や address_br と
+  結合するときは桁と体系を揃える。
+  出典: 総務省・経済産業省 令和3年経済センサス‐活動調査 卸売業，小売業に関する集計
+  産業編（市区町村表）第1表・第2表。
+  https://www.e-stat.go.jp/statistics/00200553
+keywords:
+  - e-stat
+  - 経済センサス
+  - 小売業
+  - 年間商品販売額
+  - 売場面積
+  - 事業所
+  - 従業者数
+  - 市区町村
+  - 都道府県
+published: true
+themes: [economy]
+temporal_coverage: { start: "2020", end: "2021" }
+sources:
+  - path: https://www.e-stat.go.jp/statistics/00200553
+fields:
+  - name: area
+    title: 標準地域コード（5桁）
+    description: 標準地域コード。全国は 00000、都道府県は 13000 のように市区町村部が 000。establishment_industry・census_municipality の area・code.municipality の area_code と同じ体系
+    semantic: { role: entity, name: city }
+  - name: area_name
+    title: 地域名
+    description: 地域の名称（全国／東京都／特別区部／千代田区／札幌市／札幌市中央区 など）
+  - name: area_level
+    title: 地域の粒度
+    description: 'area の粒度。national=全国（1）、prefecture=都道府県（47）、municipality=市・町村・特別区部（1,719）、ward=政令指定都市の行政区・特別区・境界未定地域（199）。日本全域をちょうど1回覆うのは prefecture だけ、または municipality だけで、どちらも小売業計の事業所数が全国の 755,015 に一致する。ward は municipality の内訳で、足すと二重に数える'
+  - name: parent_area
+    title: 上位地域の標準地域コード
+    description: 1つ上の階層の area。都道府県の親は全国、市・町村・特別区部の親は都道府県、行政区の親はその市、特別区の親は特別区部（13100）。全国は NULL
+  - name: industry_code
+    title: 産業分類コード
+    description: I2=小売業計、56=各種商品小売業、57=織物・衣服・身の回り品小売業、58=飲食料品小売業、59=機械器具小売業、60=その他の小売業、61=無店舗小売業。総数と中分類が同じ列に混在する
+  - name: industry_name
+    title: 産業分類
+    description: industry_code に対応する産業の名称
+  - name: industry_level
+    title: 産業分類の階層
+    description: 1=小売業計（I2）、2=中分類6区分。中分類6区分の和が小売業計に一致する
+  - name: parent_industry
+    title: 上位産業のコード
+    description: 中分類の親は I2。I2 は NULL
+  - name: establishments
+    title: 事業所数
+    description: 事業所数（事業所）。管理，補助的経済活動のみを行う事業所・格付不能の事業所などを除く集計対象で、同じ調査の総括表の小売業事業所数（全国880,031）とは母数が違う。該当が無い区分は 0
+  - name: employees
+    title: 従業者数
+    description: 従業者数（人）。2021年6月1日現在。該当が無い区分は 0
+  - name: sales_million_yen
+    title: 年間商品販売額
+    description: 年間商品販売額（百万円）。2020年1年間。秘匿された区分は NULL、事業所が無い区分は 0
+  - name: floor_area_m2
+    title: 売場面積
+    description: 売場面積（m2）。2021年6月1日現在。秘匿された区分は NULL、事業所が無い区分は 0。無店舗小売業（61）は常に NULL

@@ -210,3 +210,19 @@ groups:
         stats_data_id: "0003412081"
         updated_date: "2026-03-17"
         primary_key: [tab, cat01, cat02, area, time]
+  economic_census_retail:
+    title: 令和3年経済センサス‐活動調査 卸売業，小売業に関する集計 産業編（市区町村表）
+    dbt_select: "+retail_municipality"
+    # 市区町村表は2つに分かれる。第1表は産業小分類別で、地域は市・特別区部・区と
+    # 郡部の合計まで (町村ごとの行が無い)。第2表は産業中分類別で、地域は町村と
+    # 一部の政令指定都市。市は第1表、町村は第2表から取り、中分類の粒度でそろえる
+    # (stg_economic_census_retail)
+    tables:
+      - name: economic_census_retail_city
+        stats_data_id: "0004003263"
+        updated_date: "2026-09-30"
+        primary_key: [tab, cat01, area]
+      - name: economic_census_retail_town
+        stats_data_id: "0004003264"
+        updated_date: "2026-09-30"
+        primary_key: [tab, cat01, area]

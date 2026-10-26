@@ -18,7 +18,7 @@ e-Stat（政府統計の総合窓口）の API と統計GIS から取得した�
 | main | 統計表カタログ stats_catalog |
 | census | 令和2年国勢調査 小地域集計 census_small_area_*（年齢・世帯・住宅・産業）、市区町村別 基本集計 census_municipality、令和7年国勢調査 市区町村別 基本集計 census_municipality_2025・年齢別 census_municipality_age_2025、市区町村別 就業状態等基本集計 census_municipality_labor_force / census_municipality_employment_status、昼夜間人口 census_municipality_daytime_population、通勤・通学流動 census_commuting_flow、1kmメッシュ別昼間人口 daytime_population_mesh_1km、1kmメッシュ別 人口・世帯 population_mesh_1km、250mメッシュ別 人口・世帯 population_mesh_250m |
 | boundary | 令和2年国勢調査 町丁・字等別境界 small_area、1kmメッシュ境界 mesh_1km |
-| economic_census | 経済センサス‐活動調査 市区町村別・産業大分類別の事業所数・従業者数・売上金額 establishment_industry、1kmメッシュ別 産業大分類別の事業所数・従業者数 establishment_mesh_1km |
+| economic_census | 経済センサス‐活動調査 市区町村別・産業大分類別の事業所数・従業者数・売上金額 establishment_industry、市区町村別・小売業の産業中分類別の事業所数・従業者数・年間商品販売額・売場面積 retail_municipality、1kmメッシュ別 産業大分類別の事業所数・従業者数 establishment_mesh_1km |
 | code | 統計に用いる標準地域コード municipality と、その変更（廃置分合）履歴 municipality_change、日本標準産業分類の4改定 industry |
 | manufacture | 工業統計調査 市区町村別・産業中分類別の製造業統計 municipality_industry |
 | migration | 住民基本台帳人口移動報告 市区町村別の転入・転出・転入超過 municipality_migration |
