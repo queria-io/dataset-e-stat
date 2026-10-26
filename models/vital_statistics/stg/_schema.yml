@@ -1,0 +1,8 @@
+version: 2
+
+models:
+  - name: stg_vital_statistics_area
+  - name: stg_vital_statistics_summary
+  - name: stg_vital_statistics_births_mother_age
+  - name: stg_vital_statistics_deaths_age
+  - name: stg_vital_statistics_deaths_cause

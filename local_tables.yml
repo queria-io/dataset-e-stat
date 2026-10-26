@@ -190,3 +190,23 @@ groups:
         updated_date: "2026-08-27"
       - name: kaigo_insurance_certified
         updated_date: "2026-08-27"
+  vital_statistics:
+    title: 人口動態調査 人口動態統計 確定数（全国・都道府県・市区町村、2015〜2024年）
+    dbt_select: "path:models/vital_statistics"
+    tables:
+      - name: vital_statistics_summary
+        stats_data_id: "0003411564"
+        updated_date: "2026-03-17"
+        primary_key: [cat01, area, time]
+      - name: vital_statistics_births_mother_age
+        stats_data_id: "0003412062"
+        updated_date: "2026-03-17"
+        primary_key: [tab, cat01, cat02, area, time]
+      - name: vital_statistics_deaths_age
+        stats_data_id: "0003412064"
+        updated_date: "2026-03-17"
+        primary_key: [tab, cat01, cat02, area, time]
+      - name: vital_statistics_deaths_cause
+        stats_data_id: "0003412081"
+        updated_date: "2026-03-17"
+        primary_key: [tab, cat01, cat02, area, time]

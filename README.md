@@ -2011,6 +2011,69 @@ LIMIT 10;
 
 出典: 厚生労働省 介護保険事業状況報告（年報）。https://www.e-stat.go.jp/stat-search/files?toukei=00450351
 
+## 人口動態調査 市区町村別の出生・死亡・死因（vital_statistics スキーマ）
+
+厚生労働省 人口動態調査 人口動態統計（確定数）から作った4表です。収録は2015〜2024年で、
+e-Stat のデータベースにある市区町村別の表がこの10年だけのためです。日本における日本人の
+事象を住所地で数えます。
+
+| テーブル | 内容 |
+|---------|------|
+| vital_events | 出生・低体重児の出生・死亡・乳児死亡・新生児死亡・死産・周産期死亡・婚姻・離婚（年 × 地域1行） |
+| births_by_mother_age | 母の年齢（5歳階級）別・子の性別の出生数（年 × 地域 × 母の年齢10区分） |
+| deaths_by_age | 年齢（5歳階級）別・男女別の死亡数（年 × 地域 × 年齢22区分） |
+| deaths_by_cause | 死因（選択死因分類）別・男女別の死亡数（年 × 地域 × 死因） |
+
+社会・人口統計体系（ssds）の市区町村の表にも出生数・死亡数・婚姻件数・離婚件数がありますが、
+2023年までで、年齢・死因の内訳や乳児死亡・死産はありません。住民基本台帳
+（resident_registry）の出生・死亡は外国人を含む届出の数で、数え方が違います。
+
+### 地域の粒度
+
+area_kind で粒度を見分けます。vital_events は都道府県（prefecture）・政令指定都市
+（designated_city）・それ以外の市町村と特別区（municipality）・政令指定都市の区（ward）を持ち、
+日本全域を1回覆うのは `prefecture` か `municipality` と `designated_city` の組です。
+ほかの3表は政令指定都市そのものの行を持ちません。日本全域を1回覆うのは `prefecture` か
+`municipality` と `ward` の組です。死亡の2表は全国（nationwide）・住所が外国（foreign）・
+不詳（unknown）も持ち、全国は都道府県・外国・不詳の和です。母の年齢別の出生の表は全国の行を
+持たないので、都道府県を足します。原典の市部・郡部などの
+集計行は持ちません。
+
+area_code は code.municipality と同じ標準地域コード（5桁）で、各年のコードのまま入ります。
+原典の政令指定都市の行は独自のコード（札幌市 01010 など）なので、標準地域コード
+（01100）に直してあります。
+
+```sql
+-- 市区町村の出生数の 2015年→2024年 の変化（全域を覆い、重複しない）。
+-- area_code は各年のコードなので、途中でコードが変わった市（富谷市・那珂川市）は
+-- 2015年と2024年が別の行に分かれる
+SELECT area_code, area_name,
+       MAX(births) FILTER (WHERE year = 2015) AS births_2015,
+       MAX(births) FILTER (WHERE year = 2024) AS births_2024
+FROM e_stat.vital_statistics.vital_events
+WHERE area_kind IN ('municipality', 'designated_city')
+GROUP BY area_code, area_name
+ORDER BY births_2024 DESC
+LIMIT 10;
+```
+
+### 足せる行と足せない行
+
+births_by_mother_age の10区分と deaths_by_age の22区分は、足すとその地域・年の出生数・死亡数
+（vital_events の births・deaths）になります。原典の総数の行は持ちません。deaths_by_cause は
+総数（`cause_level = 'total'`）・死因（`cause`）・内訳（`subcause`）・再掲（`restatement`）が
+同じ列に並びます。選択死因分類は主な死因だけを選んだ分類なので、`cause` を足しても総数には
+なりません。悪性新生物と高血圧性疾患は2017年から分類が変わり、2016年までの `Se02`・`Se15` と
+2017年からの `Se022017`・`Se152017` に分かれます。
+
+原典の「-」（計数のない場合）は0にしてあります。男の子宮の悪性新生物（`Se12`）だけは原典が
+「・」（統計項目のあり得ない場合）なので、deaths_male が NULL です。
+
+この4表は毎日の更新（CI）では e-Stat から取らず、手元で1回だけ取り込んでいます
+（下の「手元で1回だけ取り込む統計表」）。
+
+出典: 厚生労働省 人口動態調査。https://www.e-stat.go.jp/statistics/00450011
+
 ## 手元で1回だけ取り込む統計表（local_tables.yml）
 
 数年に1度しか出ない統計は、毎日の更新（CI）で e-Stat から取り直しません。Sync の時間を
