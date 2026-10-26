@@ -63,6 +63,24 @@ WHERE c.major_code IS DISTINCT FROM
 
 UNION ALL
 
+-- 大分類の下に中分類が1つも無い。中分類の親は CSV の並び順から取るので、
+-- 並び順が変わると中分類が別の大分類の下に入り、中分類の無い大分類ができる
+SELECT
+    'major_without_middle',
+    j.revision,
+    j.code
+FROM {{ ref('industry') }} j
+WHERE j.level = 'major'
+    AND NOT EXISTS (
+        SELECT 1
+        FROM {{ ref('industry') }} m
+        WHERE m.revision = j.revision
+            AND m.level = 'middle'
+            AND m.parent_code = j.code
+    )
+
+UNION ALL
+
 -- 4改定がそろっている
 SELECT
     'missing_revision',
