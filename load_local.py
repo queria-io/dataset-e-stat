@@ -13,8 +13,12 @@ fetch は表ごとに Parquet を書き、書き終えた表は次から飛ば�
 更新日が local_tables.yml の updated_date と食い違うと止まる (見張りの基準がずれるため)。
 Parquet の名前に updated_date を入れるので、yml の日付を直すと前の取得分は読まれず、
 fetch は取り直し、load は取り直す前なら止まる。
+
+fetcher を書いたグループ (ファイルで配られる統計) は pipelines/<fetcher>.py の fetch_local が
+取得し、表ごとの updated_date の代わりに catalog_modified_date で食い違いを見る。
 """
 
+import importlib
 import logging
 import os
 import sys
@@ -124,7 +128,8 @@ def cached_resource(group: str, spec: dict):
     @dlt.resource(
         name=spec["name"],
         write_disposition="replace",
-        primary_key=spec["primary_key"],
+        # 全国の行の保険者名のように NULL の入る列は主キーにできないので、無いグループもある
+        primary_key=spec.get("primary_key"),
         # estat_table と同じ契約。列の型が変わったら黙って広げずに落とす
         schema_contract={"tables": "evolve", "columns": "evolve", "data_type": "freeze"},
     )
@@ -143,6 +148,12 @@ def main():
 
     if command == "fetch":
         app_id = os.environ["ESTAT_API_KEY"]
+        if "fetcher" in spec:
+            # e-Stat のデータベースに無く、統計表ファイルで配られる統計。
+            # pipelines/<fetcher>.py の fetch_local が表ごとの Parquet を書く
+            module = importlib.import_module(f"pipelines.{spec['fetcher']}")
+            module.fetch_local(app_id, spec, lambda t: cache_path(group, t))
+            return
         for table in spec["tables"]:
             fetch(app_id, group, table, keep_order=spec.get("class_order", False))
         return

@@ -6,3 +6,12 @@ seeds:
       e-Stat API 統計分野一覧から取得。
       https://www.e-stat.go.jp/api/api-info/statsfield/
       CSV: https://www.e-stat.go.jp/api/sites/default/files/uploads/2015/11/statsfield.csv
+  - name: kaigo_insurance_union_member
+    description: |
+      介護保険の広域連合・一部事務組合を構成する市町村。介護保険事業状況報告の保険者別の表には
+      構成市町村が無いので、最新年度（2024年度末）の保険者の一覧から手で起こした。
+      kaigo_insurance.union_member が読む。正しさは tests/kaigo_insurance_union_member_is_exhaustive.sql が押さえる。
+    config:
+      column_types:
+        area_code: varchar
+        insurer_name: varchar

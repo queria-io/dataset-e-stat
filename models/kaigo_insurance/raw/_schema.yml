@@ -1,0 +1,5 @@
+version: 2
+
+models:
+  - name: raw_kaigo_insurance_insured
+  - name: raw_kaigo_insurance_certified
