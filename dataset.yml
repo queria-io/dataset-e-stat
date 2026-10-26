@@ -90,6 +90,8 @@ keywords:
   - 作付面積
   - 全国家計構造調査
   - 年間収入階級
+  - 日本標準産業分類
+  - 産業分類
 homepage: https://github.com/queria-io/dataset-e-stat
 language: ja
 themes: [population, economy, labour, social_security_health, education_culture, land_climate, government_finance, housing_land, justice_safety_environment, agriculture, mining_manufacturing]
@@ -132,6 +134,8 @@ sources:
     path: https://www.e-stat.go.jp/statistics/00500215
   - title: 全国家計構造調査（総務省統計局）
     path: https://www.stat.go.jp/data/zenkokukakei/2019/index.html
+  - title: 日本標準産業分類（e-Stat 統計分類・用語の検索）
+    path: https://www.e-stat.go.jp/classifications/terms/10
 
 contributors:
   - title: 総務省統計局
@@ -167,7 +171,7 @@ schemas:
   - name: census
     title: 国勢調査
   - name: code
-    title: 統計に用いる標準地域コード
+    title: 統計に用いる標準地域コード・日本標準産業分類
   - name: resident_registry
     title: 住民基本台帳に基づく人口・世帯数
   - name: economic_census
