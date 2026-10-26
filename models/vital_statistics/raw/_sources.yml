@@ -1,0 +1,12 @@
+version: 2
+
+sources:
+  - name: estat_source
+    database: e_stat
+    schema: _source
+    tables:
+      # 手元でだけ取り込む (load_local.py vital_statistics)。CI の main.py はロードしない
+      - name: vital_statistics_summary
+      - name: vital_statistics_births_mother_age
+      - name: vital_statistics_deaths_age
+      - name: vital_statistics_deaths_cause

@@ -1,0 +1,7 @@
+version: 2
+
+models:
+  - name: raw_vital_statistics_summary
+  - name: raw_vital_statistics_births_mother_age
+  - name: raw_vital_statistics_deaths_age
+  - name: raw_vital_statistics_deaths_cause
