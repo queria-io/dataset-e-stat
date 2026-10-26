@@ -25,7 +25,7 @@ import pyarrow as pa
 import pyarrow.compute as pc
 import pyarrow.parquet as pq
 import yaml
-from estat_api_dlt_helper import estat_table
+from estat_api_dlt_helper import EstatApiClient, estat_table
 
 from main import dbt_build
 from pipelines import create_pipeline
@@ -44,12 +44,41 @@ def load_group(name: str) -> dict:
     return groups[name]
 
 
+def class_order(app_id: str, stats_data_id: str) -> dict[str, dict[str, int]]:
+    """分類軸ごとに、メタ情報の並び順 (0 始まり) をコードから引く表を返す。
+
+    getStatsData の値にはメタ情報の並びが残らない。並びにしか入っていない階層
+    (医療施設調査の二次医療圏と市区町村など) を読むときに使う。コードの順では
+    代えられない (コードが並びと違う順に振られた表がある)。
+    """
+    client = EstatApiClient(app_id=app_id, timeout=300)
+    try:
+        root = client.get_stats_data(stats_data_id=stats_data_id, limit=1)
+    finally:
+        client.close()
+    objs = root["GET_STATS_DATA"]["STATISTICAL_DATA"]["CLASS_INF"]["CLASS_OBJ"]
+    order = {}
+    for obj in objs if isinstance(objs, list) else [objs]:
+        classes = obj["CLASS"] if isinstance(obj["CLASS"], list) else [obj["CLASS"]]
+        order[obj["@id"]] = {c["@code"]: i for i, c in enumerate(classes)}
+    return order
+
+
+def with_class_order(table: pa.Table, order: dict[str, dict[str, int]]) -> pa.Table:
+    """cat01 などの分類軸ごとに、メタ情報の並び順を <軸>_order 列として足す。"""
+    for axis, positions in order.items():
+        if axis.startswith("cat") and axis in table.column_names:
+            values = [positions[code] for code in table.column(axis).to_pylist()]
+            table = table.append_column(f"{axis}_order", pa.array(values, type=pa.int32()))
+    return table
+
+
 def cache_path(group: str, spec: dict) -> Path:
     # YAML で引用符を落とすと updated_date が date になるので、文字列に揃える
     return CACHE_DIR / group / f"{spec['name']}.{spec['updated_date']}.parquet"
 
 
-def fetch(app_id: str, group: str, spec: dict) -> None:
+def fetch(app_id: str, group: str, spec: dict, keep_order: bool = False) -> None:
     out = cache_path(group, spec)
     if out.exists():
         logger.info(f"  {spec['name']}: 取得済み")
@@ -71,6 +100,8 @@ def fetch(app_id: str, group: str, spec: dict) -> None:
         )
     # 書き終えてから名前を付けるので、途中で止まった表は次の回に取り直される
     tmp = out.with_suffix(".parquet.tmp")
+    if keep_order:
+        table = with_class_order(table, class_order(app_id, spec["stats_data_id"]))
     pq.write_table(table, tmp)
     tmp.rename(out)
     logger.info(f"  {spec['name']}: {table.num_rows} 行")
@@ -104,7 +135,7 @@ def main():
     if command == "fetch":
         app_id = os.environ["ESTAT_API_KEY"]
         for table in spec["tables"]:
-            fetch(app_id, group, table)
+            fetch(app_id, group, table, keep_order=spec.get("class_order", False))
         return
 
     # 全部揃っていないと、replace で一部の表だけが新しくなる。ロードより先に揃いを確かめる

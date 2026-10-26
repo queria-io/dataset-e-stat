@@ -1454,6 +1454,46 @@ LIMIT 5;
 出典: 厚生労働省 介護サービス施設・事業所調査。
 https://www.e-stat.go.jp/stat-search/files?toukei=00450042
 
+## 医療施設調査 市区町村別の病院・診療所の数と病床数（medical_facility スキーマ）
+
+病院・一般診療所・歯科診療所の数と病床数を、都道府県・二次医療圏・市区町村ごとに年1行で
+収録した表です。2008年から2024年まで（2013年を除く）の36,660行で、毎年10月1日現在の数です。
+
+| テーブル | 内容 | 主なカラム |
+|---------|------|-----------|
+| municipality_facility | 地域別の病院数（種類別）・病床数（種類別）・一般診療所数（有床・無床）・歯科診療所数 | survey_year / survey_kind / area_level / area_code / area_name / prefecture_code / medical_area_code / medical_area_name / hospitals / hospital_beds / general_clinics / dental_clinics ほか |
+
+都道府県・二次医療圏・市区町村が同じ表に並び、どの粒度も全域を1回ずつ覆います。
+`area_level` で1つに絞ってから合計します。市区町村の行には、その市区町村が属する二次医療圏の
+コードと名称が入ります。政令指定都市は区ごとの行だけで、市の行はありません。
+
+```sql
+-- 2024年の人口10万人あたりの病院の病床数（二次医療圏別、上位10）
+SELECT f.medical_area_name, f.hospital_beds,
+       f.hospital_beds * 100000.0 / SUM(c.population) AS beds_per_100k
+FROM e_stat.medical_facility.municipality_facility f
+JOIN e_stat.medical_facility.municipality_facility m
+    ON m.survey_year = f.survey_year AND m.area_level = 'municipality'
+    AND m.medical_area_code = f.medical_area_code
+JOIN e_stat.census.census_municipality c ON c.area = m.area_code
+WHERE f.survey_year = 2024 AND f.area_level = 'medical_area'
+GROUP BY ALL
+ORDER BY beds_per_100k DESC
+LIMIT 10;
+```
+
+`area_code` は各年の標準地域コードのままです。合併で無くなった市町村の行は、今の
+`code.municipality` とはつながりません。`survey_kind` は静態調査の年（3年ごと）と動態調査だけの
+年を分けますが、施設数・病床数はどちらの年も全数なので、そのまま年で並べられます。
+
+2013年（平成25年）は取り込んでいません。e-Stat の市町村別の表で市町村と値の対応が崩れていて
+（宇都宮市の病院数が前後の年の31に対して5など）、市町村の和が都道府県の値に合わないためです。
+
+この表は毎日の更新（CI）では e-Stat から取らず、手元で1回だけ取り込んでいます
+（下の「手元で1回だけ取り込む統計表」）。
+
+出典: 厚生労働省 医療施設調査。https://www.e-stat.go.jp/statistics/00450021
+
 ## 就業構造基本調査 就業状態・雇用形態別の15歳以上人口（employment_structure スキーマ）
 
 | テーブル | 内容 | 主なカラム |
@@ -1927,7 +1967,9 @@ Check updates のワークフローが e-Stat の更新日と比べ、変わっ�
 取り込み直すときは `updated_date` を直してから 1 と 2 を回します（fetch は食い違うと止まります）。
 
 表を足すときは `local_tables.yml` にグループ（`tables` と、ロード後にビルドする `dbt_select`）を
-書き、`models/*/raw/_sources.yml` に元表を足します。
+書き、`models/*/raw/_sources.yml` に元表を足します。分類の並び順にしか入っていない情報
+（医療施設調査の二次医療圏と市区町村の所属など）を読むグループは `class_order: true` を付けます。
+fetch が分類軸ごとの並び順を `<軸>_order` 列（cat01_order など）として残します。
 
 ## ライセンス
 
