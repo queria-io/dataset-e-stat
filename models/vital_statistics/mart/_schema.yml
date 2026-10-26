@@ -1,0 +1,234 @@
+version: 2
+
+models:
+  - name: vital_events
+    description: |
+      人口動態調査 人口動態統計（確定数）の人口動態総覧から、都道府県・市区町村ごとの
+      出生数・低体重児の出生数・死亡数・乳児死亡数・新生児死亡数・早期新生児死亡数・
+      自然死産数・人工死産数・妊娠満22週以後の死産数・周産期死亡数・婚姻件数・離婚件数を
+      年1行にまとめた表。収録は2015〜2024年、19,628行。日本における日本人の事象を、
+      住所地（出生は子の住所、死亡は死亡者の住所）で数える。
+      地域は都道府県・政令指定都市・市町村と特別区・政令指定都市の区が同じ表に並ぶ。
+      日本全域をちょうど1回覆うのは area_kind = 'prefecture' か
+      area_kind IN ('municipality', 'designated_city') のいずれかで、ward は designated_city の
+      内訳なので一緒に足すと二重に数える。全国の値は都道府県を足す（住所が外国・不詳の分は
+      含まない）。原典の市部・郡部などの集計行は持たない。
+      area_code は code.municipality の area_code と同じ標準地域コード（5桁）で、各年のコードの
+      まま入る（富谷市は2015年が富谷町 04423、2016年から 04216。那珂川市は2018年から 40231。
+      浜松市の区は2024年に再編されて 22138〜22140 になる）。原典の政令指定都市の行は独自の
+      コード（札幌市 01010 など）なので、標準地域コード（札幌市 01100）に直してある。
+      全国地方公共団体コード（6桁）とは別体系。
+      原典の「-」（計数のない場合）は0にしてある。秘匿は無い。
+      社会・人口統計体系（ssds）の市区町村の表にも出生数・死亡数・婚姻件数・離婚件数があるが
+      2023年までで、乳児死亡・新生児死亡・死産・周産期死亡・低体重児の出生は無い。
+      住民基本台帳の出生・死亡（resident_registry）は日本人に限らない届出の数で、この表とは
+      数え方が違う。
+      出典: 厚生労働省 人口動態調査 人口動態統計 確定数「人口動態総覧（件数），都道府県・
+      市部－郡部－保健所－市区町村別」（統計表 0003411564）。https://www.e-stat.go.jp/statistics/00450011
+    access: public
+    columns:
+      - name: year
+        description: "事象の起きた年（1月〜12月）。2015〜2024年"
+        data_tests:
+          - not_null
+      - name: area_code
+        description: "標準地域コード。都道府県は 13000 のように市区町村部が 000。code.municipality の area_code と同じ体系で、各年のコードのまま入る。全国地方公共団体コード（6桁）とは別体系"
+        data_tests:
+          - not_null
+      - name: area_name
+        description: "地域の名称（東京都／新宿区／札幌市／札幌市中央区 など）"
+      - name: area_kind
+        description: "prefecture=都道府県、designated_city=政令指定都市、municipality=政令指定都市以外の市町村と東京都の特別区、ward=政令指定都市の区。日本全域をちょうど1回覆うのは prefecture だけ、または municipality と designated_city の組だけ。ward は designated_city の内訳"
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [prefecture, designated_city, municipality, ward]
+      - name: prefecture_code
+        description: "area_code の上2桁"
+      - name: births
+        description: "出生数（人）"
+      - name: low_birth_weight_births
+        description: "出生時の体重が2,500g未満の出生数（人）。births の内数"
+      - name: deaths
+        description: "死亡数（人）"
+      - name: infant_deaths
+        description: "生後1年未満の死亡数（人）。deaths の内数"
+      - name: neonatal_deaths
+        description: "生後4週未満の死亡数（人）。infant_deaths の内数"
+      - name: early_neonatal_deaths
+        description: "生後1週未満の死亡数（人）。neonatal_deaths の内数"
+      - name: spontaneous_fetal_deaths
+        description: "妊娠満12週以後の自然死産の数（胎）"
+      - name: induced_fetal_deaths
+        description: "妊娠満12週以後の人工死産の数（胎）。spontaneous_fetal_deaths との和が死産数"
+      - name: late_fetal_deaths
+        description: "妊娠満22週以後の死産の数（胎）。死産数の内数"
+      - name: perinatal_deaths
+        description: "late_fetal_deaths と early_neonatal_deaths の和"
+      - name: marriages
+        description: "婚姻件数（組）。夫の住所で数える"
+      - name: divorces
+        description: "離婚件数（組）。別居する前の住所で数える"
+  - name: births_by_mother_age
+    description: |
+      人口動態調査 人口動態統計（確定数）から、全国・都道府県・市区町村ごとの出生数を、
+      母の年齢（14歳以下・15〜19歳 … 45〜49歳・50歳以上・不詳の10区分）別、子の性別に
+      収録する。収録は2015〜2024年、194,280行。年 × 地域 × 母の年齢で1行。
+      10区分を足すとその地域・年の出生数になり、vital_events の births に一致する。
+      原典の年齢の総数の行は二重に数えないよう持たない。
+      地域は全国・都道府県・市町村と特別区・政令指定都市の区と、住所が外国・不詳の行が同じ表に
+      並ぶ。日本全域をちょうど1回覆うのは area_kind = 'prefecture' か
+      area_kind IN ('municipality', 'ward') のいずれかで、絞らずに合計すると何重にも数える。
+      政令指定都市そのものの行は無いので、市でまとめるときは code.municipality の
+      municipality_code で区を束ねる（市の値は vital_events にもある）。
+      area_code は code.municipality の area_code と同じ標準地域コード（5桁）で、各年のコードの
+      まま入る。全国地方公共団体コード（6桁）とは別体系。
+      原典の「-」（計数のない場合）は0にしてある。秘匿は無い。
+      出典: 厚生労働省 人口動態調査 人口動態統計 確定数「出生数，都道府県・市区町村・性・
+      母の年齢（５歳階級）別」（統計表 0003412062）。https://www.e-stat.go.jp/statistics/00450011
+    access: public
+    columns:
+      - name: year
+        description: "事象の起きた年（1月〜12月）。2015〜2024年"
+        data_tests:
+          - not_null
+      - name: area_code
+        description: "標準地域コード。全国は 00000、住所が外国は 51000、不詳は 52000、都道府県は 13000 のように市区町村部が 000。code.municipality の area_code と同じ体系で、各年のコードのまま入る。全国地方公共団体コード（6桁）とは別体系"
+        data_tests:
+          - not_null
+      - name: area_name
+        description: "地域の名称（全国／外国／不詳／東京都／新宿区／札幌市中央区 など）"
+      - name: area_kind
+        description: "nationwide=全国、foreign=住所が外国、unknown=住所が不詳、prefecture=都道府県、municipality=政令指定都市以外の市町村と東京都の特別区、ward=政令指定都市の区。政令指定都市そのものの行は無い。日本全域をちょうど1回覆うのは prefecture だけ、または municipality と ward の組だけ。nationwide は prefecture・foreign・unknown の和"
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [nationwide, foreign, unknown, prefecture, municipality, ward]
+      - name: prefecture_code
+        description: "area_code の上2桁。全国・外国・不詳は NULL"
+      - name: mother_age_code
+        description: "原典の母の年齢区分のコード。00190=14歳以下 … 00310=50歳以上、00450=不詳"
+      - name: mother_age_class
+        description: "mother_age_code に対応する区分名（14歳以下／15～19歳／50歳以上／不詳）"
+      - name: mother_age_from
+        description: "区分の下限の年齢（歳）。14歳以下と不詳は NULL"
+      - name: mother_age_to
+        description: "区分の上限の年齢（歳）。50歳以上と不詳は NULL"
+      - name: births
+        description: "出生数（人）。births_male と births_female の和"
+      - name: births_male
+        description: "男の子の出生数（人）"
+      - name: births_female
+        description: "女の子の出生数（人）"
+  - name: deaths_by_age
+    description: |
+      人口動態調査 人口動態統計（確定数）から、全国・都道府県・市区町村ごとの死亡数を、
+      死亡者の年齢（0〜4歳 … 95〜99歳・100歳以上・不詳の22区分）別、男女別に収録する。
+      収録は2015〜2024年、428,076行。年 × 地域 × 年齢で1行。
+      22区分を足すとその地域・年の死亡数になり、vital_events の deaths に一致する。
+      原典の年齢の総数と0〜4歳の各歳の行は二重に数えないよう持たない。0歳の死亡は
+      vital_events の infant_deaths にある。
+      地域は全国・都道府県・市町村と特別区・政令指定都市の区と、住所が外国・不詳の行が同じ表に
+      並ぶ。日本全域をちょうど1回覆うのは area_kind = 'prefecture' か
+      area_kind IN ('municipality', 'ward') のいずれかで、絞らずに合計すると何重にも数える。
+      政令指定都市そのものの行は無いので、市でまとめるときは code.municipality の
+      municipality_code で区を束ねる（市の値は vital_events にもある）。
+      area_code は code.municipality の area_code と同じ標準地域コード（5桁）で、各年のコードの
+      まま入る。全国地方公共団体コード（6桁）とは別体系。
+      原典の「-」（計数のない場合）は0にしてある。秘匿は無い。
+      出典: 厚生労働省 人口動態調査 人口動態統計 確定数「死亡数，都道府県・保健所－市区町村・
+      性・年齢（５歳階級）別・市区町村別」（統計表 0003412064）。
+      https://www.e-stat.go.jp/statistics/00450011
+    access: public
+    columns:
+      - name: year
+        description: "事象の起きた年（1月〜12月）。2015〜2024年"
+        data_tests:
+          - not_null
+      - name: area_code
+        description: "標準地域コード。全国は 00000、住所が外国は 51000、不詳は 52000、都道府県は 13000 のように市区町村部が 000。code.municipality の area_code と同じ体系で、各年のコードのまま入る。全国地方公共団体コード（6桁）とは別体系"
+        data_tests:
+          - not_null
+      - name: area_name
+        description: "地域の名称（全国／外国／不詳／東京都／新宿区／札幌市中央区 など）"
+      - name: area_kind
+        description: "nationwide=全国、foreign=住所が外国、unknown=住所が不詳、prefecture=都道府県、municipality=政令指定都市以外の市町村と東京都の特別区、ward=政令指定都市の区。政令指定都市そのものの行は無い。日本全域をちょうど1回覆うのは prefecture だけ、または municipality と ward の組だけ。nationwide は prefecture・foreign・unknown の和"
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [nationwide, foreign, unknown, prefecture, municipality, ward]
+      - name: prefecture_code
+        description: "area_code の上2桁。全国・外国・不詳は NULL"
+      - name: age_code
+        description: "原典の年齢区分のコード（5歳階級と不詳）"
+      - name: age_class
+        description: "age_code に対応する区分名（0～4歳／100歳以上／不詳 など）"
+      - name: age_from
+        description: "区分の下限の年齢（歳）。不詳は NULL"
+      - name: age_to
+        description: "区分の上限の年齢（歳）。100歳以上と不詳は NULL"
+      - name: deaths
+        description: "死亡数（人）。deaths_male と deaths_female の和"
+      - name: deaths_male
+        description: "男の死亡数（人）"
+      - name: deaths_female
+        description: "女の死亡数（人）"
+  - name: deaths_by_cause
+    description: |
+      人口動態調査 人口動態統計（確定数）から、全国・都道府県・市区町村ごとの死亡数を、
+      選択死因分類（悪性新生物・心疾患・肺炎・老衰・不慮の事故・自殺など）別、男女別に
+      収録する。収録は2015〜2024年、719,946行。年 × 地域 × 死因で1行。
+      死因は総数（cause_level = 'total'）・死因（cause）・その内訳（subcause）・再掲
+      （restatement、大腸の悪性新生物と路上交通事故）が同じ列に並ぶ。cause を足しても総数には
+      ならない（選択死因分類は主な死因だけを選んだ分類で、その他の死因の行が無い）。subcause は
+      cause の内訳、restatement はほかの行の再掲なので、一緒に足すと二重に数える。
+      悪性新生物（Se02）と高血圧性疾患（Se15）は ICD-10 の改正で2017年から分類が変わり、
+      2016年までは Se02・Se15、2017年からは Se022017・Se152017 の行になる。年で続けて見る
+      ときは2つのコードをつなぐ（同じ年に両方の行が並ぶことは無い）。
+      地域は全国・都道府県・市町村と特別区・政令指定都市の区と、住所が外国・不詳の行が同じ表に
+      並ぶ。日本全域をちょうど1回覆うのは area_kind = 'prefecture' か
+      area_kind IN ('municipality', 'ward') のいずれかで、絞らずに合計すると何重にも数える。
+      政令指定都市そのものの行は無いので、市でまとめるときは code.municipality の
+      municipality_code で区を束ねる（市の値は vital_events にもある）。
+      area_code は code.municipality の area_code と同じ標準地域コード（5桁）で、各年のコードの
+      まま入る。全国地方公共団体コード（6桁）とは別体系。
+      原典の「-」（計数のない場合）は0にしてある。男の子宮の悪性新生物（Se12）は原典が
+      「・」（統計項目のあり得ない場合）なので deaths_male を NULL にしてある。秘匿は無い。
+      出典: 厚生労働省 人口動態調査 人口動態統計 確定数「死亡数，都道府県・市区町村・
+      死因（選択死因分類）・性別」（統計表 0003412081）。https://www.e-stat.go.jp/statistics/00450011
+    access: public
+    columns:
+      - name: year
+        description: "事象の起きた年（1月〜12月）。2015〜2024年"
+        data_tests:
+          - not_null
+      - name: area_code
+        description: "標準地域コード。全国は 00000、住所が外国は 51000、不詳は 52000、都道府県は 13000 のように市区町村部が 000。code.municipality の area_code と同じ体系で、各年のコードのまま入る。全国地方公共団体コード（6桁）とは別体系"
+        data_tests:
+          - not_null
+      - name: area_name
+        description: "地域の名称（全国／外国／不詳／東京都／新宿区／札幌市中央区 など）"
+      - name: area_kind
+        description: "nationwide=全国、foreign=住所が外国、unknown=住所が不詳、prefecture=都道府県、municipality=政令指定都市以外の市町村と東京都の特別区、ward=政令指定都市の区。政令指定都市そのものの行は無い。日本全域をちょうど1回覆うのは prefecture だけ、または municipality と ward の組だけ。nationwide は prefecture・foreign・unknown の和"
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [nationwide, foreign, unknown, prefecture, municipality, ward]
+      - name: prefecture_code
+        description: "area_code の上2桁。全国・外国・不詳は NULL"
+      - name: cause_code
+        description: "選択死因分類のコード（Se00=総数、Se01=結核 … Se34=自殺）。悪性新生物と高血圧性疾患は2016年までが Se02・Se15、2017年からが Se022017・Se152017"
+      - name: cause_name
+        description: "死因の名称（悪性新生物＜腫瘍＞／心疾患（高血圧性を除く）／老衰 など）。2016年までの悪性新生物・高血圧性疾患は「(2016年以前)」が頭に付く"
+      - name: cause_level
+        description: "total=総数（Se00）、cause=死因、subcause=死因の内訳（悪性新生物の部位など）、restatement=再掲（大腸の悪性新生物 Se05Se06・路上交通事故 Se32_1）。subcause と restatement は足すと二重に数える"
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [total, cause, subcause, restatement]
+      - name: deaths
+        description: "死亡数（人）"
+      - name: deaths_male
+        description: "男の死亡数（人）。子宮の悪性新生物（Se12）は NULL"
+      - name: deaths_female
+        description: "女の死亡数（人）"

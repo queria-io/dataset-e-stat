@@ -97,6 +97,13 @@ keywords:
   - 年間収入階級
   - 日本標準産業分類
   - 産業分類
+  - 人口動態調査
+  - 人口動態統計
+  - 出生数
+  - 死亡数
+  - 死因
+  - 婚姻
+  - 離婚
 homepage: https://github.com/queria-io/dataset-e-stat
 language: ja
 themes: [population, economy, labour, social_security_health, education_culture, land_climate, government_finance, housing_land, justice_safety_environment, agriculture, mining_manufacturing]
@@ -143,6 +150,8 @@ sources:
     path: https://www.stat.go.jp/data/zenkokukakei/2019/index.html
   - title: 日本標準産業分類（e-Stat 統計分類・用語の検索）
     path: https://www.e-stat.go.jp/classifications/terms/10
+  - title: 人口動態調査（厚生労働省）
+    path: https://www.e-stat.go.jp/statistics/00450011
 
 contributors:
   - title: 総務省統計局
@@ -219,3 +228,5 @@ schemas:
     title: 作物統計調査
   - name: household_structure
     title: 全国家計構造調査
+  - name: vital_statistics
+    title: 人口動態調査

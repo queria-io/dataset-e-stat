@@ -1,0 +1,19 @@
+SELECT
+    year,
+    area_code,
+    area_name,
+    area_kind,
+    prefecture_code,
+    births,
+    low_birth_weight_births,
+    deaths,
+    infant_deaths,
+    neonatal_deaths,
+    early_neonatal_deaths,
+    spontaneous_fetal_deaths,
+    induced_fetal_deaths,
+    late_fetal_deaths,
+    perinatal_deaths,
+    marriages,
+    divorces
+FROM {{ ref('stg_vital_statistics_summary') }}
