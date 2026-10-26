@@ -66,6 +66,11 @@ keywords:
   - 小売価格
   - 価格
   - 物価
+  - 医療施設調査
+  - 病院
+  - 診療所
+  - 病床数
+  - 二次医療圏
   - 社会福祉施設等調査
   - 社会福祉施設
   - 保育所
@@ -122,6 +127,8 @@ sources:
     path: https://www.stat.go.jp/data/kouri/
   - title: 社会福祉施設等調査（厚生労働省）
     path: https://www.e-stat.go.jp/stat-search/files?toukei=00450041
+  - title: 医療施設調査（厚生労働省）
+    path: https://www.e-stat.go.jp/statistics/00450021
   - title: 介護サービス施設・事業所調査（厚生労働省）
     path: https://www.e-stat.go.jp/stat-search/files?toukei=00450042
   - title: 就業構造基本調査（総務省統計局）
@@ -192,6 +199,8 @@ schemas:
     title: 社会福祉施設等調査
   - name: kaigo_service
     title: 介護サービス施設・事業所調査
+  - name: medical_facility
+    title: 医療施設調査
   - name: employment_structure
     title: 就業構造基本調査
   - name: wage_structure

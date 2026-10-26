@@ -33,3 +33,143 @@ groups:
         stats_data_id: "0004065920"
         updated_date: "2026-09-29"
         primary_key: [cat01, cat02, cat03, area]
+  medical_facility:
+    title: 医療施設調査 市区町村別の病院・一般診療所・歯科診療所の数と病床数（2008〜2024年）
+    dbt_select: "+municipality_facility"
+    # 市区町村がどの二次医療圏に属するかは、地域軸の並び (二次医療圏の行のあとに
+    # その圏の市区町村が続く) にしか無い。並びを <軸>_order として残す
+    class_order: true
+    # 年ごとに病院の表と診療所の表が 1 つずつ。地域軸と項目軸のどちらが cat01 に
+    # 入るかは年で違う (2014 年だけ地域が cat01)。どちらも 2 軸で 1 値が決まる。
+    # 2013 年 (平成25年) の表は取らない。e-Stat のデータベース上で市町村と値の対応が
+    # 崩れている (宇都宮市の病院数が 2012 年 31・2014 年 31 に対して 5、北海道・福島・
+    # 栃木・新潟・兵庫で都道府県の値と市町村の和が合わない)
+    tables:
+      - name: medical_facility_2008_hospital
+        stats_data_id: "0003027866"
+        updated_date: "2025-03-13"
+        primary_key: [cat01, cat02]
+      - name: medical_facility_2008_clinic
+        stats_data_id: "0003026924"
+        updated_date: "2025-03-13"
+        primary_key: [cat01, cat02]
+      - name: medical_facility_2009_hospital
+        stats_data_id: "0003027878"
+        updated_date: "2025-03-13"
+        primary_key: [cat01, cat02]
+      - name: medical_facility_2009_clinic
+        stats_data_id: "0003028026"
+        updated_date: "2025-03-13"
+        primary_key: [cat01, cat02]
+      - name: medical_facility_2010_hospital
+        stats_data_id: "0003079232"
+        updated_date: "2025-03-13"
+        primary_key: [cat01, cat02]
+      - name: medical_facility_2010_clinic
+        stats_data_id: "0003079233"
+        updated_date: "2025-03-13"
+        primary_key: [cat01, cat02]
+      - name: medical_facility_2011_hospital
+        stats_data_id: "0003074490"
+        updated_date: "2025-03-13"
+        primary_key: [cat01, cat02]
+      - name: medical_facility_2011_clinic
+        stats_data_id: "0003074519"
+        updated_date: "2025-03-13"
+        primary_key: [cat01, cat02]
+      - name: medical_facility_2012_hospital
+        stats_data_id: "0003092877"
+        updated_date: "2025-03-13"
+        primary_key: [cat01, cat02]
+      - name: medical_facility_2012_clinic
+        stats_data_id: "0003092878"
+        updated_date: "2025-03-13"
+        primary_key: [cat01, cat02]
+      - name: medical_facility_2014_hospital
+        stats_data_id: "0003124689"
+        updated_date: "2025-03-13"
+        primary_key: [cat01, cat02]
+      - name: medical_facility_2014_clinic
+        stats_data_id: "0003124673"
+        updated_date: "2025-03-13"
+        primary_key: [cat01, cat02]
+      - name: medical_facility_2015_hospital
+        stats_data_id: "0003154274"
+        updated_date: "2025-03-13"
+        primary_key: [cat01, cat02]
+      - name: medical_facility_2015_clinic
+        stats_data_id: "0003154295"
+        updated_date: "2025-03-13"
+        primary_key: [cat01, cat02]
+      - name: medical_facility_2016_hospital
+        stats_data_id: "0001455723"
+        updated_date: "2025-03-13"
+        primary_key: [cat01, cat02]
+      - name: medical_facility_2016_clinic
+        stats_data_id: "0001455724"
+        updated_date: "2025-03-13"
+        primary_key: [cat01, cat02]
+      - name: medical_facility_2017_hospital
+        stats_data_id: "0003300509"
+        updated_date: "2025-03-13"
+        primary_key: [cat01, cat02]
+      - name: medical_facility_2017_clinic
+        stats_data_id: "0003300510"
+        updated_date: "2025-03-13"
+        primary_key: [cat01, cat02]
+      - name: medical_facility_2018_hospital
+        stats_data_id: "0003404862"
+        updated_date: "2026-03-11"
+        primary_key: [cat01, cat02]
+      - name: medical_facility_2018_clinic
+        stats_data_id: "0003404879"
+        updated_date: "2026-03-11"
+        primary_key: [cat01, cat02]
+      - name: medical_facility_2019_hospital
+        stats_data_id: "0003421874"
+        updated_date: "2026-03-11"
+        primary_key: [cat01, cat02]
+      - name: medical_facility_2019_clinic
+        stats_data_id: "0003421875"
+        updated_date: "2026-03-11"
+        primary_key: [cat01, cat02]
+      - name: medical_facility_2020_hospital
+        stats_data_id: "0002013963"
+        updated_date: "2026-03-11"
+        primary_key: [cat01, cat02]
+      - name: medical_facility_2020_clinic
+        stats_data_id: "0002013964"
+        updated_date: "2026-03-11"
+        primary_key: [cat01, cat02]
+      - name: medical_facility_2021_hospital
+        stats_data_id: "0002013960"
+        updated_date: "2026-03-11"
+        primary_key: [cat01, cat02]
+      - name: medical_facility_2021_clinic
+        stats_data_id: "0002013961"
+        updated_date: "2026-03-11"
+        primary_key: [cat01, cat02]
+      - name: medical_facility_2022_hospital
+        stats_data_id: "0004012014"
+        updated_date: "2026-03-11"
+        primary_key: [cat01, cat02]
+      - name: medical_facility_2022_clinic
+        stats_data_id: "0004012015"
+        updated_date: "2026-03-11"
+        primary_key: [cat01, cat02]
+      - name: medical_facility_2023_hospital
+        stats_data_id: "0004024929"
+        updated_date: "2026-03-11"
+        primary_key: [cat01, cat02]
+      - name: medical_facility_2023_clinic
+        stats_data_id: "0004024930"
+        updated_date: "2026-03-11"
+        primary_key: [cat01, cat02]
+      - name: medical_facility_2024_hospital
+        stats_data_id: "0004048437"
+        updated_date: "2026-03-11"
+        primary_key: [cat01, cat02]
+      - name: medical_facility_2024_clinic
+        stats_data_id: "0004048438"
+        updated_date: "2026-03-11"
+        primary_key: [cat01, cat02]
