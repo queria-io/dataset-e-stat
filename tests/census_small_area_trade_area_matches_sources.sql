@@ -20,12 +20,12 @@ original AS (
 {% for source, codes in parts.items() %}
     SELECT '{{ source }}' AS source, cat01, count(*) AS n, sum(value) AS total
     FROM {{ ref(source) }}
-    WHERE cat01 IN ({% for code in codes %}'{{ code }}'{{ ", " if not loop.last }}{% endfor %})
+    WHERE cat01 IN ('{{ codes | join("', '") }}')
     GROUP BY ALL
     {{ "UNION ALL" if not loop.last }}
 {% endfor %}
 )
-SELECT e.source, e.cat01, c.n AS combined_rows, o.n AS original_rows
+SELECT source, cat01, c.n AS combined_rows, o.n AS original_rows
 FROM expected e
 FULL JOIN combined c USING (source, cat01)
 LEFT JOIN original o USING (source, cat01)

@@ -13,7 +13,7 @@ SELECT
     cat02,
     value
 FROM {{ ref('stg_' ~ source) }}
-WHERE cat01 IN ({% for code in codes %}'{{ code }}'{{ ", " if not loop.last }}{% endfor %})
+WHERE cat01 IN ('{{ codes | join("', '") }}')
 {{ "UNION ALL" if not loop.last }}
 {% endfor %}
 ORDER BY area, source, cat01, cat02
