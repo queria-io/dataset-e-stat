@@ -109,6 +109,9 @@ keywords:
   - 死因
   - 婚姻
   - 離婚
+  - 小売業
+  - 年間商品販売額
+  - 売場面積
 homepage: https://github.com/queria-io/dataset-e-stat
 language: ja
 themes: [population, economy, labour, social_security_health, education_culture, land_climate, government_finance, housing_land, justice_safety_environment, agriculture, mining_manufacturing]
