@@ -9,6 +9,8 @@ order: 15
 
 テーブルは `census_municipality` の1つです。原典の3つの統計表（第1-1-1表 男女別人口、第1-1-2表 世帯の種類別世帯数及び世帯人員、第1-1-3表 人口増減・面積・人口密度）を地域1行の横持ちにまとめてあります。同じ粒度で就業の側面を見るときは[就業状態等基本集計](/cookbook/e_stat/census-employment)、昼間の人口や通勤・通学の行き先を見るときは[昼夜間人口と通勤・通学流動](/cookbook/e_stat/census-commuting)を使います。
 
+令和7年（2025年）の同じ集計は `census_municipality_2025`（列は同じ）と、年齢別の `census_municipality_age_2025` にあります。下の「令和7年（2025年）の表」を見てください。
+
 | 列のグループ | 列 |
 |-------------|-----|
 | 地域 | area / area_name / area_level / parent_area |
@@ -127,3 +129,43 @@ ORDER BY published DESC
 `ward` を含めた粒度で突き合わせてください。
 
 `lg_code` や `address_br` が使う全国地方公共団体コードは6桁で、末尾にチェックデジットが付く別の体系です。結合するときは桁と体系を揃えてください。
+
+## 令和7年（2025年）の表
+
+`census_municipality_2025` は令和7年国勢調査の同じ集計で、列は `census_municipality` と同じです。5年前の列だけが `population_2020` / `households_2020` になります。粒度の切り分けも同じで、2025年は全国の人口が 122,972,528 人です。
+
+| area_level | 地域数 | 人口の合計 | 2020年の表にもある地域 |
+|-----------|-------:|----------:|---------------------:|
+| national | 1 | 122,972,528 | 1 |
+| prefecture | 47 | 122,972,528 | 47 |
+| city | 793 | 113,209,635 | 793 |
+| town_village | 926 | 9,762,893 | 926 |
+| ward | 194 | 37,609,400 | 191 |
+| former_municipality | 2,121 | 51,093,021 | 2,121 |
+
+2020年と2025年で地域コードが違うのは浜松市の区だけです。2024年に7区が中央区・浜名区・天竜区の3区に再編されたため、2025年の `ward` のうち `22138`〜`22140` の3行は2020年の表とつながりません（2020年の7区は2025年の表にありません）。浜松市そのもの（`22130`）はつながります。
+
+```sql
+-- 市区町村の 2020年→2025年 の人口の変化（全域を覆い、重複しない）
+SELECT n.area_name, o.population AS population_2020, n.population AS population_2025,
+       n.population - o.population AS change
+FROM e_stat.census.census_municipality_2025 n
+JOIN e_stat.census.census_municipality o USING (area)
+WHERE n.area_level IN ('city', 'town_village')
+ORDER BY change
+LIMIT 10
+```
+
+`census_municipality_age_2025` は同じ 4,082 地域の5歳階級別人口で、1地域につき `age_code` 01（0〜4歳）〜21（100歳以上）と 22（年齢不詳）の22行です。男女と「うち日本人」は列に分かれています。22行を足すと `census_municipality_2025` の `population` と一致します（全国・東京都で確認）。年齢不詳は全国で 3,289,734 人、東京都で 618,507 人と多いので、年齢構成の割合を出すときは分母から不詳を外すかどうかを決めてから使ってください。
+
+```sql
+-- 都道府県別の65歳以上の割合（年齢不詳を分母から外す）
+SELECT area_name,
+       ROUND(100.0 * SUM(population) FILTER (WHERE age_from >= 65)
+             / SUM(population) FILTER (WHERE age_code <> '22'), 1) AS aged_pct
+FROM e_stat.census.census_municipality_age_2025
+WHERE area_level = 'prefecture'
+GROUP BY area_name
+ORDER BY aged_pct DESC
+LIMIT 5
+```
