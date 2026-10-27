@@ -41,7 +41,7 @@ SELECT
     END AS district_level,
     SUBSTR(cat01, 1, 5) AS area,
     parent_code AS parent_district_code,
-    CASE WHEN meta_level = 5 THEN regexp_extract(name, '【(1[1-5])】$', 1) END AS district_type_code,
+    CASE WHEN meta_level = 5 THEN NULLIF(regexp_extract(name, '【(1[1-5])】$', 1), '') END AS district_type_code,
     cat02 AS industry_code,
     industry_name,
     tab,

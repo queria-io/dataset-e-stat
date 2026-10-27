@@ -415,7 +415,7 @@ https://www.e-stat.go.jp/
 | establishment_industry | 全国・都道府県・市区町村別、産業大分類別・経営組織別の民営事業所数・従業者数・売上（収入）金額 | area / industry_code / organization_code / establishments / employees / sales_million_yen |
 | establishment_mesh_1km | 1kmメッシュ別、産業大分類別の事業所数・従業者数（平成28年経済センサス・縦持ち）。昼間人口の推計が流入側の按分に使う従業者数の元の表 | mesh_code / mesh1_code / cat01 / category / value |
 | retail_municipality | 全国・都道府県・市区町村別、小売業の産業中分類別の事業所数・従業者数・年間商品販売額・売場面積 | area / industry_code / establishments / employees / sales_million_yen / floor_area_m2 |
-| shopping_district | 商業集積地区（商店街）別、小売業・飲食サービス業・生活関連サービス業の事業所数・従業者数・売上（収入）金額・売場面積 | district_code / district_name / district_level / area / district_type_code / industry_code / establishments / sales_million_yen / floor_area_m2 |
+| shopping_district | 商業集積地区（商店街）別、小売業・飲食サービス業・生活関連サービス業の事業所数・従業者数・売上（収入）金額・売場面積 | district_code / district_name / district_level / area / district_type_code / industry_code / establishments / employees / sales_million_yen / floor_area_m2 |
 
 令和3年経済センサス‐活動調査（2021年6月1日現在）の産業横断的集計「売上（収入）金額等」
 第2-1表です。国勢調査の census_small_area_industry が常住地ベース（住民がどの産業で働くか）
@@ -537,7 +537,8 @@ retail_municipality の値とは比べられません。
 
 事業所数・大規模小売店舗内事業所数・従業者数は秘匿が無く、地区の和が市区町村の計に一致します。
 売上（収入）金額と売場面積は秘匿の地区が NULL になります（事業所のある地区のうち、小売業で4.9%、
-飲食サービス業で19.8%、生活関連サービス業で23.5%）。市区町村の計はほとんど秘匿されないので、
+飲食サービス業で19.8%、生活関連サービス業で23.5%）。売場面積は、事業所があっても「-」（該当数字なし）の
+地区も NULL になります。市区町村の計はほとんど秘匿されないので、
 市区町村ごとに比べるときは計の行を使います。
 
 ```sql

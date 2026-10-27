@@ -110,7 +110,7 @@ models:
       - name: district_name
         description: "地区の名称（銀座地域／新宿駅西口／本町商店街 など）。計の行は「東京都計」「千代田区計」のような名称"
       - name: district_level
-        description: "national=全国の計、prefecture=都道府県の計、municipality=市・町村・特別区部の計、ward=政令指定都市の区・特別区の計、district=商業集積地区。district だけ、または municipality だけを足すと全国の計に一致する"
+        description: "national=全国の計、prefecture=都道府県の計、municipality=市・町村・特別区部の計、ward=政令指定都市の区・特別区の計、district=商業集積地区。district だけ、または municipality だけを足すと全国の計に一致する（事業所数・大規模小売店舗内事業所数・従業者数）"
       - name: area
         description: "地区を含む市区町村（政令指定都市と特別区部では区）の標準地域コード。計の行はその地域自身のコード"
       - name: parent_district_code
@@ -132,7 +132,7 @@ models:
       - name: sales_million_yen
         description: "売上（収入）金額（百万円）。2020年1年間。小売業も年間商品販売額ではない。秘匿された区分は NULL、事業所が無い区分は 0"
       - name: floor_area_m2
-        description: "小売業の売場面積（m2）。秘匿された地区は NULL、事業所が無い地区は 0。飲食サービス業・生活関連サービス業は NULL"
+        description: "小売業の売場面積（m2）。法人組織の事業所だけの値。秘匿された地区と、事業所があっても「-」（該当数字なし）の地区は NULL、事業所が無い地区は 0。飲食サービス業・生活関連サービス業は NULL"
 
   - name: establishment_mesh_1km
     description: |

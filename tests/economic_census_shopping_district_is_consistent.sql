@@ -5,7 +5,7 @@
 --    1行に潰すので、stg で地区 × 産業 × 表章項目が1行ずつかを見る
 -- 2. 全国の計が原典の値に一致する
 -- 3. 親 (parent_district_code) が1つ上の段に実在し、地区の area が親と同じ市区町村・区を指す。
---    地区には立地環境特性の細分類があり、計の行には無い
+--    どの行も段 (district_level) が決まり、地区には立地環境特性の細分類があり、計の行には無い
 -- 4. 親の計が子の和に一致する (地区 → 市区町村・区、区 → 政令指定都市・特別区部、
 --    市区町村 → 都道府県、都道府県 → 全国)。事業所数・大規模小売店舗内事業所数・従業者数は
 --    ちょうど一致する。売上（収入）金額は原典が区分ごとに丸めるので、(足した行数 + 1) × 0.5
@@ -96,7 +96,8 @@ orphans AS (
 district_types AS (
     SELECT 'district_type ' || district_code AS check_name, NULL::BIGINT AS actual, NULL::BIGINT AS expected
     FROM r
-    WHERE (district_level = 'district') <> (district_type IS NOT NULL)
+    WHERE district_level IS NULL
+        OR (district_level = 'district') <> (district_type IS NOT NULL)
 ),
 
 pairs AS (
