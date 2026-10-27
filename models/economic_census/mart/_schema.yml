@@ -92,6 +92,48 @@ models:
       - name: floor_area_m2
         description: "売場面積（m2）。秘匿された区分は NULL、事業所が無い区分は 0。無店舗小売業（61）は常に NULL"
 
+  - name: shopping_district
+    description: |
+      令和3年経済センサス‐活動調査 立地環境特性編から、全国の商業集積地区（商店街）12,535地区
+      ごとの小売業・飲食サービス業・生活関連サービス業の事業所数・従業者数・売上（収入）金額と
+      小売業の売場面積を収録した表。全国・都道府県・市区町村・区ごとの商業集積地区の計の行も
+      持つ。2021年6月1日現在、売上（収入）金額は2020年1年間。地区の位置（座標・町丁目）は無く、
+      名前と市区町村（area）だけで特定する。売上（収入）金額と売場面積は秘匿の地区が NULL になる。
+      area は retail_municipality・code.municipality と同じ標準地域コード(5桁)。
+      出典: 総務省・経済産業省 令和3年経済センサス‐活動調査 立地環境特性編
+      商業集積地区（商店街）別の表。
+      https://www.e-stat.go.jp/
+    access: public
+    columns:
+      - name: district_code
+        description: "商業集積地区コード（8桁）。上5桁が area、下3桁が市区町村の中の地区の番号。計の行は下3桁が 000"
+      - name: district_name
+        description: "地区の名称（銀座地域／新宿駅西口／本町商店街 など）。計の行は「東京都計」「千代田区計」のような名称"
+      - name: district_level
+        description: "national=全国の計、prefecture=都道府県の計、municipality=市・町村・特別区部の計、ward=政令指定都市の区・特別区の計、district=商業集積地区。district だけ、または municipality だけを足すと全国の計に一致する"
+      - name: area
+        description: "地区を含む市区町村（政令指定都市と特別区部では区）の標準地域コード。計の行はその地域自身のコード"
+      - name: parent_district_code
+        description: "1つ上の計の行の district_code。全国は NULL"
+      - name: district_type_code
+        description: "立地環境特性の細分類。11=駅周辺型、12=市街地型、13=住宅地背景型、14=ロードサイド型、15=その他。計の行は NULL"
+      - name: district_type
+        description: "district_type_code の名称"
+      - name: industry_code
+        description: "I2=小売業計、M2=飲食サービス業計、N=生活関連サービス業計"
+      - name: industry_name
+        description: "industry_code に対応する産業の名称"
+      - name: establishments
+        description: "事業所数（事業所）。該当が無い区分は 0"
+      - name: establishments_in_large_stores
+        description: "大規模小売店舗（店舗面積 1,000m2 超）内の事業所数（事業所）。establishments の内数"
+      - name: employees
+        description: "従業者数（人）。臨時雇用者を含む。該当が無い区分は 0"
+      - name: sales_million_yen
+        description: "売上（収入）金額（百万円）。2020年1年間。小売業も年間商品販売額ではない。秘匿された区分は NULL、事業所が無い区分は 0"
+      - name: floor_area_m2
+        description: "小売業の売場面積（m2）。秘匿された地区は NULL、事業所が無い地区は 0。飲食サービス業・生活関連サービス業は NULL"
+
   - name: establishment_mesh_1km
     description: |
       平成28年経済センサス‐活動調査 1kmメッシュ（3次メッシュ）別の

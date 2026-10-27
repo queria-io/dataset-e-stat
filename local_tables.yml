@@ -226,3 +226,11 @@ groups:
         stats_data_id: "0004003264"
         updated_date: "2026-09-30"
         primary_key: [tab, cat01, area]
+  economic_census_shopping_district:
+    title: 令和3年経済センサス‐活動調査 立地環境特性編 商業集積地区別
+    dbt_select: "+shopping_district"
+    tables:
+      - name: economic_census_shopping_district
+        stats_data_id: "0004015880"
+        updated_date: "2026-09-30"
+        primary_key: [tab, cat01, cat02]

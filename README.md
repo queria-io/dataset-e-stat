@@ -415,6 +415,7 @@ https://www.e-stat.go.jp/
 | establishment_industry | 全国・都道府県・市区町村別、産業大分類別・経営組織別の民営事業所数・従業者数・売上（収入）金額 | area / industry_code / organization_code / establishments / employees / sales_million_yen |
 | establishment_mesh_1km | 1kmメッシュ別、産業大分類別の事業所数・従業者数（平成28年経済センサス・縦持ち）。昼間人口の推計が流入側の按分に使う従業者数の元の表 | mesh_code / mesh1_code / cat01 / category / value |
 | retail_municipality | 全国・都道府県・市区町村別、小売業の産業中分類別の事業所数・従業者数・年間商品販売額・売場面積 | area / industry_code / establishments / employees / sales_million_yen / floor_area_m2 |
+| shopping_district | 商業集積地区（商店街）別、小売業・飲食サービス業・生活関連サービス業の事業所数・従業者数・売上（収入）金額・売場面積 | district_code / district_name / district_level / area / district_type_code / industry_code / establishments / sales_million_yen / floor_area_m2 |
 
 令和3年経済センサス‐活動調査（2021年6月1日現在）の産業横断的集計「売上（収入）金額等」
 第2-1表です。国勢調査の census_small_area_industry が常住地ベース（住民がどの産業で働くか）
@@ -517,6 +518,43 @@ LIMIT 10;
 
 出典: 総務省・経済産業省 令和3年経済センサス‐活動調査 卸売業，小売業に関する集計
 産業編（市区町村表）第1表・第2表。https://www.e-stat.go.jp/statistics/00200553
+
+### 商業集積地区（商店街）別の表（shopping_district）
+
+立地環境特性編の、商業集積地区（商店街）12,535地区ごとの表です。商業集積地区は、小売業・飲食店・
+サービス業の事業所が近接して30店舗以上集まる商店街を概ね1つずつ区切った地区で、駅ビルや
+ショッピングセンターも原則1地区になります。1地区につき小売業計（I2）・飲食サービス業計（M2）・
+生活関連サービス業計（N）の3行で、地区の行（district_level = 'district'）のほかに、全国・都道府県・
+市区町村・区ごとの計の行があります。地区のある市区町村は1,334です。
+
+地区の位置（座標・境界・町丁目）は原典にありません。地区は名前（銀座地域、新宿駅西口など）と、
+それが計上された市区町村（area）だけで特定します。同じ名前の地区が別の市区町村にもあります
+（本町商店街は94地区）。
+
+全国の地区の小売業は事業所数 259,039・売上（収入）金額 49兆8,238億円・売場面積 54,794,283m2 です。
+小売業の金額は年間商品販売額ではなく売上（収入）金額で、従業者数は臨時雇用者を含むので、
+retail_municipality の値とは比べられません。
+
+事業所数・大規模小売店舗内事業所数・従業者数は秘匿が無く、地区の和が市区町村の計に一致します。
+売上（収入）金額と売場面積は秘匿の地区が NULL になります（事業所のある地区のうち、小売業で4.9%、
+飲食サービス業で19.8%、生活関連サービス業で23.5%）。市区町村の計はほとんど秘匿されないので、
+市区町村ごとに比べるときは計の行を使います。
+
+```sql
+-- 小売業の売上（収入）金額が大きい商業集積地区
+SELECT district_code, district_name, area, district_type,
+       establishments, sales_million_yen, floor_area_m2
+FROM e_stat.economic_census.shopping_district
+WHERE district_level = 'district' AND industry_code = 'I2'
+ORDER BY sales_million_yen DESC NULLS LAST
+LIMIT 10;
+```
+
+この表は毎日の更新（CI）では e-Stat から取らず、手元で1回だけ取り込んでいます
+（下の「手元で1回だけ取り込む統計表」）。
+
+出典: 総務省・経済産業省 令和3年経済センサス‐活動調査 立地環境特性編
+商業集積地区（商店街）別の表。https://www.e-stat.go.jp/statistics/00200553
 
 ## 工業統計調査 市区町村別 産業中分類別の製造業統計（manufacture スキーマ）
 
