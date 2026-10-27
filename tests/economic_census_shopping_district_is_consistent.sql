@@ -52,12 +52,13 @@ national AS (
     SELECT 'national ' || r.industry_code || ' ' || m.name AS check_name, m.actual, m.expected
     FROM r
     JOIN (VALUES
-        ('I2', 259039, 2316334, 49823750, 54794283),
-        ('M2', 188254, 1432843, 5737129, NULL),
-        ('N', 93803, 360004, 2536656, NULL)
-    ) AS e (industry_code, est, emp, sales, floor) USING (industry_code),
+        ('I2', 259039, 74523, 2316334, 49823750, 54794283),
+        ('M2', 188254, 21084, 1432843, 5737129, NULL),
+        ('N', 93803, 11845, 360004, 2536656, NULL)
+    ) AS e (industry_code, est, large, emp, sales, floor) USING (industry_code),
         LATERAL (VALUES
             ('establishments', r.establishments, e.est),
+            ('establishments_in_large_stores', r.establishments_in_large_stores, e.large),
             ('employees', r.employees, e.emp),
             ('sales_million_yen', r.sales_million_yen, e.sales),
             ('floor_area_m2', r.floor_area_m2, e.floor)
