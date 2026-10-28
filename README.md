@@ -1852,6 +1852,63 @@ ORDER BY year;
 出典: 国土交通省 建築着工統計調査 建築物着工統計。
 https://www.e-stat.go.jp/statistics/00600120
 
+## 建設総合統計 都道府県別の建設工事出来高（construction スキーマ）
+
+| テーブル | 内容 | 主なカラム |
+|---------|------|-----------|
+| prefecture_monthly | その月に施工された建設工事の金額（出来高、億円）。都道府県別・月次。2011年4月〜 | prefecture_code / area / area_name / region_code / region_name / time / time_name / year / month / output |
+
+国土交通省の建設総合統計のうち、月別《地域別》出来高の表です。建築着工統計と建設工事受注動態統計の
+工事費を工事の進み具合に合わせて月ごとに割り振った加工統計で、着工した月に全額が載る建築着工統計と
+違い、工期の長い工事も毎月の施工分に均されます。185か月 × 47都道府県の8,695行です。
+
+```sql
+-- 2025年度（2025年4月〜2026年3月）の出来高が大きかった都道府県
+SELECT area_name, sum(output) AS output
+FROM e_stat.construction.prefecture_monthly
+WHERE (year = 2025 AND month >= 4) OR (year = 2026 AND month <= 3)
+GROUP BY area_name
+ORDER BY output DESC
+LIMIT 5;
+```
+
+東京都の76,096億円が最も大きく、神奈川県（37,959億円）・北海道・愛知県・大阪府と続きます。
+
+```sql
+-- 2011年度から2025年度にかけての出来高の伸び
+SELECT area_name,
+    sum(output) FILTER (WHERE (year = 2011 AND month >= 4) OR (year = 2012 AND month <= 3)) AS fy2011,
+    sum(output) FILTER (WHERE (year = 2025 AND month >= 4) OR (year = 2026 AND month <= 3)) AS fy2025
+FROM e_stat.construction.prefecture_monthly
+GROUP BY area_name
+ORDER BY fy2025 / fy2011 DESC
+LIMIT 3;
+```
+
+石川県が3,932億円から9,275億円へ2.4倍で最も大きく、滋賀県・鹿児島県が続きます。
+
+### 建築・土木、民間・公共の内訳は無い
+
+この表の値はすべてを合わせた計です。都道府県別の内訳はこの表にはありません。
+
+### 年度で数えるときは4月始まり
+
+year は暦年です。年度で集計するときは4月〜翌年3月を同じ年度に数えます。都道府県を足した年度計は
+全国の年度別出来高と2011〜2025年度のすべてで16億円以内で一致します（億円の丸めによる差）。
+全国の月別出来高の表とは2021年度以降に差があり、2025年度は全国の月別のほうが4.6%大きくなっています。
+
+### 値は遡って改定される
+
+毎年6月に、過去3年分の月の値が補正率で遡及改定されます。同じ月でも取得した時期によって値が変わります。
+
+### 地方区分はこの統計独自のもの
+
+region_code / region_name はこの統計の9地方です。山梨県・長野県は関東地方、新潟県は北陸地方に入り、
+中部地方は岐阜・静岡・愛知・三重の4県です。
+
+出典: 国土交通省 建設総合統計。
+https://www.e-stat.go.jp/statistics/00600260
+
 ## 民間給与実態統計調査 業種別・給与階級別の給与所得者数と給与（private_salary スキーマ）
 
 | テーブル | 内容 | 主なカラム |

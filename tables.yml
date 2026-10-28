@@ -260,6 +260,16 @@ tables:
     merge_keys: [tab, cat01, area, time]
     incremental: true
 
+  # 建設総合統計 月別《地域別》出来高（都道府県・地方別、月次）
+  # 毎年6月に過去3年分の月次の値が補正率で遡及改定される（訂正時はさらに遡る）ので、
+  # incremental にせず毎回全量を取り直して置き換える（merge_keys を持たないので replace）。
+  # 全量でも1万行ほど。対前年同期比（tab=130）は地方の行にしか無いので取らない。
+  - name: construction_prefecture_monthly
+    description: 建設総合統計 月別《地域別》出来高
+    statsDataId: "0003458459"
+    api_params:
+      cdTab: "100"
+
   # 小売物価統計調査（動向編） 調査品目の年平均価格
   # 品目別の「円」そのものを市別に持つ唯一の表。cpi.price_index は地域ごとに
   # 2020年=100 に揃えた指数なので、地域間の水準比較には使えない。

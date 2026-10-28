@@ -26,6 +26,11 @@ models:
         +materialized: table
       stg:
         +materialized: table
+    construction:
+      raw:
+        +materialized: table
+      stg:
+        +materialized: table
     census:
       raw:
         +materialized: table
