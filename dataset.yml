@@ -42,6 +42,9 @@ keywords:
   - 建築着工
   - 着工床面積
   - 建築物
+  - 建設総合統計
+  - 建設投資
+  - 出来高
   - 住民基本台帳
   - 人口動態
   - 人口移動
@@ -234,6 +237,8 @@ schemas:
     title: 学校保健統計調査
   - name: building_starts
     title: 建築着工統計調査
+  - name: construction
+    title: 建設総合統計
   - name: private_salary
     title: 民間給与実態統計調査
   - name: housing_survey
