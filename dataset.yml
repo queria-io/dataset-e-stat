@@ -45,6 +45,9 @@ keywords:
   - 建設総合統計
   - 建設投資
   - 出来高
+  - 建設工事受注動態統計調査
+  - 公共工事
+  - 受注高
   - 住民基本台帳
   - 人口動態
   - 人口移動
@@ -238,7 +241,7 @@ schemas:
   - name: building_starts
     title: 建築着工統計調査
   - name: construction
-    title: 建設総合統計
+    title: 建設総合統計・建設工事受注動態統計調査
   - name: private_salary
     title: 民間給与実態統計調査
   - name: housing_survey
