@@ -200,7 +200,7 @@ def parse(body: bytes, year: int, month: int) -> list[dict]:
     if not period or (2018 + int(period.group(1)), int(period.group(2))) != (year, month):
         raise RuntimeError(f"{where}: 表の調査月が {''.join(labels[title_row])!r}")
 
-    # 見出しは表題の下の 2 行。列の位置を見出しの文字で決める。
+    # 表題の下は単位の行と見出しの 2 行で、データ行はその次から。列の位置を見出しの文字で決める。
     header = [" ".join(filter(None, col)) for col in zip(*labels[title_row + 1 : title_row + 4])]
     positions: list[tuple[int, str]] = []
     cursor = 1
