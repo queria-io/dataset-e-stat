@@ -1,0 +1,94 @@
+schema: construction
+name: public_orders_prefecture_monthly
+title: 都道府県別・発注機関別の公共工事の請負契約額（月次）
+description: |-
+  建設工事受注動態統計調査のうち、公共機関から受注した工事（1件500万円以上）の請負契約額を、
+  施工した都道府県・発注機関ごとに月別に収録する（百万円）。全国計（area = '00000'）と47都道府県の行がある。
+  発注機関は国の機関（国・独立行政法人・政府関連企業等）と地方の機関（都道府県・市区町村・
+  地方公営企業・その他）の7区分で、合計と国の機関・地方の機関の小計も列に持つ。
+  収録は2021年4月〜2026年8月の65か月 × 48行の3,120行。推計方法が2021年4月分から変わり、
+  それより前の月とは水準がつながらないので、この月から収録する。
+  都道府県を足した値は全国計と一致し、月を足した年度計は年度次の同じ表と2025年度で全国・
+  都道府県・発注機関のすべて一致する。2025年度の全国の請負契約額は23兆5,706億円で、
+  東京都（3兆1,006億円）・北海道・愛知県・神奈川県・大阪府の順に大きい。
+  年度末の3月に契約が集まり、2021〜2025年度の3月の全国計は平均でほかの月の2.4倍。
+  受注したその月に契約額の全額が載るので、工事の進み具合に合わせて均した出来高は
+  prefecture_monthly（建設総合統計）を使う。
+  変更契約で減額された分が多い月は発注機関の列が負になる（78行、最小は -25,913百万円）。
+  受注高の少ない区分は標本の誤差が大きい。
+  出典: 国土交通省 建設工事受注動態統計調査。
+  https://www.e-stat.go.jp/stat-search/files?toukei=00600130
+  統計の案内: https://www.e-stat.go.jp/statistics/00600130
+keywords:
+  - e-stat
+  - 建設工事受注動態統計調査
+  - 公共工事
+  - 受注高
+  - 請負契約額
+  - 発注機関
+  - 都道府県
+  - 月次
+published: true
+themes: [housing_land]
+sources:
+  - path: https://www.e-stat.go.jp/stat-search/files?toukei=00600130
+fields:
+  - name: prefecture_code
+    title: 都道府県コード
+    description: "都道府県コード（2桁）。01=北海道〜47=沖縄県。全国計の行は NULL"
+    semantic: { role: entity, name: prefecture }
+  - name: area
+    title: 地域コード
+    description: "地域コード（5桁）。都道府県は下3桁が000、全国計は 00000。統計に用いる標準地域コードと同じ体系"
+  - name: area_name
+    title: 地域名
+    description: "都道府県名（北海道・東京都 など）。全国計の行は「全国」"
+  - name: year
+    title: 年
+    description: "調査月の西暦4桁。年度ではなく暦年"
+  - name: month
+    title: 月
+    description: "調査月（1〜12）"
+  - name: fiscal_year
+    title: 年度
+    description: "調査月の属する年度（4月〜翌年3月）"
+  - name: total
+    title: 合計
+    description: "公共機関から受注した工事の請負契約額の合計（百万円）。national_total と local_total の和"
+    semantic: { role: measure, agg: sum }
+  - name: national_total
+    title: 国の機関
+    description: "国・独立行政法人・政府関連企業等の計（百万円）"
+    semantic: { role: measure, agg: sum }
+  - name: national_government
+    title: 国
+    description: "国が発注した工事の請負契約額（百万円）"
+    semantic: { role: measure, agg: sum }
+  - name: independent_agency
+    title: 独立行政法人
+    description: "独立行政法人が発注した工事の請負契約額（百万円）"
+    semantic: { role: measure, agg: sum }
+  - name: government_affiliated
+    title: 政府関連企業等
+    description: "政府関連企業等が発注した工事の請負契約額（百万円）"
+    semantic: { role: measure, agg: sum }
+  - name: local_total
+    title: 地方の機関
+    description: "都道府県・市区町村・地方公営企業・その他の計（百万円）"
+    semantic: { role: measure, agg: sum }
+  - name: prefectural_government
+    title: 都道府県
+    description: "都道府県が発注した工事の請負契約額（百万円）"
+    semantic: { role: measure, agg: sum }
+  - name: municipal_government
+    title: 市区町村
+    description: "市区町村が発注した工事の請負契約額（百万円）"
+    semantic: { role: measure, agg: sum }
+  - name: local_public_enterprise
+    title: 地方公営企業
+    description: "地方公営企業が発注した工事の請負契約額（百万円）"
+    semantic: { role: measure, agg: sum }
+  - name: other
+    title: その他
+    description: "地方の機関のうち、都道府県・市区町村・地方公営企業以外が発注した工事の請負契約額（百万円）"
+    semantic: { role: measure, agg: sum }
