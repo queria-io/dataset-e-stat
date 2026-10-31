@@ -270,6 +270,15 @@ tables:
     api_params:
       cdTab: "100"
 
+  # 鉄道輸送統計調査 旅客営業キロ及び旅客数量 業態別（全国、月次）
+  # 全量でも1,575行なので incremental にせず毎回全量を取り直して置き換える
+  # （merge_keys を持たないので replace）。営業キロ（tab=100）と前月比・前年同月比は取らない。
+  - name: rail_transport_passengers_monthly
+    description: 鉄道輸送統計調査 旅客数量 業態別（月次）
+    statsDataId: "0003423105"
+    api_params:
+      cdTab: "110"
+
   # 小売物価統計調査（動向編） 調査品目の年平均価格
   # 品目別の「円」そのものを市別に持つ唯一の表。cpi.price_index は地域ごとに
   # 2020年=100 に揃えた指数なので、地域間の水準比較には使えない。
