@@ -1,0 +1,4 @@
+version: 2
+
+models:
+  - name: stg_rail_transport_passengers_monthly
