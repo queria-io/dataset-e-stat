@@ -45,6 +45,10 @@ keywords:
   - 建設総合統計
   - 建設投資
   - 出来高
+  - 鉄道輸送統計調査
+  - 鉄道
+  - 旅客
+  - 輸送人員
   - 住民基本台帳
   - 人口動態
   - 人口移動
@@ -119,7 +123,7 @@ keywords:
   - 商店街
 homepage: https://github.com/queria-io/dataset-e-stat
 language: ja
-themes: [population, economy, labour, social_security_health, education_culture, land_climate, government_finance, housing_land, justice_safety_environment, agriculture, mining_manufacturing]
+themes: [population, economy, labour, social_security_health, education_culture, land_climate, government_finance, housing_land, transport_tourism, justice_safety_environment, agriculture, mining_manufacturing]
 
 licenses:
   - JP-GOV-STD-2.0
@@ -167,6 +171,8 @@ sources:
     path: https://www.e-stat.go.jp/classifications/terms/10
   - title: 人口動態調査（厚生労働省）
     path: https://www.e-stat.go.jp/statistics/00450011
+  - title: 鉄道輸送統計調査（国土交通省）
+    path: https://www.e-stat.go.jp/statistics/00600350
 
 contributors:
   - title: 総務省統計局
@@ -183,6 +189,9 @@ contributors:
     roles: [rightsHolder]
   - title: 農林水産省
     path: https://www.maff.go.jp/
+    roles: [rightsHolder]
+  - title: 国土交通省
+    path: https://www.mlit.go.jp/
     roles: [rightsHolder]
 
 temporal_coverage: { start: "1970", end: null }
@@ -239,6 +248,8 @@ schemas:
     title: 建築着工統計調査
   - name: construction
     title: 建設総合統計
+  - name: rail_transport
+    title: 鉄道輸送統計調査
   - name: private_salary
     title: 民間給与実態統計調査
   - name: housing_survey

@@ -1,0 +1,63 @@
+schema: rail_transport
+name: passengers_monthly
+title: 業態別の鉄道旅客数量（月次）
+description: |-
+  鉄道輸送統計調査の業態別・月別の旅客数量（千人）。鉄道・軌道の旅客を、ＪＲ旅客会社（うち新幹線）と
+  民鉄（大手・中小・公営）の業態ごとに、定期・定期外に分けて数えた全国の値。地域の内訳は無い。
+  業態と定期・定期外はどちらも計と内訳が同じ列に並ぶので、足すときは段（operator_type_level）と
+  ticket_type_code で絞る。新幹線はＪＲ旅客会社の内数。
+  収録は2020年4月〜2026年6月の75か月 × 7業態 × 3区分の1,575行で、欠けは無い。
+  月を足した年度計は、年度別の旅客数量（sid=0003440001）と2020〜2024年度のすべての業態で一致する。
+  出典: 国土交通省 鉄道輸送統計調査。
+  https://www.e-stat.go.jp/dbview?sid=0003423105
+  統計の案内: https://www.e-stat.go.jp/statistics/00600350
+keywords:
+  - e-stat
+  - 鉄道輸送統計調査
+  - 鉄道
+  - 旅客
+  - 輸送人員
+  - 定期
+  - ＪＲ
+  - 民鉄
+  - 新幹線
+  - 月次
+published: true
+themes: [transport_tourism]
+sources:
+  - path: https://www.e-stat.go.jp/dbview?sid=0003423105
+fields:
+  - name: operator_type_code
+    title: 業態コード
+    description: "業態のコード。160=計、100=ＪＲ旅客会社、110=新幹線、120=民鉄（ＪＲ以外）、130=大手、140=中小、150=公営"
+  - name: operator_type_name
+    title: 業態
+    description: "operator_type_code に対応する業態名"
+  - name: operator_type_level
+    title: 業態の段
+    description: "業態の段。1=計、2=ＪＲ旅客会社・民鉄、3=新幹線・大手・中小・公営。業態をまたいで足すときは1つの段に絞る。段3の新幹線はＪＲ旅客会社の一部だけなので、段3を足してもＪＲ旅客会社にはならない"
+  - name: operator_type_parent_code
+    title: 親の業態コード
+    description: "1つ上の業態のコード。計は NULL、ＪＲ旅客会社・民鉄は NULL、新幹線は 100、大手・中小・公営は 120"
+  - name: ticket_type_code
+    title: 定期・定期外コード
+    description: "定期・定期外のコード。100=計、110=定期、120=定期外"
+  - name: ticket_type_name
+    title: 定期・定期外
+    description: "ticket_type_code に対応する名称"
+  - name: time
+    title: 時間軸コード
+    description: "e-Stat の時間軸コード。2024000404 が2024年4月"
+  - name: time_name
+    title: 時間軸名
+    description: "時間軸の名称（2024年4月 など）"
+  - name: year
+    title: 年
+    description: "time から切り出した西暦4桁。年度ではなく暦年"
+  - name: month
+    title: 月
+    description: "time から切り出した月（1〜12）。年度で集計するときは4月〜翌年3月を同じ年度に数える"
+  - name: passengers
+    title: 旅客数量
+    description: "その月の旅客数量（千人）。千人未満を丸めた値で、定期と定期外を足すと計と最大9千人ずれる"
+    semantic: { role: measure, agg: sum }

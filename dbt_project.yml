@@ -31,6 +31,11 @@ models:
         +materialized: table
       stg:
         +materialized: table
+    rail_transport:
+      raw:
+        +materialized: table
+      stg:
+        +materialized: table
     census:
       raw:
         +materialized: table
