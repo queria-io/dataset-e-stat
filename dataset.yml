@@ -45,6 +45,9 @@ keywords:
   - 建設総合統計
   - 建設投資
   - 出来高
+  - 建設工事受注動態統計調査
+  - 公共工事
+  - 受注高
   - 鉄道輸送統計調査
   - 鉄道
   - 旅客
@@ -247,7 +250,7 @@ schemas:
   - name: building_starts
     title: 建築着工統計調査
   - name: construction
-    title: 建設総合統計
+    title: 建設総合統計・建設工事受注動態統計調査
   - name: rail_transport
     title: 鉄道輸送統計調査
   - name: private_salary
