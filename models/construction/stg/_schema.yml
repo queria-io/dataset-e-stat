@@ -2,3 +2,4 @@ version: 2
 
 models:
   - name: stg_construction_prefecture_monthly
+  - name: stg_construction_public_orders_prefecture_monthly
