@@ -1,0 +1,46 @@
+version: 2
+
+models:
+  - name: cargo_tonnage_annual
+    description: |
+      港湾調査（年報）の甲種港湾の港別・年別の海上出入貨物トン数（トン）。輸出・輸入・移出・移入と
+      その合計を、港ごとに1年1行で持つ。都道府県の行（area_level=2）と港の行（area_level=3）が
+      同じ列に並び、県の行はその県の甲種港湾の和に一致する。足すときは area_level で1つの段に絞る。
+      輸移出入も flow_code=100 の合計と内訳が並ぶ。
+      原典は自動車航送船の取扱いが無い港など、輸送形態の計の行を出さないことが多い。そのときの
+      cargo_tons は一般と自動車航送船の和で補い、cargo_tons_is_derived を true にする。
+      収録は2010〜2023年のうち2018年を除く13年で、各年160〜166港。2018年は原典の値が崩れている
+      （名古屋の計が前後の年の約80分の1になるなど）ので収録していない。
+      出典: 国土交通省 港湾調査。
+      https://www.e-stat.go.jp/dbview?sid=0003130803
+      統計の案内: https://www.e-stat.go.jp/statistics/00600280
+    access: public
+    columns:
+      - name: area_code
+        description: "港湾調査の港湾コード（5桁）。先頭2桁が都道府県コードで、末尾3桁が000の行は都道府県の計、それ以外は甲種港湾"
+      - name: area_level
+        description: "2=都道府県の計、3=甲種港湾。県の行はその県の港の和なので、足すときはどちらかに絞る"
+      - name: prefecture_code
+        description: "area_code の先頭2桁（JIS の都道府県コード）"
+      - name: prefecture_name
+        description: "港が属する都道府県の名前"
+      - name: port_name
+        description: "港の名前（名古屋、千葉 など）。都道府県の行は NULL"
+      - name: flow_code
+        description: "輸移出入のコード。100=合計、110=輸出、120=輸入、130=移出、140=移入。合計は4つの内訳の和に一致する"
+      - name: flow_name
+        description: "flow_code に対応する名称"
+      - name: time
+        description: "e-Stat の時間軸コード。2023000000 が2023年"
+      - name: year
+        description: "time から切り出した西暦4桁。暦年"
+      - name: cargo_tons
+        description: "その港・年・輸移出入の貨物の総トン数（トン）。原典に輸送形態の計の行があればその値、無ければ一般と自動車航送船の和。どちらも「-」（該当数字がない）なら NULL"
+      - name: cargo_tons_is_derived
+        description: "true なら cargo_tons は原典の計ではなく、一般と自動車航送船の和で補った値"
+      - name: general_tons
+        description: "自動車航送船以外の船で運んだ貨物のトン数（トン）。原典が「-」なら NULL"
+      - name: ferry_tons
+        description: "フェリーなど自動車航送船で運んだ貨物のトン数（トン）。原典が「-」なら NULL"
+      - name: transshipment_tons
+        description: "一般貨物のうち、積み替え（T/S、トランシップ）の貨物のトン数（トン）。general_tons の内数。原典が「-」なら NULL"
