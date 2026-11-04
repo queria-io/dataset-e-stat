@@ -34,6 +34,7 @@ e-Stat（政府統計の総合窓口）の API と統計GIS から取得した�
 | building_starts | 建築着工統計調査 市区町村別・用途別の建築着工 municipality_use |
 | construction | 建設総合統計 都道府県別・月次の建設工事出来高 prefecture_monthly、建設工事受注動態統計調査 都道府県別・発注機関別の公共工事の請負契約額 public_orders_prefecture_monthly |
 | rail_transport | 鉄道輸送統計調査 業態別・定期／定期外別・月次の鉄道旅客数量 passengers_monthly |
+| port | 港湾調査 甲種港湾の港別・輸移出入別・年次の海上出入貨物トン数 cargo_tonnage_annual |
 | housing_survey | 住宅・土地統計調査 市区町村別の世帯の年間収入階級・住宅の所有の関係別主世帯数 municipality_income_tenure |
 | household_structure | 全国家計構造調査 年間収入階級別の1世帯当たり1か月間の消費支出と10大費目 income_class_expenditure |
 | vital_statistics | 人口動態調査 市区町村別の出生・死亡・死産・婚姻・離婚 vital_events、母の年齢別の出生数 births_by_mother_age、年齢別の死亡数 deaths_by_age、死因別の死亡数 deaths_by_cause |

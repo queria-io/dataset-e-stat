@@ -36,6 +36,11 @@ models:
         +materialized: table
       stg:
         +materialized: table
+    port:
+      raw:
+        +materialized: table
+      stg:
+        +materialized: table
     census:
       raw:
         +materialized: table

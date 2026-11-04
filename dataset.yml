@@ -52,6 +52,9 @@ keywords:
   - 鉄道
   - 旅客
   - 輸送人員
+  - 港湾調査
+  - 港湾
+  - 貨物
   - 住民基本台帳
   - 人口動態
   - 人口移動
@@ -176,6 +179,8 @@ sources:
     path: https://www.e-stat.go.jp/statistics/00450011
   - title: 鉄道輸送統計調査（国土交通省）
     path: https://www.e-stat.go.jp/statistics/00600350
+  - title: 港湾調査（国土交通省）
+    path: https://www.e-stat.go.jp/statistics/00600280
 
 contributors:
   - title: 総務省統計局
@@ -253,6 +258,8 @@ schemas:
     title: 建設総合統計・建設工事受注動態統計調査
   - name: rail_transport
     title: 鉄道輸送統計調査
+  - name: port
+    title: 港湾調査
   - name: private_salary
     title: 民間給与実態統計調査
   - name: housing_survey
