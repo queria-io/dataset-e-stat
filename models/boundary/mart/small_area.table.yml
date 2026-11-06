@@ -1,15 +1,10 @@
 schema: boundary
 name: small_area
 title: 町丁・字等別境界
-description: '令和2年国勢調査 町丁・字等別境界データ。
+description: |-
+  令和2年国勢調査の町丁・字等別の境界ポリゴンと人口・世帯数を持つテーブルです。key_code で census の小地域の表と結合します。
 
-  境界ポリゴン・人口・世帯数を key_code で結合可能な形で提供。
-
-  水面調査区(HCODE=8154)を除外。
-
-  同一KEY_CODEに複数境界がある場合は代表(KIGO_E=E1)のみ残し、
-
-  飛び地等の重複ポリゴン(E2以降)は除外済み。'
+  - 水面調査区と飛び地などの重複ポリゴンは除いています
 keywords:
   - e-stat
   - 国勢調査

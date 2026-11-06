@@ -2,24 +2,11 @@ schema: census
 name: census_municipality_labor_force
 title: 市区町村別 労働力状態別人口（令和2年国勢調査）
 description: |-
-  令和2年国勢調査 就業状態等基本集計から、全国・都道府県・市区町村ごとの15歳以上人口を
-  男女別・労働力状態別（労働力人口／就業者／完全失業者／非労働力人口）に集計した表。
-  年齢は総数のみで、年齢階級別の内訳は含まない。
-  1地域につき 男女3区分 × 労働力状態13区分 = 39行の縦持ちで、地域は1,965。
-  labor_status_level が階層の深さを表す。1 は総数と大区分（労働力人口・非労働力人口・
-  労働力状態「不詳」）、2 はその内訳（就業者・完全失業者・家事・通学・その他）、
-  3 は就業者の内訳。絞らずに value を合計すると何重にも数える。合計に使えるのは
-  labor_status_level = 1 かつ labor_status_code <> '0' の3行で、その和が総数に一致する。
-  area は全国（00000）・都道府県・市・特別区部・政令指定都市の区・特別区・町村が同じ列に
-  縦に並ぶ。日本全域をちょうど1回覆うのは area_level = 'prefecture' か
-  area_level IN ('city', 'town_village') のいずれかで、絞らずに合計すると何重にも数える。
-  census_municipality と違い、2000年（平成12年）市区町村の再掲は含まない。
-  area は census_municipality・census_small_area_* の市区町村行・boundary.small_area の
-  key_code の上位5桁・code.municipality の area_code と同じ標準地域コード（5桁）。
-  全国地方公共団体コード（6桁）とは別体系なので、lg_code や address_br と結合するときは
-  桁と体系を揃える。
-  出典: 総務省統計局 令和2年国勢調査 就業状態等基本集計（第1-2-1表）。
-  https://www.e-stat.go.jp/
+  令和2年国勢調査の、全国・都道府県・市区町村ごとの15歳以上人口を、男女別・労働力状態別に持つテーブルです。
+
+  - 合計に使えるのは labor_status_level = 1 かつ labor_status_code <> '0' の3行です
+  - 全国・都道府県・市区町村などの行が同じ列に並ぶので、area_level で1つの粒度に絞ってから合計してください
+  - area は標準地域コード（5桁）で、6桁の全国地方公共団体コードとは別体系です
 keywords:
   - e-stat
   - 国勢調査

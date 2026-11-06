@@ -123,3 +123,64 @@ GROUP BY m.pref_name, m.municipality_name
 ORDER BY population DESC
 LIMIT 10
 ```
+
+## 補足: 国勢調査 小地域集計（census スキーマ）
+
+令和2年国勢調査の町丁・字等別（小地域）集計です。area は同データセットの境界データ
+small_area の key_code と同一体系で、`key_code = area` で境界ポリゴンと結合できます。
+area には市区町村・町丁・字等・その内訳の3階層が含まれ、粒度は `area_level` で判別
+できます。桁数を揃えずに合計すると重複します。
+分類は cat01（主分類）、cat02（秘匿・合算区分: 無し/合算/秘匿）です。
+
+#### 地域の粒度
+
+7表とも cat02 は秘匿・合算区分です。census_small_area_age だけ名称列が sex という
+名前ですが、中身は他の6表の secrecy と同じ秘匿・合算区分で、男女は cat01 側
+（総数 / 男 / 女 × 年齢区分）に入っています。主分類の名称列はテーブルごとに
+age_class / family_type / industry / tenure / household_size / building_type /
+economic_type として展開しています。
+
+出典: 総務省統計局 令和2年国勢調査 小地域集計（統計GIS）。https://www.e-stat.go.jp/gis
+
+## 補足: census.census_small_area_age
+
+令和2年国勢調査 小地域(町丁・字等)別 年齢(5歳階級・4区分)別、男女別人口。
+area には市区町村(5桁)と小地域(9桁/11桁)の各階層が含まれる。
+分類は cat01=男女・年齢区分（総数／男／女 × 5歳階級・4区分）、cat02=秘匿・合算区分(無し/合算/秘匿)。
+男女は cat01 側に入っている。
+
+## 補足: census.census_small_area_building_type
+
+area には市区町村(5桁)と小地域(9桁/11桁)の各階層が含まれる。
+分類は cat01=住宅の建て方(主世帯数・一戸建・長屋建・共同住宅とその階数区分・その他)、cat02=秘匿・合算区分(無し/合算/秘匿)。
+
+## 補足: census.census_small_area_economic_type
+
+area には市区町村(5桁)と小地域(9桁/11桁)の各階層が含まれる。
+分類は cat01=世帯の経済構成(農林漁業就業者世帯・非農林漁業就業者世帯・非就業者世帯 など)、cat02=秘匿・合算区分(無し/合算/秘匿)。
+
+## 補足: census.census_small_area_household
+
+area には市区町村(5桁)と小地域(9桁/11桁)の各階層が含まれる。
+分類は cat01=世帯の家族類型(一般世帯総数・親族世帯・核家族世帯・夫婦のみ・夫婦と子供 など)、cat02=秘匿・合算区分(無し/合算/秘匿)。
+
+## 補足: census.census_small_area_household_size
+
+area には市区町村(5桁)と小地域(9桁/11桁)の各階層が含まれる。
+分類は cat01=世帯人員(一般世帯数・世帯人員1人〜5人・一般世帯人員・1世帯当たり人員)、cat02=秘匿・合算区分(無し/合算/秘匿)。
+
+## 補足: census.census_small_area_housing
+
+area には市区町村(5桁)と小地域(9桁/11桁)の各階層が含まれる。
+分類は cat01=住宅の種類・所有の関係(住宅に住む一般世帯・持ち家・民営借家 など)、cat02=秘匿・合算区分(無し/合算/秘匿)。
+
+## 補足: census.census_small_area_industry
+
+area には市区町村(5桁)と小地域(9桁/11桁)の各階層が含まれる。
+分類は cat01=産業大分類(総数・農業林業・製造業・卸売小売業 など)、cat02=秘匿・合算区分(無し/合算/秘匿)。
+
+## 補足: census.census_small_area_trade_area
+
+商圏分析（queria.io の /gis と、ページの gis ブロック）が町丁目ごとに引く値を、小地域の年齢・世帯の家族類型・世帯人員・住宅の所有の関係・住宅の建て方の 5 つの表から1 本に積んだもの。
+分析が使う cat01 の行だけを、元の表の行のまま持つ。
+source が元の表の名前で、area・cat01・cat02・value の意味は元の表と同じ。
