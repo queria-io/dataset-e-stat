@@ -2,25 +2,11 @@ schema: census
 name: census_municipality_employment_status
 title: 市区町村別 従業上の地位別就業者数（令和2年国勢調査）
 description: |-
-  令和2年国勢調査 就業状態等基本集計から、全国・都道府県・市区町村ごとの15歳以上就業者を
-  男女別・従業上の地位別（雇用者／正規の職員・従業員／派遣社員／パート・アルバイト／役員／
-  業主／家族従業者 など）に集計した表。
-  1地域につき 男女3区分 × 従業上の地位12区分 = 36行の縦持ちで、地域は1,965。
-  employment_status_level が階層の深さを表す。1 は総数と大区分、2 は雇用者の内訳
-  （正規の職員・従業員／派遣社員／パート・アルバイト・その他）。
-  さらに「（再掲）雇用者（役員を含む）」は level=1 だが雇用者と役員の再掲なので、
-  is_reprint = true で分けてある。合計に使えるのは employment_status_level = 1 かつ
-  employment_status_code <> '0' かつ is_reprint = false の7行で、その和が総数に一致する。
-  総数は census_municipality_labor_force の就業者（labor_status_code = '11'）と全行で一致する。
-  area は全国（00000）・都道府県・市・特別区部・政令指定都市の区・特別区・町村が同じ列に
-  縦に並ぶ。日本全域をちょうど1回覆うのは area_level = 'prefecture' か
-  area_level IN ('city', 'town_village') のいずれかで、絞らずに合計すると何重にも数える。
-  area は census_municipality・census_small_area_* の市区町村行・boundary.small_area の
-  key_code の上位5桁・code.municipality の area_code と同じ標準地域コード（5桁）。
-  全国地方公共団体コード（6桁）とは別体系なので、lg_code や address_br と結合するときは
-  桁と体系を揃える。
-  出典: 総務省統計局 令和2年国勢調査 就業状態等基本集計（第3-2表）。
-  https://www.e-stat.go.jp/
+  令和2年国勢調査の、全国・都道府県・市区町村ごとの15歳以上就業者を、男女別・従業上の地位別に持つテーブルです。
+
+  - 合計に使えるのは employment_status_level = 1、employment_status_code <> '0'、is_reprint = false の7行です
+  - 全国・都道府県・市区町村などの行が同じ列に並ぶので、area_level で1つの粒度に絞ってから合計してください
+  - area は標準地域コード（5桁）で、6桁の全国地方公共団体コードとは別体系です
 keywords:
   - e-stat
   - 国勢調査

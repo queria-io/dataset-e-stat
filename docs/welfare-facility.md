@@ -160,3 +160,27 @@ ORDER BY occupants / capacity DESC
 ## 値が NULL の行
 
 その年その地域にその種類の施設が無いか、原典が値を伏せた行は NULL です。値が入るのは年・指標ごとに34.4%〜63.3%の行なので、集計の前に `value IS NOT NULL` で絞るか、`SUM` の NULL 無視に任せます。
+
+## 補足: 社会福祉施設等調査 施設数・定員・在所者数・従事者数（welfare_facility スキーマ）
+
+| テーブル | 内容 | 主なカラム |
+|---------|------|-----------|
+| facility_statistics | 都道府県別・施設の種類別の施設数・定員・在所者数・従事者数 | survey_year / area_kind / area_code / area_name / prefecture_code / facility_code / facility_type / facility_level / operator / survey_form / measure / value |
+
+1セル1行の縦持ちで、指標は `measure` で選びます（`facility_count` 施設数、`capacity` 定員、
+`occupants` 在所者数、`fte_workers` 常勤換算従事者数）。値が入るのは年・指標ごとに
+34.4%〜63.3%の行で、残りはその年その地域にその種類の施設が無いか、原典が値を伏せた行です。
+
+## 補足: welfare_facility.facility_statistics
+
+特別養護老人ホームなど介護保険の施設は介護サービス施設・事業所調査の対象で、この統計には入らない。
+同じ領域の事業所名簿が現時点の一覧しか持たないのに対して、こちらは年次の増減を追える。
+収録は2011年〜2024年調査の14年、864,063行。
+指標（measure）は施設数 facility_count・定員 capacity・在所者数 occupants・常勤換算従事者数 fte_workers の4つ。
+常勤換算従事者数は原典が四捨五入した整数で、小数は入らない。
+地域は全国・国・47都道府県が全年にそろい、2011年〜2017年調査にはこれに加えてその年の指定都市（19〜20市）と中核市（41〜48市）の行がある。
+2017年調査までの都道府県の行は市の分を含まないので、都道府県で通しの系列を作るときは prefecture_code で足し合わせる。
+大分類の小計・保育所等の内訳・再掲を混ぜると二重に数える。
+2023年調査から幼保連携型認定こども園が調査の対象外になり、保育所等の定員が2,939,776人（2022年）から 2,259,096人（2023年）に落ちる。
+減少ではなく対象の変更。
+https://www.e-stat.go.jp/stat-search/files?toukei=00450041厚生労働省ポータル: https://www.mhlw.go.jp/toukei/list/23-22.html

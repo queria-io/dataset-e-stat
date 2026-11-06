@@ -1,17 +1,8 @@
 schema: census
 name: census_small_area_trade_area
 title: 商圏分析用 小地域別の国勢調査の値（令和2年国勢調査）
-description: '商圏分析（queria.io の /gis と、ページの gis ブロック）が町丁目ごとに引く値を、
-
-  小地域の年齢・世帯の家族類型・世帯人員・住宅の所有の関係・住宅の建て方の 5 つの表から
-
-  1 本に積んだもの。分析が使う cat01 の行だけを、元の表の行のまま持つ。
-
-  source が元の表の名前で、area・cat01・cat02・value の意味は元の表と同じ。
-
-  出典: 総務省統計局 令和2年国勢調査 小地域集計（統計GIS）。
-
-  https://www.e-stat.go.jp/gis'
+description: |-
+  Queria のエリア分析が町丁目ごとに使う値を、小地域の5つの表から1つに積んだテーブルです。source が元の表の名前で、ほかの列の意味は元の表と同じです。
 keywords:
   - e-stat
   - 国勢調査

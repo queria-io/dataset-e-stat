@@ -13,4 +13,5 @@ dependencies = [
     "pandas>=2.0",
     "xlrd>=2.0",
     "openpyxl>=3.1",
+    "fdl-cli>=0.19.0",
 ]

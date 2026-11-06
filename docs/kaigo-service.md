@@ -163,3 +163,41 @@ ORDER BY survey_year
 ```
 
 介護予防訪問介護と介護予防通所介護は総合事業へ移り、2017年調査を最後に表から無くなります。原典が「-」（該当なし）のセルは NULL です。
+
+## 補足: 介護サービス施設・事業所調査 介護保険施設数・定員・事業所数（kaigo_service スキーマ）
+
+| テーブル | 内容 | 主なカラム |
+|---------|------|-----------|
+| insurance_facility | 市区町村別・施設の種類別の介護保険施設数・定員 | survey_year / area_code / area_name / area_kind / prefecture_code / prefecture_name / facility_type / survey_form / measure / value |
+| service_establishment | 都道府県別・サービスの種類別の居宅サービス・地域密着型サービスの事業所数 | survey_year / area_code / area_name / area_kind / prefecture_code / prefecture_name / service_category / service_type / value |
+
+1セル1行の縦持ちで、指標は `measure` で選びます（`facility_count` 施設数、`capacity` 定員、
+`fte_workers` 常勤換算従事者数）。常勤換算従事者数が入るのは2017年調査までです。値が入るのは
+年・指標ごとに51.7%〜72.3%の行で、残りはその年その市区町村にその種類の施設が無い行です。
+
+#### 行政区の行を足すと二重に数える
+
+政令指定都市は市の合計行とその行政区の行が両方並びます。足し合わせて全国になるのは
+`area_kind` が `municipality` と `designated_city` の行だけです。行政区（`ward`）を混ぜると
+2024年の介護老人福祉施設の定員が全国604,469人に対して724,785人になります。
+
+## 補足: kaigo_service.insurance_facility
+
+介護サービス施設・事業所調査の介護保険施設数・定員を、市区町村別・施設の種類別に1セル1行で収録する。
+これらの施設は社会福祉施設等調査（welfare_facility.facility_statistics）には1行も入らない。
+収録は2001年〜2024年調査の24年、534,444行。
+地域は市区町村まで下りる。
+全国・47都道府県・市区町村に加えて、政令指定都市の行政区の行がある。
+area_code は調査時点の標準地域コードなので、平成の大合併の前後で同じ市区町村が別のコードで並ぶ。
+指標（measure）は施設数 facility_count・定員 capacity・常勤換算従事者数fte_workers の3つ。
+2012年調査から基本票（全施設）と詳細票（回収率の変動を受ける）の2本立てになり、2017年調査まで両方が出る。
+年をまたぐ系列はsurvey_form をそろえて作る。
+介護医療院は2018年調査から表に出る（62施設・定員4,533人 → 2024年調査で917施設・定員52,837人）。
+https://www.e-stat.go.jp/stat-search/files?toukei=00450042厚生労働省ポータル: https://www.mhlw.go.jp/toukei/list/24-22-2.html
+
+## 補足: kaigo_service.service_establishment
+
+収録は2013年〜2024年調査の12年、46,087行。
+サービスの種類は制度改正で入れ替わる。
+年をまたいで比べるときは地域密着型通所介護（2016年調査21,063）と合わせる。
+https://www.e-stat.go.jp/stat-search/files?toukei=00450042厚生労働省ポータル: https://www.mhlw.go.jp/toukei/list/24-22-2.html
