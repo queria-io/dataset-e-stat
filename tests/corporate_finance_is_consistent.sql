@@ -2,10 +2,13 @@
 -- 結果が0行ならテスト成功。
 --
 -- 1. 対象業種の範囲（scope）と原数値・季節調整値の組がすべてあり、取り始めの期が tables.yml の
---    initial_time どおり（四半期は2008年4〜6月期、季節調整値は1985年4〜6月期、年度は2008年度）。
+--    initial_time どおり（四半期は2008年4〜6月期、年度は2008年度）。季節調整値は全期間を取るので
+--    1985年4〜6月期から。
 --    最初の期から最後の期まで、四半期・年度の抜けが無い
 -- 2. キー（scope・季節調整・調査項目・業種・資本金規模・期）が一意で、単位が空でない
--- 3. 金融業、保険業以外の業種の四半期（原数値・金額の項目）で、次の恒等式がちょうど成り立つ（実測で差0）
+-- 3. 金融業、保険業以外の業種の四半期（原数値・金額の項目）で、次の恒等式がちょうど成り立つ（実測で差0）。
+--    内訳の規模・業種が無い組（業種 102・103 には 10億円以上が無い）はその内訳を0として足す。
+--    合計の行が無い組は失敗にする
 --    - 全規模（26）= 10億円以上（25）+ 1億円以上10億円未満（24）+ 1千万円以上1億円未満（19）
 --    - 1億円以上（23）= 25 + 24
 --    - 全産業（104）= 製造業（108）+ 非製造業（144）
@@ -98,26 +101,35 @@ nonfinancial AS (
 
 size_sums AS (
     SELECT 'size sum ' || item_code || ' ' || industry_code || ' ' || time AS check_name,
-        (max(value) FILTER (WHERE size_code = '25') + max(value) FILTER (WHERE size_code = '24')
-            + max(value) FILTER (WHERE size_code = '19'))::VARCHAR AS actual,
-        max(value) FILTER (WHERE size_code = '26')::VARCHAR AS expected
-    FROM nonfinancial
-    GROUP BY item_code, industry_code, time
-    HAVING abs(max(value) FILTER (WHERE size_code = '26')
-            - (max(value) FILTER (WHERE size_code = '25') + max(value) FILTER (WHERE size_code = '24')
-                + max(value) FILTER (WHERE size_code = '19'))) > 1
-        OR abs(max(value) FILTER (WHERE size_code = '23')
-            - (max(value) FILTER (WHERE size_code = '25') + max(value) FILTER (WHERE size_code = '24'))) > 1
+        (coalesce(s25, 0) + coalesce(s24, 0) + coalesce(s19, 0))::VARCHAR AS actual,
+        coalesce(s26::VARCHAR, 'missing') AS expected
+    FROM (
+        SELECT item_code, industry_code, time,
+            max(value) FILTER (WHERE size_code = '26') AS s26,
+            max(value) FILTER (WHERE size_code = '25') AS s25,
+            max(value) FILTER (WHERE size_code = '24') AS s24,
+            max(value) FILTER (WHERE size_code = '19') AS s19,
+            max(value) FILTER (WHERE size_code = '23') AS s23
+        FROM nonfinancial
+        GROUP BY item_code, industry_code, time
+    )
+    WHERE NOT coalesce(abs(s26 - (coalesce(s25, 0) + coalesce(s24, 0) + coalesce(s19, 0))) <= 1, false)
+        OR NOT coalesce(abs(s23 - (coalesce(s25, 0) + coalesce(s24, 0))) <= 1, true)
 ),
 
 industry_sums AS (
     SELECT 'industry sum ' || item_code || ' ' || size_code || ' ' || time AS check_name,
-        (max(value) FILTER (WHERE industry_code = '108') + max(value) FILTER (WHERE industry_code = '144'))::VARCHAR AS actual,
-        max(value) FILTER (WHERE industry_code = '104')::VARCHAR AS expected
-    FROM nonfinancial
-    GROUP BY item_code, size_code, time
-    HAVING abs(max(value) FILTER (WHERE industry_code = '104')
-        - (max(value) FILTER (WHERE industry_code = '108') + max(value) FILTER (WHERE industry_code = '144'))) > 1
+        (coalesce(i108, 0) + coalesce(i144, 0))::VARCHAR AS actual,
+        coalesce(i104::VARCHAR, 'missing') AS expected
+    FROM (
+        SELECT item_code, size_code, time,
+            max(value) FILTER (WHERE industry_code = '104') AS i104,
+            max(value) FILTER (WHERE industry_code = '108') AS i108,
+            max(value) FILTER (WHERE industry_code = '144') AS i144
+        FROM nonfinancial
+        GROUP BY item_code, size_code, time
+    )
+    WHERE NOT coalesce(abs(i104 - (coalesce(i108, 0) + coalesce(i144, 0))) <= 1, false)
 ),
 
 scope_sums AS (

@@ -374,11 +374,11 @@ tables:
     merge_keys: [cat01, cat02, cat03, time]
     incremental: true
     initial_time: "20080"
+  # 季節調整値は季節指数を見直すたびに過去の期まで改訂されるので、incremental にせず毎回全量を
+  # 取り直して置き換える（merge_keys を持たないので replace）。全量でも2,280行。
   - name: corporate_finance_nonfinancial_sa_quarterly
     description: 法人企業統計調査 時系列データ 金融業、保険業以外の業種（季節調整値・四半期）
     statsDataId: "0003066618"
-    merge_keys: [cat01, cat02, cat03, time]
-    incremental: true
   - name: corporate_finance_all_industries_quarterly
     description: 法人企業統計調査 時系列データ 全産業（金融業、保険業を含む）（原数値・四半期）
     statsDataId: "0003061946"

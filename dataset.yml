@@ -201,6 +201,9 @@ contributors:
   - title: 国土交通省
     path: https://www.mlit.go.jp/
     roles: [rightsHolder]
+  - title: 財務省
+    path: https://www.mof.go.jp/
+    roles: [rightsHolder]
 
 temporal_coverage: { start: "1970", end: null }
 spatial_coverage: [JP]

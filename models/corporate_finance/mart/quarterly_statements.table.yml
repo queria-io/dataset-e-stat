@@ -64,10 +64,10 @@ fields:
   description: size_code に対応する資本金規模の名称。同じコードでも表によって「1億円以上 - 10億円未満」「1億円 - 10億円」のように表記が違う
 - name: time
   title: 時間軸コード
-  description: 時間軸コード。四半期は YYYYQ（20262 = 2026年4〜6月）、年度は YYYY0（20250 = 2025年度）
+  description: 時間軸コード。YYYYQ（20262 = 2026年4〜6月）
 - name: time_name
   title: 時間軸名
-  description: 時間軸の名称（2026年4-6月、2025年度 など）
+  description: 時間軸の名称（2026年4-6月 など）
 - name: year
   title: 年
   description: 暦年（西暦4桁）。1〜3月期はその年の行で、年度は fiscal_year を使う
