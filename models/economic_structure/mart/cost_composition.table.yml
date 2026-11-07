@@ -1,0 +1,49 @@
+schema: economic_structure
+name: cost_composition
+title: 事業区分別の費用内訳割合
+description: |-
+  経済構造実態調査の企業等に関する集計2を、調査年・事業区分（中分類、一部は小分類）・費用項目ごとに持つテーブルです。費用総額に占める各費用項目の割合（％）で、全国の値です。2019・2020・2022〜2025年を収録しています。
+
+  - 事業区分ごとに割合を足すと100になります
+  - 産業共通の項目と、特定の事業区分だけの項目が cost_scope で分かれます
+keywords:
+- e-stat
+- 経済構造実態調査
+- 総務省
+- 経済産業省
+- 費用構成
+- 原価
+- 外注費
+- 給与総額
+published: true
+themes:
+- economy
+sources:
+- path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003414957
+- path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003433761
+- path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004007366
+- path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004018723
+- path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004030062
+- path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004055483
+fields:
+- name: year
+  title: 調査年
+  description: 調査年（西暦4桁）。前年1年間の売上・費用を、調査年の6月1日現在の企業等について集計した値。2021年は経済センサス‐活動調査の年でこの調査が無い
+- name: business_code
+  title: 事業区分コード
+  description: 事業区分のコード（日本標準産業分類の中分類、一部は小分類）。2024年までの表は表内の通し番号を振っていたので、名称の先頭のコードに置き換えている
+- name: business_name
+  title: 事業区分名
+  description: business_code に対応する事業区分名
+- name: cost_item_code
+  title: 費用項目コード
+  description: 費用項目のコード。2024年に一部が「1022-2024」の形に振り直されている
+- name: cost_scope
+  title: 費用項目の対象
+  description: どの事業区分の費用項目か。産業共通 はすべての事業区分に共通の項目、そのほかは特定の事業区分（電気業、卸売業、小売業 など）だけの項目。「その他」だけは NULL
+- name: cost_item
+  title: 費用項目名
+  description: 費用項目の名称（給与総額、外注費、燃料費 など）
+- name: share_percent
+  title: 費用に占める割合
+  description: その事業区分の費用総額に占める割合（％）。事業区分ごとに足すと100になる。その事業区分に無い費用項目は NULL

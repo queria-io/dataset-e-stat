@@ -234,3 +234,80 @@ groups:
         stats_data_id: "0004015880"
         updated_date: "2026-09-30"
         primary_key: [tab, cat01, cat02]
+  economic_structure:
+    title: 経済構造実態調査 企業産業別の企業等数・売上・費用・付加価値、事業区分別の費用内訳、都道府県別の事業所数・売上（2019〜2025年）
+    dbt_select: "+enterprise_industry +cost_composition +establishment_prefecture"
+    # 毎年の調査で、調査年ごとに統計表が別になる。2021年は経済センサス‐活動調査の年で
+    # この調査は行われていない。2024年は経済センサス‐基礎調査の確報を反映した参考値の表
+    # (0004054008 など) も出ているが、ほかの年と同じ基準の当初の表を取る。
+    # 次の調査年の表は stats_data_id を足して取る。
+    tables:
+      # 二次集計 企業等に関する集計1 企業産業（小分類）、経営組織別企業等数、売上（収入）金額、
+      # 年間商品販売額、費用総額、主な費用項目及び付加価値額（全国）
+      - name: economic_structure_enterprise_2019
+        stats_data_id: "0003414933"
+        updated_date: "2026-10-28"
+        primary_key: [tab, cat01, cat02, area, time]
+      - name: economic_structure_enterprise_2020
+        stats_data_id: "0003433753"
+        updated_date: "2026-10-28"
+        primary_key: [tab, cat01, cat02, area, time]
+      - name: economic_structure_enterprise_2022
+        stats_data_id: "0004007360"
+        updated_date: "2026-10-28"
+        primary_key: [tab, cat01, cat02, area, time]
+      - name: economic_structure_enterprise_2023
+        stats_data_id: "0004018720"
+        updated_date: "2026-10-28"
+        primary_key: [tab, cat01, cat02, area, time]
+      - name: economic_structure_enterprise_2024
+        stats_data_id: "0004030059"
+        updated_date: "2026-10-28"
+        primary_key: [tab, cat01, cat02, area, time]
+      - name: economic_structure_enterprise_2025
+        stats_data_id: "0004055461"
+        updated_date: "2026-10-28"
+        primary_key: [tab, cat01, cat02, area, time]
+      # 二次集計 企業等に関する集計2 事業区分（中分類、一部小分類）別費用内訳割合（全国）
+      - name: economic_structure_cost_2019
+        stats_data_id: "0003414957"
+        updated_date: "2026-10-28"
+        primary_key: [tab, cat01, area, time]
+      - name: economic_structure_cost_2020
+        stats_data_id: "0003433761"
+        updated_date: "2026-10-28"
+        primary_key: [tab, cat01, area, time]
+      - name: economic_structure_cost_2022
+        stats_data_id: "0004007366"
+        updated_date: "2026-10-28"
+        primary_key: [tab, cat01, area, time]
+      - name: economic_structure_cost_2023
+        stats_data_id: "0004018723"
+        updated_date: "2026-10-28"
+        primary_key: [tab, cat01, area, time]
+      - name: economic_structure_cost_2024
+        stats_data_id: "0004030062"
+        updated_date: "2026-10-28"
+        primary_key: [tab, cat01, area, time]
+      - name: economic_structure_cost_2025
+        stats_data_id: "0004055483"
+        updated_date: "2026-10-28"
+        primary_key: [tab, cat01, area, time]
+      # 三次集計 事業所に関する集計1 産業（大分類）別事業所数及び売上（収入）金額（全国、都道府県）。
+      # 2019・2020年の調査にこの表は無い
+      - name: economic_structure_establishment_2022
+        stats_data_id: "0004009880"
+        updated_date: "2026-10-28"
+        primary_key: [tab, cat01, area, time]
+      - name: economic_structure_establishment_2023
+        stats_data_id: "0004021920"
+        updated_date: "2026-10-28"
+        primary_key: [tab, cat01, area, time]
+      - name: economic_structure_establishment_2024
+        stats_data_id: "0004032882"
+        updated_date: "2026-10-28"
+        primary_key: [tab, cat01, area, time]
+      - name: economic_structure_establishment_2025
+        stats_data_id: "0004068497"
+        updated_date: "2026-10-28"
+        primary_key: [tab, cat01, area, time]
