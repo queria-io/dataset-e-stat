@@ -51,6 +51,9 @@ models:
         +materialized: table
       stg:
         +materialized: table
+    corporate_finance:
+      stg:
+        +materialized: table
     cpi:
       stg:
         +materialized: table

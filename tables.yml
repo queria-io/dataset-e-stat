@@ -352,3 +352,110 @@ tables:
       cdCat02: "0"
       cdCat03: "0"
       cdCat04: "0,1,2101,210101,210102,210103,210104,210105,210106,210107,210108,210109,210110"
+
+  # 法人企業統計調査 時系列データ（財務省）
+  # 四半期別調査（原数値・季節調整値）と年次別調査の表を、対象業種の範囲ごとに取る。
+  # どの表も cat01=調査項目・cat02=業種・cat03=資本金規模の3軸で、地域の軸と表章項目を
+  # 持たない。調査項目のコードは表ごとに振られていて、同じコードでも表が違えば別の項目に
+  # なる（001 は原数値の表では母集団、季節調整値の表では売上高）ので、stg で表の範囲を
+  # 列に残して積む。
+  # 時間軸コードは四半期が YYYYQ（20262 = 2026年4〜6月）、年度が YYYY0（20250 = 2025年度）。
+  # 金融業、保険業以外の業種の原数値は全期間で四半期2,300万行・年度750万行あり、初回の
+  # 取得だけで Sync の上限を超えるので、金融業、保険業の表がそろう2008年度から取る。
+  - name: corporate_finance_nonfinancial_quarterly
+    description: 法人企業統計調査 時系列データ 金融業、保険業以外の業種（原数値・四半期）
+    statsDataId: "0003060191"
+    merge_keys: [cat01, cat02, cat03, time]
+    incremental: true
+    initial_time: "20082"
+  - name: corporate_finance_nonfinancial_annual
+    description: 法人企業統計調査 時系列データ 金融業、保険業以外の業種（原数値・年度）
+    statsDataId: "0003060791"
+    merge_keys: [cat01, cat02, cat03, time]
+    incremental: true
+    initial_time: "20080"
+  - name: corporate_finance_nonfinancial_sa_quarterly
+    description: 法人企業統計調査 時系列データ 金融業、保険業以外の業種（季節調整値・四半期）
+    statsDataId: "0003066618"
+    merge_keys: [cat01, cat02, cat03, time]
+    incremental: true
+  - name: corporate_finance_all_industries_quarterly
+    description: 法人企業統計調査 時系列データ 全産業（金融業、保険業を含む）（原数値・四半期）
+    statsDataId: "0003061946"
+    merge_keys: [cat01, cat02, cat03, time]
+    incremental: true
+  - name: corporate_finance_all_industries_annual
+    description: 法人企業統計調査 時系列データ 全産業（金融業、保険業を含む）（原数値・年度）
+    statsDataId: "0003061945"
+    merge_keys: [cat01, cat02, cat03, time]
+    incremental: true
+  - name: corporate_finance_finance_insurance_quarterly
+    description: 法人企業統計調査 時系列データ 金融業、保険業（集約）（原数値・四半期）
+    statsDataId: "0003061948"
+    merge_keys: [cat01, cat02, cat03, time]
+    incremental: true
+  - name: corporate_finance_finance_insurance_annual
+    description: 法人企業統計調査 時系列データ 金融業、保険業（集約）（原数値・年度）
+    statsDataId: "0003061947"
+    merge_keys: [cat01, cat02, cat03, time]
+    incremental: true
+  - name: corporate_finance_banking_quarterly
+    description: 法人企業統計調査 時系列データ 銀行業（原数値・四半期）
+    statsDataId: "0003060192"
+    merge_keys: [cat01, cat02, cat03, time]
+    incremental: true
+  - name: corporate_finance_banking_annual
+    description: 法人企業統計調査 時系列データ 銀行業（原数値・年度）
+    statsDataId: "0003060824"
+    merge_keys: [cat01, cat02, cat03, time]
+    incremental: true
+  - name: corporate_finance_nondeposit_credit_quarterly
+    description: 法人企業統計調査 時系列データ 貸金業、クレジットカード業等非預金信用機関（原数値・四半期）
+    statsDataId: "0003060193"
+    merge_keys: [cat01, cat02, cat03, time]
+    incremental: true
+  - name: corporate_finance_nondeposit_credit_annual
+    description: 法人企業統計調査 時系列データ 貸金業、クレジットカード業等非預金信用機関（原数値・年度）
+    statsDataId: "0003060825"
+    merge_keys: [cat01, cat02, cat03, time]
+    incremental: true
+  - name: corporate_finance_securities_quarterly
+    description: 法人企業統計調査 時系列データ 金融商品取引業（第一種金融商品取引業であって有価証券関連業に限る）（原数値・四半期）
+    statsDataId: "0003060194"
+    merge_keys: [cat01, cat02, cat03, time]
+    incremental: true
+  - name: corporate_finance_securities_annual
+    description: 法人企業統計調査 時系列データ 金融商品取引業（第一種金融商品取引業であって有価証券関連業に限る）（原数値・年度）
+    statsDataId: "0003060826"
+    merge_keys: [cat01, cat02, cat03, time]
+    incremental: true
+  - name: corporate_finance_other_securities_quarterly
+    description: 法人企業統計調査 時系列データ その他の金融商品取引業、商品先物取引業（原数値・四半期）
+    statsDataId: "0003060221"
+    merge_keys: [cat01, cat02, cat03, time]
+    incremental: true
+  - name: corporate_finance_other_securities_annual
+    description: 法人企業統計調査 時系列データ その他の金融商品取引業、商品先物取引業（原数値・年度）
+    statsDataId: "0003060827"
+    merge_keys: [cat01, cat02, cat03, time]
+    incremental: true
+  - name: corporate_finance_insurance_quarterly
+    description: 法人企業統計調査 時系列データ 保険業（その他の保険業を除く）（集約）（原数値・四半期）
+    statsDataId: "0003060222"
+    merge_keys: [cat01, cat02, cat03, time]
+    incremental: true
+  - name: corporate_finance_insurance_annual
+    description: 法人企業統計調査 時系列データ 保険業（その他の保険業を除く）（集約）（原数値・年度）
+    statsDataId: "0003060828"
+    merge_keys: [cat01, cat02, cat03, time]
+    incremental: true
+  - name: corporate_finance_other_insurance_quarterly
+    description: 法人企業統計調査 時系列データ その他の保険業（原数値・四半期）
+    statsDataId: "0003060223"
+    merge_keys: [cat01, cat02, cat03, time]
+    incremental: true
+  - name: corporate_finance_other_insurance_annual
+    description: 法人企業統計調査 時系列データ その他の保険業（原数値・年度）
+    statsDataId: "0003060829"
+    merge_keys: [cat01, cat02, cat03, time]
+    incremental: true

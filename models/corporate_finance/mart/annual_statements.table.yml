@@ -1,0 +1,72 @@
+schema: corporate_finance
+name: annual_statements
+title: 法人企業統計 年度別の財務諸表
+description: |-
+  法人企業統計調査の年次別調査の値を、調査項目・業種・資本金規模・年度ごとに縦に持つテーブルです。金融業、保険業以外の業種、金融業、保険業の各業種、全産業の範囲を2008年度から収録しています。
+
+  - 調査項目のコードは scope ごとに違うので、scope で絞ってから item_code を使ってください
+  - 業種・資本金規模・調査項目は合計と内訳が同じ列に並ぶので、絞ってから集計してください
+  - 資本金1千万円未満の法人も含み、四半期別調査とは対象が違います
+keywords:
+- e-stat
+- 法人企業統計
+- 財務省
+- 企業
+- 売上高
+- 経常利益
+- 設備投資
+- 財務
+- 付加価値
+published: true
+themes:
+- economy
+sources:
+- path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003060791
+- path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003061945
+- path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003061947
+- path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003060824
+- path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003060825
+- path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003060826
+- path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003060827
+- path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003060828
+- path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003060829
+fields:
+- name: scope
+  title: 対象業種の範囲
+  description: 対象業種の範囲（取り込んだ元の表）。nonfinancial=金融業、保険業以外の業種、all_industries=全産業（金融業、保険業を含む）、finance_insurance=金融業、保険業、banking=銀行業、nondeposit_credit=貸金業、クレジットカード業等非預金信用機関、securities=金融商品取引業（第一種金融商品取引業であって有価証券関連業に限る）、other_securities=その他の金融商品取引業、商品先物取引業、insurance=保険業（その他の保険業を除く）、other_insurance=その他の保険業。調査項目のコードは範囲ごとに振られているので、item_code は同じ scope の中でだけ比べる
+- name: scope_name
+  title: 対象業種の範囲名
+  description: scope に対応する範囲名
+- name: item_code
+  title: 調査項目コード
+  description: 調査項目コード（3桁）。scope ごとに振られたコードで、001 は原数値では母集団、季節調整値では売上高を指す。貸借対照表の項目は期末残高で、(当期末) と (前期末) が別の項目になっている
+- name: item
+  title: 調査項目名
+  description: item_code に対応する調査項目名。「売上高(当期末)」のように期の位置が括弧で付く。資産合計と内訳の資産、売上高と売上原価など、合計と内訳が同じ列に並ぶ
+- name: unit
+  title: 単位
+  description: 単位。金額は百万円、母集団は社、役員数・従業員数は人、比率は ％、回転率は 回、回転期間は 月。比率・回転率は足し上げても意味を持たない
+- name: industry_code
+  title: 業種コード
+  description: 業種コード（3桁）。104=全産業（金融業、保険業以外の業種の全体）、108=製造業、144=非製造業。製造業・非製造業とその内訳、(集約) の付いた業種とその内訳が同じ列に並ぶので、絞らずに合計すると何重にも数える。「(H20年度まで)」の業種は2008年度までの分類で、2009年度以降は値が無い
+- name: industry_name
+  title: 業種名
+  description: industry_code に対応する業種名。季節調整値の 104 は「全産業」と名付けられているが、金融業、保険業を含まない
+- name: size_code
+  title: 資本金規模コード
+  description: 資本金規模コード（2桁）。26=全規模、25=10億円以上、24=1億円以上10億円未満、19=1千万円以上1億円未満、16=1千万円未満。23=1億円以上、22=1億円未満のような再掲と、19・16 の内訳（21・18・20・17・15・14・13・12・11）も同じ列に並ぶので、絞らずに合計すると何重にも数える。金融業、保険業の範囲は区分が少ない
+- name: size_name
+  title: 資本金規模名
+  description: size_code に対応する資本金規模の名称。同じコードでも表によって「1億円以上 - 10億円未満」「1億円 - 10億円」のように表記が違う
+- name: time
+  title: 時間軸コード
+  description: 時間軸コード。YYYY0（20250 = 2025年度）
+- name: time_name
+  title: 時間軸名
+  description: 時間軸の名称（2025年度 など）
+- name: fiscal_year
+  title: 年度
+  description: 年度（4月始まり、西暦4桁）
+- name: value
+  title: 統計値
+  description: 統計値。単位は unit。計算結果が値を持たない項目（「*」）は NULL
