@@ -234,3 +234,185 @@ groups:
         stats_data_id: "0004015880"
         updated_date: "2026-09-30"
         primary_key: [tab, cat01, cat02]
+  enterprise_activity:
+    title: 経済産業省企業活動基本調査 確報 産業別・都道府県別・資本金規模別の財務、研究開発、外資系企業、子会社の表（2020〜2025年調査）
+    dbt_select: "+industry_finance +prefecture_finance +capital_size_finance +research_development +foreign_affiliated_finance +subsidiary_count"
+    # 調査年ごとに統計表が別になり、表番号も年で変わるので表題で選んでいる。
+    # 2019年以前の調査は行の軸（産業×内訳×年度をつないだ名称）の書き方が違い、大分類に
+    # 産業コードが付かないので取っていない。次の調査年の表は stats_data_id を足して取る。
+    tables:
+      # 第1巻 総括表 第1表 産業別、企業数、事業所数、従業者数、資産、負債及び純資産、売上高、…付加価値額、子会社・関連会社数
+      - name: enterprise_activity_summary_2020
+        stats_data_id: "0003458218"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_summary_2021
+        stats_data_id: "0003459118"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_summary_2022
+        stats_data_id: "0004018975"
+        updated_date: "2024-07-16"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_summary_2023
+        stats_data_id: "0004019540"
+        updated_date: "2024-08-09"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_summary_2024
+        stats_data_id: "0004029505"
+        updated_date: "2025-07-29"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_summary_2025
+        stats_data_id: "0004062616"
+        updated_date: "2026-09-16"
+        primary_key: [cat01, cat02]
+      # 第1巻 地域に関する表 第16表 産業別、都道府県別、企業数、事業所数、従業者数、…
+      - name: enterprise_activity_prefecture_2020
+        stats_data_id: "0003458234"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_prefecture_2021
+        stats_data_id: "0003459125"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_prefecture_2022
+        stats_data_id: "0004018991"
+        updated_date: "2024-07-16"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_prefecture_2023
+        stats_data_id: "0004019556"
+        updated_date: "2024-08-09"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_prefecture_2024
+        stats_data_id: "0004029520"
+        updated_date: "2025-07-29"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_prefecture_2025
+        stats_data_id: "0004062632"
+        updated_date: "2026-09-16"
+        primary_key: [cat01, cat02]
+      # 第1巻 第3-1表 産業別、資本金規模別、企業数、売上高、経常利益、資産、負債及び純資産、剰余金の配当状況
+      - name: enterprise_activity_capital_balance_2020
+        stats_data_id: "0003458220"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_capital_balance_2021
+        stats_data_id: "0003459138"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_capital_balance_2022
+        stats_data_id: "0004018977"
+        updated_date: "2024-07-16"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_capital_balance_2023
+        stats_data_id: "0004019542"
+        updated_date: "2024-08-09"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_capital_balance_2024
+        stats_data_id: "0004029507"
+        updated_date: "2025-07-29"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_capital_balance_2025
+        stats_data_id: "0004062618"
+        updated_date: "2026-09-16"
+        primary_key: [cat01, cat02]
+      # 第1巻 第4表 産業別、資本金規模別、企業数、売上高、経常利益、当期純利益、付加価値額、営業費用、…
+      - name: enterprise_activity_capital_business_2020
+        stats_data_id: "0003458222"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_capital_business_2021
+        stats_data_id: "0003459140"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_capital_business_2022
+        stats_data_id: "0004018979"
+        updated_date: "2024-07-16"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_capital_business_2023
+        stats_data_id: "0004019544"
+        updated_date: "2024-08-09"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_capital_business_2024
+        stats_data_id: "0004029509"
+        updated_date: "2025-07-29"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_capital_business_2025
+        stats_data_id: "0004062620"
+        updated_date: "2026-09-16"
+        primary_key: [cat01, cat02]
+      # 第1巻 研究開発に関する表 第10表 産業別、企業数、売上高、研究開発費及び売上高比率、受託研究費、研究開発投資、能力開発費
+      - name: enterprise_activity_research_2020
+        stats_data_id: "0003458228"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_research_2021
+        stats_data_id: "0003459146"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_research_2022
+        stats_data_id: "0004018985"
+        updated_date: "2024-07-16"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_research_2023
+        stats_data_id: "0004019550"
+        updated_date: "2024-08-09"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_research_2024
+        stats_data_id: "0004029514"
+        updated_date: "2025-07-29"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_research_2025
+        stats_data_id: "0004062626"
+        updated_date: "2026-09-16"
+        primary_key: [cat01, cat02]
+      # 第1巻 外資系企業に関する表 第15表 産業別、企業数、事業所数、従業者数、…（外資系企業）
+      - name: enterprise_activity_foreign_2020
+        stats_data_id: "0003458233"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_foreign_2021
+        stats_data_id: "0003459124"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_foreign_2022
+        stats_data_id: "0004018990"
+        updated_date: "2024-07-16"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_foreign_2023
+        stats_data_id: "0004019555"
+        updated_date: "2024-08-09"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_foreign_2024
+        stats_data_id: "0004029519"
+        updated_date: "2025-07-29"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_foreign_2025
+        stats_data_id: "0004062631"
+        updated_date: "2026-09-16"
+        primary_key: [cat01, cat02]
+      # 第3巻 第2表 産業別、子会社・関連会社保有の企業数、議決権所有割合別、国内・海外別、子会社業種別社数
+      - name: enterprise_activity_subsidiary_2020
+        stats_data_id: "0003458249"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_subsidiary_2021
+        stats_data_id: "0003459158"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_subsidiary_2022
+        stats_data_id: "0004019007"
+        updated_date: "2024-07-16"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_subsidiary_2023
+        stats_data_id: "0004019572"
+        updated_date: "2024-08-09"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_subsidiary_2024
+        stats_data_id: "0004029556"
+        updated_date: "2025-07-29"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_subsidiary_2025
+        stats_data_id: "0004062649"
+        updated_date: "2026-09-16"
+        primary_key: [cat01, cat02]

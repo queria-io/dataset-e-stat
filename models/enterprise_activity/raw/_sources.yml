@@ -1,0 +1,50 @@
+version: 2
+
+sources:
+  - name: estat_source
+    database: e_stat
+    schema: _source
+    tables:
+      # 手元でだけ取り込む (load_local.py の enterprise_activity)。CI の main.py はロードしない
+      - name: enterprise_activity_summary_2020
+      - name: enterprise_activity_summary_2021
+      - name: enterprise_activity_summary_2022
+      - name: enterprise_activity_summary_2023
+      - name: enterprise_activity_summary_2024
+      - name: enterprise_activity_summary_2025
+      - name: enterprise_activity_prefecture_2020
+      - name: enterprise_activity_prefecture_2021
+      - name: enterprise_activity_prefecture_2022
+      - name: enterprise_activity_prefecture_2023
+      - name: enterprise_activity_prefecture_2024
+      - name: enterprise_activity_prefecture_2025
+      - name: enterprise_activity_capital_balance_2020
+      - name: enterprise_activity_capital_balance_2021
+      - name: enterprise_activity_capital_balance_2022
+      - name: enterprise_activity_capital_balance_2023
+      - name: enterprise_activity_capital_balance_2024
+      - name: enterprise_activity_capital_balance_2025
+      - name: enterprise_activity_capital_business_2020
+      - name: enterprise_activity_capital_business_2021
+      - name: enterprise_activity_capital_business_2022
+      - name: enterprise_activity_capital_business_2023
+      - name: enterprise_activity_capital_business_2024
+      - name: enterprise_activity_capital_business_2025
+      - name: enterprise_activity_research_2020
+      - name: enterprise_activity_research_2021
+      - name: enterprise_activity_research_2022
+      - name: enterprise_activity_research_2023
+      - name: enterprise_activity_research_2024
+      - name: enterprise_activity_research_2025
+      - name: enterprise_activity_foreign_2020
+      - name: enterprise_activity_foreign_2021
+      - name: enterprise_activity_foreign_2022
+      - name: enterprise_activity_foreign_2023
+      - name: enterprise_activity_foreign_2024
+      - name: enterprise_activity_foreign_2025
+      - name: enterprise_activity_subsidiary_2020
+      - name: enterprise_activity_subsidiary_2021
+      - name: enterprise_activity_subsidiary_2022
+      - name: enterprise_activity_subsidiary_2023
+      - name: enterprise_activity_subsidiary_2024
+      - name: enterprise_activity_subsidiary_2025

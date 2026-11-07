@@ -1,0 +1,55 @@
+schema: enterprise_activity
+name: prefecture_finance
+title: 都道府県別・産業別の企業数・財務
+description: |-
+  経済産業省企業活動基本調査の都道府県別・産業別の企業数・事業所数・従業者数・財務を、年度ごとに縦に持つテーブルです。2019〜2024年度を収録しています。
+
+  - 全国と都道府県、産業の計と内訳が同じ列に並ぶので、絞ってから合計してください
+  - 秘匿のため、都道府県の和が全国に一致しない項目があります
+keywords:
+- e-stat
+- 企業活動基本調査
+- 経済産業省
+- 企業
+- 都道府県
+published: true
+themes:
+- economy
+sources:
+- path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003458234
+- path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003459125
+- path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004018991
+- path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004019556
+- path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004029520
+- path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004062632
+fields:
+- name: fiscal_year
+  title: 年度
+  description: 実績の年度（4月始まり、西暦4桁）。調査年の前年度。2025年調査は2024年度実績
+- name: survey_year
+  title: 調査年
+  description: 値を取った調査の年（西暦4桁）
+- name: industry_code
+  title: 産業コード
+  description: 産業コード。総合計=全体、000=合計（調査対象の産業）、C・E・F・G・I1・I2・J1・K1・L・M・N・O・R1=大分類（I1 卸売業・I2 小売業のように一部は大分類を分けた区分）、3桁=中分類・小分類、R2=サービス業（その他のサービス業）、Z=その他の産業。企業数では、合計（000）が大分類の和に、総合計が 000 + R2 + Z にちょうど一致する。総合計・合計・大分類・内訳が同じ列に並ぶので、絞らずに合計すると何重にも数える
+- name: industry_name
+  title: 産業名
+  description: industry_code に対応する産業名
+- name: area
+  title: 地域コード
+  description: 都道府県のコード（5桁）。00000=全国、01000〜47000=都道府県。企業を本社のある都道府県に数えた値で、都道府県の企業数の和が全国に一致する
+- name: prefecture_name
+  title: 都道府県名
+  description: area に対応する名称
+- name: measure_code
+  title: 測定項目コード
+  description: 測定項目のコード（原典の表頭のコード）。表の種類ごとに振られていて、2020〜2025年調査で同じ
+- name: measure
+  title: 測定項目
+  description: 測定項目の名称。「資産_流動資産」のように上位の項目と「_」でつないである。計と内訳（資産_計 と 資産_流動資産 など）が同じ列に並ぶ
+- name: unit
+  title: 単位
+  description: 単位（社・事業所・人・百万円・％）
+- name: value
+  title: 値
+  description: 値。原典の「-」（該当なし）と「x」（秘匿）はどちらも NULL

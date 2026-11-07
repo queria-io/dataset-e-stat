@@ -25,6 +25,7 @@
 | `code` | 標準地域コードと日本標準産業分類 | [code.md](docs/code.md) |
 | `resident_registry` | 住民基本台帳の人口・世帯数・人口動態 | [resident-registry.md](docs/resident-registry.md) |
 | `economic_census` | 経済センサス‐活動調査 | [economic-census.md](docs/economic-census.md) |
+| `enterprise_activity` | 経済産業省企業活動基本調査 | [enterprise-activity.md](docs/enterprise-activity.md) |
 | `household` | 家計調査 | [household.md](docs/household.md) |
 | `labor` | 労働力調査 | [labor.md](docs/labor.md) |
 | `manufacture` | 工業統計調査 | [manufacture.md](docs/manufacture.md) |
