@@ -2,11 +2,12 @@
 -- 結果が0行ならテスト成功。
 --
 -- 1. 調査年がそろっている（企業産業・費用内訳は 2019・2020・2022〜2025年、事業所は 2022〜2025年）
--- 2. どの行も表章項目（measure_code）と産業の段（industry_level）が決まる。表章項目のコードは年で
---    振り直されるので、マッピングから漏れると measure_code が NULL になる
+-- 2. どの行も表章項目（measure_code）が決まる。表章項目のコードは年で振り直されるので、マッピングから
+--    漏れると measure_code が NULL になる。全産業（industry_level = 'total'）の行が年ごとに
+--    経営組織6 × 表章項目10 の60行ある
 -- 3. 企業産業: キー（年・産業・経営組織・表章項目）が一意。総数の経営組織（0）は 1（会社企業）と
 --    2（会社以外の法人）の和に、全産業は大分類の和に一致する。原典は区分ごとに丸めるうえ秘匿もあるので、
---    0.1% までのずれを許す（実測の最大は全産業の売上で 0.0006%）
+--    0.1% までのずれを許す（実測の最大は全産業の売上で 0.0006%）。片方が無いときも失敗にする
 -- 4. 費用内訳: 事業区分ごとに割合の和が100%（実測で 100 ± 1e-13）
 -- 5. 事業所: 全国の事業所数は都道府県の和に一致する（実測で全年・全産業ちょうど）
 --
@@ -47,8 +48,17 @@ unmapped AS (
     SELECT 'enterprise_industry unmapped measure ' || year AS check_name,
         count(*)::VARCHAR AS actual, '0' AS expected
     FROM enterprise
-    WHERE measure_code IS NULL OR industry_code IS NULL OR industry_level IS NULL
+    WHERE measure_code IS NULL OR industry_code IS NULL
     GROUP BY year
+),
+
+totals AS (
+    SELECT 'enterprise_industry total rows ' || year AS check_name,
+        count(*)::VARCHAR AS actual, '60' AS expected
+    FROM enterprise
+    WHERE industry_level = 'total'
+    GROUP BY year
+    HAVING count(*) <> 60
 ),
 
 duplicates AS (
@@ -66,9 +76,9 @@ organization_sums AS (
     FROM enterprise
     WHERE industry_level = 'total'
     GROUP BY year, industry_code, measure_code
-    HAVING abs(sum(value) FILTER (WHERE organization_code IN ('1', '2'))
+    HAVING NOT coalesce(abs(sum(value) FILTER (WHERE organization_code IN ('1', '2'))
         - max(value) FILTER (WHERE organization_code = '0'))
-        > 0.001 * max(value) FILTER (WHERE organization_code = '0')
+        <= 0.001 * max(value) FILTER (WHERE organization_code = '0'), false)
 ),
 
 division_sums AS (
@@ -78,9 +88,9 @@ division_sums AS (
     FROM enterprise
     WHERE organization_code = '0'
     GROUP BY year, measure_code
-    HAVING abs(sum(value) FILTER (WHERE industry_level = 'division')
+    HAVING NOT coalesce(abs(sum(value) FILTER (WHERE industry_level = 'division')
         - max(value) FILTER (WHERE industry_level = 'total'))
-        > 0.001 * max(value) FILTER (WHERE industry_level = 'total')
+        <= 0.001 * max(value) FILTER (WHERE industry_level = 'total'), false)
 ),
 
 cost_sums AS (
@@ -104,6 +114,7 @@ prefecture_sums AS (
 
 SELECT * FROM years WHERE actual IS DISTINCT FROM expected
 UNION ALL SELECT * FROM unmapped WHERE actual <> expected
+UNION ALL SELECT * FROM totals
 UNION ALL SELECT * FROM duplicates
 UNION ALL SELECT * FROM organization_sums
 UNION ALL SELECT * FROM division_sums
