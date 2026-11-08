@@ -45,6 +45,7 @@
 | `rail_transport` | 鉄道輸送統計調査 | [rail-transport.md](docs/rail-transport.md) |
 | `port` | 港湾調査 | [port.md](docs/port.md) |
 | `housing_survey` | 住宅・土地統計調査 | [housing-survey.md](docs/housing-survey.md) |
+| `trade` | 普通貿易統計（品別国別表） | [trade.md](docs/trade.md) |
 | `crop` | 作物統計調査（野菜） | [vegetable-production.md](docs/vegetable-production.md) |
 | `household_structure` | 全国家計構造調査 | [household-structure.md](docs/household-structure.md) |
 | `vital_statistics` | 人口動態調査 | [vital-statistics.md](docs/vital-statistics.md) |

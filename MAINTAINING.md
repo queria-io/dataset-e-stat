@@ -23,6 +23,12 @@ Check updates のワークフローが e-Stat の更新日と比べ、変わっ�
 （医療施設調査の二次医療圏と市区町村の所属など）を読むグループは `class_order: true` を付けます。
 fetch が分類軸ごとの並び順を `<軸>_order` 列（cat01_order など）として残します。
 
+普通貿易統計の品別国別表（trade グループ）は、過去の年だけを手元で取り込み、新しい年は CI の
+Sync が毎日取り直します。境目は `catalog_filter.through_year` です。Check updates も through_year
+までの年のファイルだけを見張ります。境目を進めるときは、through_year と catalog_modified_date・
+各表の updated_date を直し、`fetch trade` と `load trade` を回してから PR にします。先に境目だけを
+進めると、その年が手元の分にも CI の分にも入らなくなります。
+
 統計表データベース（API）に無く、ファイル（Excel）でだけ配られる統計は、グループに `fetcher` と
 `stats_code` を書きます。fetch は `pipelines/<fetcher>.py` の `fetch_local` に取得を任せ、
 Check updates は表の更新日の代わりに、その政府統計コードのファイルの最終更新日（`catalog_modified_date`）を比べます。
