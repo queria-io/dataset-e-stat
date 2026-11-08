@@ -1,11 +1,19 @@
 name: Check updates
 
-# 手元で取り込んだ統計表 (local_tables.yml) の e-Stat 側の更新日を見張る。
-# 変わっていたら issue を立てる。数十秒で終わる
+# 手元で取り込んだ統計表 (local_tables.yml) の e-Stat 側の更新日と、watch_stats.yml の統計に
+# 新しく公開された統計表を見張る。どちらも見つけたら issue を立てる。数十秒で終わる
 on:
   schedule:
     - cron: "0 0 * * 1" # 毎週月曜 09:00 JST
   workflow_dispatch:
+    inputs:
+      days:
+        description: 新しい統計表を探す日数
+        default: "7"
+      dry_run:
+        description: issue を立てずに結果だけ出す
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -18,7 +26,12 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - uses: astral-sh/setup-uv@v7
-      - run: uv run --no-project --with pyyaml python scripts/check_local_updates.py
+      - run: uv run --no-project --with pyyaml python scripts/check_local_updates.py ${{ inputs.dry_run && '--dry-run' || '' }}
+        env:
+          ESTAT_API_KEY: ${{ secrets.ESTAT_API_KEY }}
+          GH_TOKEN: ${{ github.token }}
+      - if: ${{ !cancelled() }}
+        run: uv run --no-project --with pyyaml python scripts/check_new_tables.py --days ${{ inputs.days || '7' }} ${{ inputs.dry_run && '--dry-run' || '' }}
         env:
           ESTAT_API_KEY: ${{ secrets.ESTAT_API_KEY }}
           GH_TOKEN: ${{ github.token }}
