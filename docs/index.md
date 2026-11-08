@@ -21,6 +21,7 @@ e-Stat（政府統計の総合窓口）の API と統計GIS から取得した�
 | boundary | 令和2年国勢調査 町丁・字等別境界 small_area、1kmメッシュ境界 mesh_1km |
 | economic_census | 経済センサス‐活動調査 市区町村別・産業大分類別の事業所数・従業者数・売上金額 establishment_industry、市区町村別・小売業の産業中分類別の事業所数・従業者数・年間商品販売額・売場面積 retail_municipality、商業集積地区（商店街）別の小売業・飲食サービス業・生活関連サービス業の事業所数・従業者数・売上金額 shopping_district、1kmメッシュ別 産業大分類別の事業所数・従業者数 establishment_mesh_1km |
 | economic_structure | 経済構造実態調査 全国の企業産業（小分類まで）別・経営組織別の企業等数・売上金額・費用・付加価値額 enterprise_industry、事業区分別の費用内訳割合 cost_composition、都道府県別・産業大分類別の事業所数・売上金額 establishment_prefecture |
+| enterprise_activity | 経済産業省企業活動基本調査 産業別の財務 industry_finance、都道府県別 prefecture_finance、資本金規模別 capital_size_finance、研究開発費 research_development、外資系企業 foreign_affiliated_finance、子会社・関連会社数 subsidiary_count |
 | code | 統計に用いる標準地域コード municipality と、その変更（廃置分合）履歴 municipality_change、日本標準産業分類の4改定 industry |
 | manufacture | 工業統計調査 市区町村別・産業中分類別の製造業統計 municipality_industry |
 | migration | 住民基本台帳人口移動報告 市区町村別の転入・転出・転入超過 municipality_migration |

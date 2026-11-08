@@ -7,6 +7,9 @@ description: |-
 keywords:
   - 経済構造実態調査
   - 付加価値額
+  - 企業活動基本調査
+  - 研究開発費
+  - 外資系企業
   - 法人企業統計
   - 経常利益
   - 設備投資
@@ -183,6 +186,8 @@ sources:
     path: https://www.e-stat.go.jp/statistics/00600280
   - title: 経済構造実態調査（総務省・経済産業省）
     path: https://www.e-stat.go.jp/statistics/00200555
+  - title: 経済産業省企業活動基本調査（経済産業省）
+    path: https://www.meti.go.jp/statistics/tyo/kikatu/
   - title: 法人企業統計調査（財務省）
     path: https://www.mof.go.jp/pri/reference/ssc/
 
@@ -235,6 +240,8 @@ schemas:
     title: 経済センサス‐活動調査
   - name: economic_structure
     title: 経済構造実態調査
+  - name: enterprise_activity
+    title: 経済産業省企業活動基本調査
   - name: household
     title: 家計調査
   - name: labor
