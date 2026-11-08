@@ -38,7 +38,7 @@ fields:
   description: industry_code に対応する産業名
 - name: subsidiary_industry_code
   title: 子会社業種コード
-  description: 子会社・関連会社の業種のコード。総合計=全業種、大分類（C・E など）と中分類（090 など）が同じ列に並ぶ
+  description: 子会社・関連会社の業種のコード。全業種の行は、親会社の産業が総合計の行では 総合計、それ以外の産業では 000（合計）になっている。大分類（C・E など）と中分類（090 など）が同じ列に並ぶ
 - name: subsidiary_industry_name
   title: 子会社業種
   description: subsidiary_industry_code に対応する業種名
