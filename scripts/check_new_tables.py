@@ -16,6 +16,7 @@ import json
 import os
 import subprocess
 import sys
+import traceback
 import urllib.parse
 import urllib.request
 from pathlib import Path
@@ -28,7 +29,14 @@ LIMIT = 100
 
 
 def as_list(x) -> list:
-    return [] if x is None else [x] if isinstance(x, dict) else x
+    """1 件のときは dict、複数のときは list で返る項目を list にそろえる。"""
+    items = [x] if isinstance(x, dict) else x if isinstance(x, list) else []
+    return [i for i in items if isinstance(i, dict)]
+
+
+def as_dict(x) -> dict:
+    """該当が無いときなどに、dict の代わりに文字列や空が返る項目を dict にそろえる。"""
+    return x if isinstance(x, dict) else {}
 
 
 def text(x) -> str:
@@ -53,7 +61,7 @@ def fetch_page(app_id: str, stats_code: str, search_kind: int, since: dt.date, u
     # 1 = 該当なし
     if status not in (0, 1, 2):
         raise RuntimeError(f"{stats_code}: e-Stat がエラー {status} を返した: {body['RESULT']['ERROR_MSG']}")
-    return body.get("DATALIST_INF", {})
+    return as_dict(body.get("DATALIST_INF"))
 
 
 def tables(app_id: str, stats_code: str, search_kind: int, since: dt.date, until: dt.date) -> list[dict]:
@@ -62,7 +70,7 @@ def tables(app_id: str, stats_code: str, search_kind: int, since: dt.date, until
     while True:
         listing = fetch_page(app_id, stats_code, search_kind, since, until, start)
         out += as_list(listing.get("TABLE_INF"))
-        next_key = listing.get("RESULT_INF", {}).get("NEXT_KEY")
+        next_key = as_dict(listing.get("RESULT_INF")).get("NEXT_KEY")
         if not next_key:
             return out
         start = int(next_key)
@@ -70,12 +78,12 @@ def tables(app_id: str, stats_code: str, search_kind: int, since: dt.date, until
 
 def new_tables(app_id: str, stat: dict, since: dt.date, until: dt.date) -> list[dict]:
     """since 以降に公開された（更新ではなく新しく出た）統計表。"""
-    found = [
-        t
+    found = {
+        t["@id"]: t
         for kind in stat.get("search_kinds", [1])
         for t in tables(app_id, stat["stats_code"], kind, since, until)
-    ]
-    return [t for t in found if text(t.get("OPEN_DATE")) >= f"{since:%Y-%m-%d}"]
+    }
+    return [t for t in found.values() if text(t.get("OPEN_DATE")) >= f"{since:%Y-%m-%d}"]
 
 
 def describe(t: dict) -> str:
@@ -85,7 +93,7 @@ def describe(t: dict) -> str:
 
 
 def issue_body(stat: dict, found: list[dict], since: dt.date, until: dt.date) -> str:
-    lines = sorted({describe(t) for t in found})
+    lines = sorted(describe(t) for t in found)
     shown = lines[:100]
     rest = len(lines) - len(shown)
     return "\n".join(
@@ -126,7 +134,8 @@ def main() -> None:
         try:
             found = new_tables(app_id, stat, since, until)
         except Exception as e:
-            print(f"{stat['title']}: 取得できなかった: {e}", file=sys.stderr)
+            print(f"{stat['title']}: 取得できなかった: {e!r}", file=sys.stderr)
+            traceback.print_exc()
             failed.append(stat["stats_code"])
             continue
         if not found:
