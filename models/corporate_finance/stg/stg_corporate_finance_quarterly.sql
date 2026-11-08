@@ -1,6 +1,7 @@
 {# 並べてからテーブルにする。読み手は scope・item_code・industry_code・size_code で
    絞ることが多いので、その順に並べておくと行グループの統計で読み飛ばせる。 #}
 {% set tables = [
+    ('raw_corporate_finance_nonfinancial_quarterly_pre2008', 'nonfinancial', '金融業、保険業以外の業種', 'false'),
     ('raw_corporate_finance_nonfinancial_quarterly', 'nonfinancial', '金融業、保険業以外の業種', 'false'),
     ('raw_corporate_finance_nonfinancial_sa_quarterly', 'nonfinancial', '金融業、保険業以外の業種', 'true'),
     ('raw_corporate_finance_all_industries_quarterly', 'all_industries', '全産業（金融業、保険業を含む）', 'false'),

@@ -20,3 +20,5 @@ models:
   - name: raw_corporate_finance_insurance_annual
   - name: raw_corporate_finance_other_insurance_quarterly
   - name: raw_corporate_finance_other_insurance_annual
+  - name: raw_corporate_finance_nonfinancial_quarterly_pre2008
+  - name: raw_corporate_finance_nonfinancial_annual_pre2008
