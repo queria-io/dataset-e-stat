@@ -99,7 +99,7 @@ models:
         description: "値。原典の「-」（該当なし）と「x」（秘匿）はどちらも NULL"
   - name: foreign_affiliated_finance
     description: |
-      経済産業省企業活動基本調査のうち外資系企業の、産業別の企業数・事業所数・従業者数・財務を、年度ごとに縦に持つテーブルです。2009〜2024年度を収録しています。
+      経済産業省企業活動基本調査のうち外資系企業の、産業別の企業数・事業所数・従業者数・財務を、年度ごとに縦に持つテーブルです。2014〜2024年度を収録しています。
       出典: 経済産業省 経済産業省企業活動基本調査。https://www.meti.go.jp/statistics/tyo/kikatu/
     access: public
     columns:

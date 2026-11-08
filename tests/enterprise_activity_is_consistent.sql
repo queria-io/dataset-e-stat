@@ -8,7 +8,7 @@
 -- 3. 企業数で次の恒等式がちょうど成り立つ（実測で全年度・差0）
 --    - 産業: 合計（000）= 大分類（C・E・F・G・I1・I2・J1・K1・L・M・N・O・R1）の和、
 --      総合計 = 合計（000）+ サービス業（その他のサービス業）（R2）+ その他の産業（Z）
---    - 都道府県: 全国（00000）= 47都道府県の和（企業数・事業所数）。秘匿で空欄の県がある年度は、和が全国を超えないこと
+--    - 都道府県: 全国（00000）= 47都道府県の和（企業数・事業所数）。2018年度までで秘匿で空欄の県がある組は、和が全国を超えないこと
 --    - 資本金規模: 計（00）= 8区分の和
 --    表側の名称を「_」で区切る位置を読み違えると、産業・内訳・年度がずれてこれらが外れる
 --
@@ -101,8 +101,9 @@ prefecture_sums AS (
     WHERE industry_code = '総合計' AND measure IN ('企業数', '事業所数')
     GROUP BY fiscal_year, measure
     HAVING count(*) FILTER (WHERE area <> '00000') <> 47
-        -- 秘匿で空欄の県がある年度（2013年度の事業所数など）は、和が全国を超えないことだけを見る
-        OR (count(value) FILTER (WHERE area <> '00000') = 47
+        -- 2019年以前の調査（2018年度まで）は秘匿で空欄の県がある（2013年度の事業所数）ので、空欄のある
+        -- 組だけ和が全国を超えないことを見る。2019年度以降は空欄が無いので、いつも一致を見る
+        OR ((fiscal_year >= 2019 OR count(value) FILTER (WHERE area <> '00000') = 47)
             AND sum(value) FILTER (WHERE area <> '00000') IS DISTINCT FROM max(value) FILTER (WHERE area = '00000'))
         OR sum(value) FILTER (WHERE area <> '00000') > max(value) FILTER (WHERE area = '00000')
 ),

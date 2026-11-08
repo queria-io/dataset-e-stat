@@ -311,6 +311,21 @@ capital_codes AS (
 
 {# 子会社の業種の大分類は、親会社の産業と区分が違う（J 金融業、保険業、R サービス業 など）。
    2020年以降の子会社の表で同じ名前に付いたコードを引く #}
+{# 名前の書き方が年で揺れるもの（2010年調査の「和歌山」、「クレジットカード業・割賦金融業」）を
+   2020年以降の表の名前にそろえる。コードで引く #}
+current_names AS (
+    SELECT industry_code, any_value(industry_name ORDER BY survey_year DESC) AS industry_name
+    FROM {{ ref('stg_enterprise_activity') }}
+    GROUP BY industry_code
+),
+
+prefecture_names AS (
+    SELECT breakdown_code, any_value(breakdown_name ORDER BY survey_year DESC) AS breakdown_name
+    FROM {{ ref('stg_enterprise_activity') }}
+    WHERE kind = 'prefecture'
+    GROUP BY breakdown_code
+),
+
 subsidiary_codes AS (
     SELECT DISTINCT breakdown_name, breakdown_code
     FROM {{ ref('stg_enterprise_activity') }}
@@ -322,8 +337,9 @@ SELECT
     n.survey_year,
     n.fiscal_year,
     coalesce(n.industry_code_raw, n.major_code) AS industry_code,
-    -- 括弧は比べるために半角にそろえたので、2020年以降の表と同じ全角に戻す
-    translate(n.industry_name, '()', '（）') AS industry_name,
+    -- コードの付かない大分類などは2020年以降の表の名前にそろえる。ほかは括弧を全角に戻す
+    CASE WHEN n.major_code IS NOT NULL THEN coalesce(cn.industry_name, translate(n.industry_name, '()', '（）'))
+        ELSE translate(n.industry_name, '()', '（）') END AS industry_name,
     CASE
         WHEN n.kind = 'prefecture' THEN n.breakdown_key
         WHEN n.kind IN ('capital_balance', 'capital_business') THEN c.breakdown_code
@@ -337,6 +353,7 @@ SELECT
             translate(n.breakdown_name_raw, '()', '（）'),
             CASE WHEN coalesce(n.industry_code_raw, n.major_code) = '総合計' THEN '総合計' ELSE '合計' END
         )
+        WHEN n.kind = 'prefecture' THEN coalesce(pn.breakdown_name, n.breakdown_name_raw)
         ELSE n.breakdown_name_raw
     END AS breakdown_name,
     m.measure_code,
@@ -346,4 +363,6 @@ SELECT
 FROM named n
 LEFT JOIN measures m ON m.kind = n.kind AND m.cat01_order = n.cat01_order
 LEFT JOIN capital_codes c ON c.breakdown_name = n.breakdown_name_raw AND n.kind IN ('capital_balance', 'capital_business')
+LEFT JOIN current_names cn ON cn.industry_code = n.major_code
+LEFT JOIN prefecture_names pn ON pn.breakdown_code = n.breakdown_key AND n.kind = 'prefecture'
 LEFT JOIN subsidiary_codes sc ON sc.breakdown_name = translate(n.breakdown_name_raw, '()', '（）') AND n.kind = 'subsidiary'
