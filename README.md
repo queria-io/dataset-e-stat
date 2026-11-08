@@ -30,6 +30,7 @@
 | `enterprise_activity` | 経済産業省企業活動基本調査 | [enterprise-activity.md](docs/enterprise-activity.md) |
 | `household` | 家計調査 | [household.md](docs/household.md) |
 | `labor` | 労働力調査 | [labor.md](docs/labor.md) |
+| `production` | 経済産業省生産動態統計 | [production.md](docs/production.md) |
 | `manufacture` | 工業統計調査 | [manufacture.md](docs/manufacture.md) |
 | `migration` | 住民基本台帳人口移動報告 | [migration.md](docs/migration.md) |
 | `local_finance` | 地方財政状況調査 | [local-finance.md](docs/local-finance.md) |

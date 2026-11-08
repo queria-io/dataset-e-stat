@@ -9,6 +9,10 @@ SELECT
     measure,
     unit,
     value
-FROM {{ ref('stg_enterprise_activity') }}
+FROM (
+    SELECT * FROM {{ ref('stg_enterprise_activity') }}
+    UNION ALL
+    SELECT * FROM {{ ref('stg_enterprise_activity_legacy') }}
+)
 WHERE kind = 'summary'
 QUALIFY survey_year = max(survey_year) OVER (PARTITION BY fiscal_year)

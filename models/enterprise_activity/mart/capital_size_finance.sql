@@ -13,7 +13,11 @@ SELECT
     measure,
     unit,
     value
-FROM {{ ref('stg_enterprise_activity') }}
+FROM (
+    SELECT * FROM {{ ref('stg_enterprise_activity') }}
+    UNION ALL
+    SELECT * FROM {{ ref('stg_enterprise_activity_legacy') }}
+)
 WHERE fiscal_year = survey_year - 1
     AND kind IN ('capital_balance', 'capital_business')
 QUALIFY row_number() OVER (
