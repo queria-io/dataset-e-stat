@@ -87,22 +87,30 @@ def new_tables(app_id: str, stat: dict, since: dt.date, until: dt.date) -> list[
 
 
 def describe(t: dict) -> str:
-    stat_name = text(t.get("STATISTICS_NAME"))
-    title = text(t.get("TITLE"))
-    return f"- {t['@id']}（公開 {text(t.get('OPEN_DATE'))}、調査 {text(t.get('SURVEY_DATE'))}）{stat_name} {title}"
+    return f"  - {t['@id']} {text(t.get('TITLE'))}"
 
 
 def issue_body(stat: dict, found: list[dict], since: dt.date, until: dt.date) -> str:
-    lines = sorted(describe(t) for t in found)
-    shown = lines[:100]
-    rest = len(lines) - len(shown)
+    """統計名（集計の種類）ごとに件数と公開日、表の例を 3 つまで並べる。"""
+    groups: dict[str, list[dict]] = {}
+    for t in sorted(found, key=lambda t: t["@id"]):
+        groups.setdefault(text(t.get("STATISTICS_NAME")), []).append(t)
+    sections = [
+        "\n".join(
+            [
+                f"- {name}: {len(ts)} 件（公開 {', '.join(sorted({text(t.get('OPEN_DATE')) for t in ts}))}）",
+                *[describe(t) for t in ts[:3]],
+                *([f"  - ほか {len(ts) - 3} 件"] if len(ts) > 3 else []),
+            ]
+        )
+        for name, ts in groups.items()
+    ]
     return "\n".join(
         [
-            f"{stat['title']}（{stat['stats_code']}）に、{since}〜{until} に公開された統計表が {len(lines)} 件あります。",
+            f"{stat['title']}（{stat['stats_code']}）に、{since}〜{until} に公開された統計表が {len(found)} 件あります。",
             "取り込むかどうかを決め、取り込むなら tables.yml か local_tables.yml に足してください。",
             "",
-            *shown,
-            *([f"- ほか {rest} 件"] if rest else []),
+            *sections,
             "",
             f"一覧: https://www.e-stat.go.jp/stat-search/database?toukei={stat['stats_code']}",
         ]
