@@ -19,6 +19,7 @@
 | --- | --- | --- |
 | `ssds` | 社会・人口統計体系。都道府県・市区町村別の11分野の指標 | [index.md](docs/index.md) |
 | `cpi` | 消費者物価指数 | [cpi.md](docs/cpi.md) |
+| `corporate_finance` | 法人企業統計調査 | [corporate-finance.md](docs/corporate-finance.md) |
 | `main` | 統計表カタログ・指標定義 | [catalog.md](docs/catalog.md) |
 | `census` | 国勢調査（小地域・市区町村・昼夜間人口・通勤通学・メッシュ） | [census.md](docs/census.md) |
 | `boundary` | 町丁・字等と1kmメッシュの境界 | [boundary.md](docs/boundary.md) |

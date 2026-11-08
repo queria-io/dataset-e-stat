@@ -29,7 +29,11 @@ def _build_table(app_id: str, t: dict):
         write_disposition="merge" if t.get("merge_keys") else "replace",
         primary_key=t.get("merge_keys"),
         app_id=app_id,
-        incremental=dlt.sources.incremental("time", initial_value="0000000000")
+        # initial_time は初回に取る最初の期。全期間を取ると初回の Sync が上限を超える表で、
+        # 取り始めの期を後ろにずらす
+        incremental=dlt.sources.incremental(
+            "time", initial_value=t.get("initial_time", "0000000000")
+        )
         if t.get("incremental")
         else None,
         **t.get("api_params", {}),
