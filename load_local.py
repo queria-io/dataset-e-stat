@@ -113,7 +113,10 @@ def fetch(app_id: str, group: str, spec: dict, keep_order: bool = False) -> None
         logger.info(f"  {spec['name']}: 取得済み")
         return
     out.parent.mkdir(parents=True, exist_ok=True)
-    resource = estat_table(stats_data_id=spec["stats_data_id"], app_id=app_id, timeout=300)
+    # api_params は取得を絞る (cdTimeTo など)。tables.yml と同じ書き方
+    resource = estat_table(
+        stats_data_id=spec["stats_data_id"], app_id=app_id, timeout=300, **spec.get("api_params", {})
+    )
     pages, updated = [], set()
     for page in resource:
         # stat_inf は全行に同じ値が複製されるので、更新日だけ抜いてページごとに落とす

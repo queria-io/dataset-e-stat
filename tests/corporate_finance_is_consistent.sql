@@ -3,11 +3,14 @@
 --
 -- 1. 対象業種の範囲（scope）と原数値・季節調整値の組がすべてあり、取り始めの期が tables.yml の
 --    initial_time どおり（四半期は2008年4〜6月期、年度は2008年度）。季節調整値は全期間を取るので
---    1985年4〜6月期から。
+--    1985年4〜6月期から。金融業、保険業以外の業種の原数値は、2007年度以前を手元から取り込んだ
+--    後（local_tables.yml の corporate_finance_history）は四半期が1954年4〜6月期、年度が1960年度から。
 --    最初の期から最後の期まで、四半期・年度の抜けが無い
 -- 2. キー（scope・季節調整・調査項目・業種・資本金規模・期）が一意で、単位が空でない
 -- 3. 金融業、保険業以外の業種の四半期（原数値・金額の項目）で、次の恒等式がちょうど成り立つ（実測で差0）。
 --    内訳の規模・業種が無い組（業種 102・103 には 10億円以上が無い）はその内訳を0として足す。
+--    1959年4〜6月期までは10億円以上・1億円以上10億円未満の区分が無いので、全規模 = 1億円以上 + 19 で見る。
+--    原典で一致しない6つの期は数えない。
 --    合計の行が無い組は失敗にする
 --    - 全規模（26）= 10億円以上（25）+ 1億円以上10億円未満（24）+ 1千万円以上1億円未満（19）
 --    - 1億円以上（23）= 25 + 24
@@ -25,7 +28,8 @@ a AS (
 
 expected_series (scope, seasonally_adjusted, first_time) AS (
     VALUES
-        ('nonfinancial', false, '20082'),
+        -- 2007年度以前を手元から取り込んだ後は、金融業、保険業以外の業種は全期間（1954年4〜6月期から）
+        ('nonfinancial', false, '{{ "19542" if local_source_loaded("corporate_finance_nonfinancial_quarterly_pre2008") else "20082" }}'),
         ('nonfinancial', true, '19852'),
         ('all_industries', false, '20082'),
         ('finance_insurance', false, '20082'),
@@ -62,10 +66,14 @@ series_checks AS (
     UNION ALL
     SELECT 'annual series ' || e.scope,
         coalesce(s.first_time || ' / ' || s.periods, 'missing'),
-        '20080 / ' || coalesce(s.expected_periods, 0)
-    FROM (SELECT DISTINCT scope FROM expected_series) e
+        e.first_time || ' / ' || coalesce(s.expected_periods, 0)
+    FROM (
+        SELECT DISTINCT scope,
+            CASE WHEN scope = 'nonfinancial' THEN '{{ "19600" if local_source_loaded("corporate_finance_nonfinancial_annual_pre2008") else "20080" }}' ELSE '20080' END AS first_time
+        FROM expected_series
+    ) e
     LEFT JOIN annual_series s USING (scope)
-    WHERE s.first_time IS DISTINCT FROM '20080' OR s.periods <> s.expected_periods
+    WHERE s.first_time IS DISTINCT FROM e.first_time OR s.periods <> s.expected_periods
     UNION ALL
     SELECT 'unexpected scope ' || scope || ' ' || seasonally_adjusted, '', ''
     FROM quarter_series
@@ -113,8 +121,18 @@ size_sums AS (
         FROM nonfinancial
         GROUP BY item_code, industry_code, time
     )
-    WHERE NOT coalesce(abs(s26 - (coalesce(s25, 0) + coalesce(s24, 0) + coalesce(s19, 0))) <= 1, false)
-        OR NOT coalesce(abs(s23 - (coalesce(s25, 0) + coalesce(s24, 0))) <= 1, true)
+    -- 1959年4〜6月期までは 10億円以上・1億円以上10億円未満の区分が無いので、全規模 = 1億円以上 + 19 で見る。
+    -- 原典で一致しない期（実測で 1955年1〜3月期、1959年7〜12月期、1961年1〜3月期、1965年10〜12月期、
+    -- 1967年1〜3月期）は数えない
+    WHERE time NOT IN ('19551', '19593', '19594', '19611', '19654', '19671')
+        -- 規模の内訳が1つも無い組（1957年1〜3月期の業種 135 など）は数えない
+        AND (s25 IS NOT NULL OR s24 IS NOT NULL OR s23 IS NOT NULL OR s19 IS NOT NULL)
+        AND CASE
+            -- 内訳の片方が無い組（1957年1〜3月期の業種 135 の 1千万円以上1億円未満など）は数えない
+            WHEN time < '19593' THEN s23 IS NOT NULL AND s19 IS NOT NULL AND NOT coalesce(abs(s26 - (s23 + s19)) <= 1, false)
+            ELSE NOT coalesce(abs(s26 - (coalesce(s25, 0) + coalesce(s24, 0) + coalesce(s19, 0))) <= 1, false)
+                OR NOT coalesce(abs(s23 - (coalesce(s25, 0) + coalesce(s24, 0))) <= 1, true)
+        END
 ),
 
 industry_sums AS (
@@ -129,7 +147,8 @@ industry_sums AS (
         FROM nonfinancial
         GROUP BY item_code, size_code, time
     )
-    WHERE NOT coalesce(abs(i104 - (coalesce(i108, 0) + coalesce(i144, 0))) <= 1, false)
+    -- 全産業の行が無く、内訳も0の組（1959年の一部の項目）は数えない
+    WHERE NOT coalesce(abs(i104 - (coalesce(i108, 0) + coalesce(i144, 0))) <= 1, i104 IS NULL AND coalesce(i108, 0) + coalesce(i144, 0) = 0)
 ),
 
 scope_sums AS (
@@ -142,6 +161,8 @@ scope_sums AS (
         AND scope IN ('all_industries', 'nonfinancial', 'finance_insurance')
         AND (scope <> 'nonfinancial' OR industry_code = '104')
         AND size_code IN (SELECT size_code FROM q WHERE scope = 'all_industries')
+        -- 全産業（金融業、保険業を含む）の表は2008年4〜6月期から
+        AND time >= '20082'
     GROUP BY item, size_code, time
     HAVING NOT coalesce(abs(max(value) FILTER (WHERE scope = 'all_industries')
         - (max(value) FILTER (WHERE scope = 'nonfinancial') + max(value) FILTER (WHERE scope = 'finance_insurance'))) <= 1, false)
