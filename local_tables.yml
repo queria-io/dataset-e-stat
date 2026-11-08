@@ -509,6 +509,9 @@ groups:
       data_type: CSV
       through_year: 2024
     catalog_modified_date: "2025-11-13"
+    # trade_history は品目順に並べて書く (pipelines/trade.py)。ロードで並びを崩さないよう、
+    # 挿入順を保ってロードする。品目で絞る問い合わせが行グループの統計で読む範囲を絞れる
+    preserve_insertion_order: true
     dbt_select: "raw_trade_history raw_trade_country"
     tables:
       - name: trade_history
