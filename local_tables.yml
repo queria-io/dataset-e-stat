@@ -518,3 +518,25 @@ groups:
         updated_date: "2025-11-13"
       - name: trade_country
         updated_date: "2025-11-13"
+  corporate_finance_history:
+    title: 法人企業統計調査 時系列データ 金融業、保険業以外の業種（原数値）の2007年度以前
+    # 四半期・年度の2表は tables.yml で2008年度から CI の Sync が取っている (全期間を CI で取ると
+    # 初回の Sync が上限を超えるため)。それより前の期をここで手元から1回だけ取る。
+    # 表は四半期ごとに更新されて updated_date が進むが、取った期の値は変わらないので watch: false
+    # にして Check updates では見張らない。取り直すときは updated_date を e-Stat の値に直す。
+    dbt_select: "+quarterly_statements +annual_statements"
+    tables:
+      - name: corporate_finance_nonfinancial_quarterly_pre2008
+        stats_data_id: "0003060191"
+        updated_date: "2026-09-01"
+        primary_key: [cat01, cat02, cat03, time]
+        watch: false
+        api_params:
+          cdTimeTo: "20081"
+      - name: corporate_finance_nonfinancial_annual_pre2008
+        stats_data_id: "0003060791"
+        updated_date: "2026-09-01"
+        primary_key: [cat01, cat02, cat03, time]
+        watch: false
+        api_params:
+          cdTimeTo: "20070"

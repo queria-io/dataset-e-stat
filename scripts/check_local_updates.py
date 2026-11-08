@@ -99,6 +99,10 @@ def changed_tables(app_id: str, group: dict) -> list[str]:
         return [f"- 統計表ファイル（{group['stats_code']}）: {group['catalog_modified_date']} → {now}"]
     lines = []
     for t in group["tables"]:
+        # 毎期更新される統計表の過去の期だけを取った表。表の更新日は新しい期が出るたびに進むが、
+        # 取った期の値は変わらないので見張らない
+        if t.get("watch") is False:
+            continue
         now = updated_date(app_id, t["stats_data_id"])
         # YAML で引用符を落とすと updated_date が date になるので、文字列に揃えて比べる
         if now != str(t["updated_date"]):

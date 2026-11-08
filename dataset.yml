@@ -5,6 +5,8 @@ description: |-
   e-Stat の API と統計GIS から取得した日本の公的統計です。社会・人口統計体系、国勢調査、経済センサスなど約 30 の統計を、スキーマごとに収録しています。
   出典は政府統計の総合窓口（e-Stat）と各統計の作成府省です。このサービスは、政府統計総合窓口(e-Stat)のAPI機能を使用していますが、サービスの内容は国によって保証されたものではありません。
 keywords:
+  - 商業動態統計
+  - 商業販売額
   - 生産動態統計
   - 鉱工業生産
   - 経済構造実態調査
@@ -190,6 +192,8 @@ sources:
     path: https://www.e-stat.go.jp/statistics/00600350
   - title: 港湾調査（国土交通省）
     path: https://www.e-stat.go.jp/statistics/00600280
+  - title: 商業動態統計調査（経済産業省）
+    path: https://www.meti.go.jp/statistics/tyo/syoudou/
   - title: 経済産業省生産動態統計（経済産業省）
     path: https://www.meti.go.jp/statistics/tyo/seidou/
   - title: 経済構造実態調査（総務省・経済産業省）
@@ -286,6 +290,8 @@ schemas:
     title: 学校保健統計調査
   - name: building_starts
     title: 建築着工統計調査
+  - name: commerce
+    title: 商業動態統計調査
   - name: construction
     title: 建設総合統計・建設工事受注動態統計調査
   - name: rail_transport
