@@ -1,0 +1,33 @@
+version: 2
+
+models:
+  - name: monthly
+    description: |
+      経済産業省生産動態統計の月報の統計表（確報）を、月・調査票・品目・アイテム（生産・出荷・在庫など）ごとに縦に持つテーブルです。2022年1月から最新の公表月まで、約110の調査票・2,200品目を収録しています。
+      出典: 経済産業省 経済産業省生産動態統計。https://www.meti.go.jp/statistics/tyo/seidou/
+    access: public
+    columns:
+      - name: time
+        description: "時間軸コード（YYYY00MMMM。2026000808 = 2026年8月）"
+      - name: year
+        description: "暦年（西暦4桁）"
+      - name: month
+        description: "月（1〜12）"
+      - name: form_code
+        description: "調査票の番号（4桁。1010 = 鉄鋼月報（その１） など）"
+      - name: form_name
+        description: "調査票の名前（鉄鋼月報（その１）銑鉄・フェロアロイ・粗鋼… など）"
+      - name: category
+        description: "品目の項目（製品・原材料・労務・生産能力 など）"
+      - name: product_code
+        description: "調査票の中の品目の番号（4桁）。調査票をまたいで同じ番号が出るので、form_code と組で使う"
+      - name: product_name
+        description: "品目の名前。合計・中間計の品目も同じ列に並ぶ（原典の「参考資料(中間計項目一覧)」）"
+      - name: item_symbol
+        description: "品目の中のアイテムの記号（A・B…）"
+      - name: item_name
+        description: "生産数量・販売金額・月末在庫などの名前。調査票ごとに名前と並びが違う"
+      - name: unit
+        description: "単位（t・kl・台・千円・人 など）。アイテムごとに違うので、アイテムをまたいで足さない"
+      - name: value
+        description: "値。原典の「X」（秘匿）は NULL。品種振替・投入（石油製品）は負の値がある"
