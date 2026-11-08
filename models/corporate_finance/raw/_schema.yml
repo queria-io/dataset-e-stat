@@ -1,0 +1,22 @@
+version: 2
+
+models:
+  - name: raw_corporate_finance_nonfinancial_quarterly
+  - name: raw_corporate_finance_nonfinancial_annual
+  - name: raw_corporate_finance_nonfinancial_sa_quarterly
+  - name: raw_corporate_finance_all_industries_quarterly
+  - name: raw_corporate_finance_all_industries_annual
+  - name: raw_corporate_finance_finance_insurance_quarterly
+  - name: raw_corporate_finance_finance_insurance_annual
+  - name: raw_corporate_finance_banking_quarterly
+  - name: raw_corporate_finance_banking_annual
+  - name: raw_corporate_finance_nondeposit_credit_quarterly
+  - name: raw_corporate_finance_nondeposit_credit_annual
+  - name: raw_corporate_finance_securities_quarterly
+  - name: raw_corporate_finance_securities_annual
+  - name: raw_corporate_finance_other_securities_quarterly
+  - name: raw_corporate_finance_other_securities_annual
+  - name: raw_corporate_finance_insurance_quarterly
+  - name: raw_corporate_finance_insurance_annual
+  - name: raw_corporate_finance_other_insurance_quarterly
+  - name: raw_corporate_finance_other_insurance_annual

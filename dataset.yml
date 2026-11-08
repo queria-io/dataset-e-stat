@@ -5,6 +5,9 @@ description: |-
   e-Stat の API と統計GIS から取得した日本の公的統計です。社会・人口統計体系、国勢調査、経済センサスなど約 30 の統計を、スキーマごとに収録しています。
   出典は政府統計の総合窓口（e-Stat）と各統計の作成府省です。このサービスは、政府統計総合窓口(e-Stat)のAPI機能を使用していますが、サービスの内容は国によって保証されたものではありません。
 keywords:
+  - 法人企業統計
+  - 経常利益
+  - 設備投資
   - 統計
   - 政府統計
   - e-Stat
@@ -176,6 +179,8 @@ sources:
     path: https://www.e-stat.go.jp/statistics/00600350
   - title: 港湾調査（国土交通省）
     path: https://www.e-stat.go.jp/statistics/00600280
+  - title: 法人企業統計調査（財務省）
+    path: https://www.mof.go.jp/pri/reference/ssc/
 
 contributors:
   - title: 総務省統計局
@@ -196,6 +201,9 @@ contributors:
   - title: 国土交通省
     path: https://www.mlit.go.jp/
     roles: [rightsHolder]
+  - title: 財務省
+    path: https://www.mof.go.jp/
+    roles: [rightsHolder]
 
 temporal_coverage: { start: "1970", end: null }
 spatial_coverage: [JP]
@@ -209,6 +217,8 @@ schemas:
     title: 社会・人口統計体系
   - name: boundary
     title: 境界データ
+  - name: corporate_finance
+    title: 法人企業統計調査
   - name: cpi
     title: 消費者物価指数
   - name: census
