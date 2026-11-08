@@ -1,6 +1,6 @@
-# 手元で 1 回だけ取り込む統計表。CI の Sync (main.py) は e-Stat から取らず、
-# 公開済みの _source の表を読んでビルドするだけにする。どれも数年に 1 度しか
-# 出ない統計で、毎日取り直すと Sync の時間 (ホステッドの上限 360 分) を食うため。
+# 手元で取り込む統計表。CI の Sync (main.py) は e-Stat から取らず、公開済みの
+# _source の表を読んでビルドするだけにする。数年に 1 度・年に 1 度・四半期に 1 度
+# 出る統計で、毎日取り直すと Sync の時間 (ホステッドの上限 360 分) を食うため。
 #
 # 取り込みと公開は load_local.py、更新の見張りは scripts/check_local_updates.py
 # (.github/workflows/check-updates.yml が毎週回す)。

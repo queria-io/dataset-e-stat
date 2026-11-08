@@ -4,7 +4,8 @@
 -- 2. キーが一意（BSI: 調査期・指標・当期翌期・規模・業種、見通し: 調査期・表・年度・期・業種・項目・表章項目）
 -- 3. BSI は -100〜100 の範囲（上昇と回答した割合 - 下降と回答した割合）
 -- 4. 翌年度見通しの表は1〜3月期の調査にだけあり、年度の読み替え（相対の年度 → 実際の年度）が
---    調査期と合っている（当年度見通しの通期の年度は、1〜3月期の調査で調査年の前年、ほかは調査年）
+--    調査期と合っている。調査期ごとの通期の最も新しい年度が、当年度見通しの表では調査年
+--    （1〜3月期の調査は調査年の前年）、翌年度見通しの表では調査年にちょうど一致する
 --
 -- 元表は手元でだけ取り込む (load_local.py business_outlook)。元表が無いカタログ
 -- (CI でまだ公開していないとき) では 0 行の表になるので検査しない。
@@ -55,10 +56,15 @@ FROM outlook WHERE outlook_table = '翌年度見通し' AND survey_quarter <> 1
 HAVING count(*) > 0
 
 UNION ALL
-SELECT 'fiscal year ' || survey_time, string_agg(DISTINCT fiscal_year::VARCHAR, ','), (survey_year - CASE WHEN survey_quarter = 1 THEN 1 ELSE 0 END)::VARCHAR
+SELECT 'fiscal year ' || outlook_table || ' ' || survey_time,
+    max(fiscal_year)::VARCHAR,
+    max(CASE WHEN outlook_table = '翌年度見通し' THEN survey_year
+        ELSE survey_year - CASE WHEN survey_quarter = 1 THEN 1 ELSE 0 END END)::VARCHAR
 FROM outlook
-WHERE outlook_table = '当年度見通し' AND half = '通期' AND fiscal_year > survey_year - CASE WHEN survey_quarter = 1 THEN 1 ELSE 0 END
-GROUP BY survey_time, survey_year, survey_quarter
+WHERE half = '通期'
+GROUP BY outlook_table, survey_time
+HAVING max(fiscal_year) <> max(CASE WHEN outlook_table = '翌年度見通し' THEN survey_year
+    ELSE survey_year - CASE WHEN survey_quarter = 1 THEN 1 ELSE 0 END END)
 {% else %}
 SELECT NULL::VARCHAR AS check_name, NULL::VARCHAR AS actual, NULL::VARCHAR AS expected
 WHERE FALSE
