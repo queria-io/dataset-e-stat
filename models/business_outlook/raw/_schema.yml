@@ -1,0 +1,10 @@
+version: 2
+
+models:
+  - name: raw_business_outlook_conditions_bsi
+  - name: raw_business_outlook_employment_bsi
+  - name: raw_business_outlook_equipment_bsi
+  - name: raw_business_outlook_sales_profit_current
+  - name: raw_business_outlook_investment_current
+  - name: raw_business_outlook_sales_profit_next
+  - name: raw_business_outlook_investment_next

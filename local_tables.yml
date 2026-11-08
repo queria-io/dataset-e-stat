@@ -1,6 +1,6 @@
-# 手元で 1 回だけ取り込む統計表。CI の Sync (main.py) は e-Stat から取らず、
-# 公開済みの _source の表を読んでビルドするだけにする。どれも数年に 1 度しか
-# 出ない統計で、毎日取り直すと Sync の時間 (ホステッドの上限 360 分) を食うため。
+# 手元で取り込む統計表。CI の Sync (main.py) は e-Stat から取らず、公開済みの
+# _source の表を読んでビルドするだけにする。数年に 1 度・年に 1 度・四半期に 1 度
+# 出る統計で、毎日取り直すと Sync の時間 (ホステッドの上限 360 分) を食うため。
 #
 # 取り込みと公開は load_local.py、更新の見張りは scripts/check_local_updates.py
 # (.github/workflows/check-updates.yml が毎週回す)。
@@ -518,6 +518,44 @@ groups:
         updated_date: "2025-11-13"
       - name: trade_country
         updated_date: "2025-11-13"
+  business_outlook:
+    title: 法人企業景気予測調査 BSI（景況・従業員数・設備）と売上高・経常利益・設備投資の見通し（業種別、2004年4〜6月期〜）
+    dbt_select: "+bsi +sales_profit_investment_outlook"
+    # 四半期ごとに調査し、同じ統計表に新しい調査期を足して更新される (表の ID は変わらない)。
+    # 毎日の Sync では取らず、手元から取り込む。新しい調査期が出ると Check updates が表の更新日の
+    # 変化で issue を立てるので、updated_date を直して fetch と load を回し直す。
+    tables:
+      # BSI項目 業種別。cat01=当期・翌期・翌々期、cat02=規模、cat03=業種、cat04=貴社・国内
+      - name: business_outlook_conditions_bsi
+        stats_data_id: "0003325983"
+        updated_date: "2026-09-11"
+        primary_key: [tab, cat01, cat02, cat03, cat04, time]
+      # BSI項目 業種別。cat01=当期・翌期・翌々期、cat02=規模、cat03=業種
+      - name: business_outlook_employment_bsi
+        stats_data_id: "0003326004"
+        updated_date: "2026-09-11"
+        primary_key: [tab, cat01, cat02, cat03, time]
+      - name: business_outlook_equipment_bsi
+        stats_data_id: "0003326002"
+        updated_date: "2026-09-11"
+        primary_key: [tab, cat01, cat02, cat03, time]
+      # 計数項目 業種別。tab=金額・前年同期比、cat01=時期（半期）、cat02=業種、cat04=項目
+      - name: business_outlook_sales_profit_current
+        stats_data_id: "0003326060"
+        updated_date: "2026-09-11"
+        primary_key: [tab, cat01, cat02, cat04, time]
+      - name: business_outlook_investment_current
+        stats_data_id: "0003326044"
+        updated_date: "2026-09-11"
+        primary_key: [tab, cat01, cat02, cat04, time]
+      - name: business_outlook_sales_profit_next
+        stats_data_id: "0003326161"
+        updated_date: "2026-09-11"
+        primary_key: [tab, cat01, cat02, cat04, time]
+      - name: business_outlook_investment_next
+        stats_data_id: "0003326163"
+        updated_date: "2026-09-11"
+        primary_key: [tab, cat01, cat02, cat04, time]
   enterprise_activity_legacy:
     title: 経済産業省企業活動基本調査 確報 2010〜2019年調査（enterprise_activity と同じ7種類の表）
     dbt_select: "+industry_finance +prefecture_finance +capital_size_finance +research_development +foreign_affiliated_finance +subsidiary_count"

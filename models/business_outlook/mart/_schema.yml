@@ -1,0 +1,69 @@
+version: 2
+
+models:
+  - name: bsi
+    description: |
+      法人企業景気予測調査の BSI（景況判断・従業員数判断・設備判断）を、調査期・業種・規模・当期翌期ごとに持つテーブルです。2004年4〜6月期の調査から収録しています。
+      出典: 内閣府・財務省 法人企業景気予測調査。https://www.mof.go.jp/pri/reference/bos/
+    access: public
+    columns:
+      - name: survey_time
+        description: "調査期のコード（YYYY00MMMM。2026000709 = 2026年7〜9月期の調査）"
+      - name: survey_name
+        description: "調査期の名称（2026年7〜9月期 など）"
+      - name: survey_year
+        description: "調査期の暦年"
+      - name: survey_quarter
+        description: "調査期の暦年の四半期（1=1〜3月期 … 4=10〜12月期）"
+      - name: indicator
+        description: "BSI の指標。景況判断（貴社）・景況判断（国内）・従業員数判断・設備判断"
+      - name: horizon_code
+        description: "10=当期、20=翌期、30=翌々期"
+      - name: horizon
+        description: "当期（調査期）・翌期・翌々期。翌期・翌々期は回答時点の見通し"
+      - name: size_code
+        description: "20=大企業、30=中堅企業、40=中小企業。全規模の行は無い"
+      - name: size
+        description: "資本金による規模。大企業=10億円以上、中堅企業=1億円以上10億円未満、中小企業=1千万円以上1億円未満"
+      - name: industry_code
+        description: "業種コード。10=全産業、20=製造業、240=非製造業、それ以外は製造業・非製造業の内訳。全産業・製造業・非製造業と内訳が同じ列に並ぶ。「（2008年度まで）」「（2009年度から）」の付いた業種は、その期間だけ値がある"
+      - name: industry_name
+        description: "industry_code に対応する業種名"
+      - name: industry_level
+        description: "業種の段（1=全産業、2=製造業・非製造業、3=内訳）"
+      - name: value
+        description: "BSI（%ポイント）。前期と比べて「上昇」と答えた企業の割合から「下降」の割合を引いた値。従業員数判断は期末の水準について「不足気味」-「過剰気味」、設備判断は「不足」-「過大」"
+  - name: sales_profit_investment_outlook
+    description: |
+      法人企業景気予測調査の売上高・経常利益・設備投資の見通し（金額と前年同期比）を、調査期・年度・業種ごとに持つテーブルです。2004年4〜6月期の調査から収録しています。
+      出典: 内閣府・財務省 法人企業景気予測調査。https://www.mof.go.jp/pri/reference/bos/
+    access: public
+    columns:
+      - name: survey_time
+        description: "調査期のコード（YYYY00MMMM。2026000709 = 2026年7〜9月期の調査）"
+      - name: survey_name
+        description: "調査期の名称（2026年7〜9月期 など）"
+      - name: survey_year
+        description: "調査期の暦年"
+      - name: survey_quarter
+        description: "調査期の暦年の四半期（1=1〜3月期 … 4=10〜12月期）"
+      - name: outlook_table
+        description: "当年度見通し または 翌年度見通し（1〜3月期の調査だけ）。1〜3月期の調査では同じ年度が両方の表にあるが、値は一致しない"
+      - name: fiscal_year
+        description: "実際の年度（4月始まり）。原典の前年度・当年度・翌年度を、調査期から読み替えた"
+      - name: half
+        description: "上期・下期・通期。上期・下期は2019年1〜3月期の調査まで。それより後は通期だけ"
+      - name: industry_code
+        description: "業種コード。10=全産業、20=製造業、240=非製造業、それ以外は製造業・非製造業の内訳。全産業・製造業・非製造業と内訳が同じ列に並ぶ。「（2008年度まで）」「（2009年度から）」の付いた業種は、その期間の調査にだけ値がある。この期間は調査期の年度で、fiscal_year とは違う（2009年1〜3月期の調査の翌年度見通しでは、fiscal_year 2009 に「（2008年度まで）」の業種が出る）"
+      - name: industry_name
+        description: "industry_code に対応する業種名"
+      - name: industry_level
+        description: "業種の段（1=全産業、2=製造業・非製造業、3=内訳）"
+      - name: item
+        description: "売上高・経常利益と、設備投資（ソフトウェアを含む、土地を除く など4種）"
+      - name: measure
+        description: "金額 または 前年同期比"
+      - name: unit
+        description: "金額は百万円、前年同期比は %"
+      - name: value
+        description: "値。原典の空欄は NULL"
