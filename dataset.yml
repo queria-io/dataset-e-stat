@@ -7,6 +7,9 @@ description: |-
 keywords:
   - 経済構造実態調査
   - 付加価値額
+  - 法人企業統計
+  - 経常利益
+  - 設備投資
   - 統計
   - 政府統計
   - e-Stat
@@ -180,6 +183,8 @@ sources:
     path: https://www.e-stat.go.jp/statistics/00600280
   - title: 経済構造実態調査（総務省・経済産業省）
     path: https://www.e-stat.go.jp/statistics/00200555
+  - title: 法人企業統計調査（財務省）
+    path: https://www.mof.go.jp/pri/reference/ssc/
 
 contributors:
   - title: 総務省統計局
@@ -200,6 +205,9 @@ contributors:
   - title: 国土交通省
     path: https://www.mlit.go.jp/
     roles: [rightsHolder]
+  - title: 財務省
+    path: https://www.mof.go.jp/
+    roles: [rightsHolder]
 
 temporal_coverage: { start: "1970", end: null }
 spatial_coverage: [JP]
@@ -213,6 +221,8 @@ schemas:
     title: 社会・人口統計体系
   - name: boundary
     title: 境界データ
+  - name: corporate_finance
+    title: 法人企業統計調査
   - name: cpi
     title: 消費者物価指数
   - name: census
