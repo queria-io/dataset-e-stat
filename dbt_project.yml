@@ -65,6 +65,11 @@ models:
         +materialized: table
       stg:
         +materialized: table
+    economic_structure:
+      raw:
+        +materialized: table
+      stg:
+        +materialized: table
     enterprise_activity:
       raw:
         +materialized: table

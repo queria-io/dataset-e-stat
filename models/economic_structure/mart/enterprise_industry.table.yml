@@ -1,0 +1,61 @@
+schema: economic_structure
+name: enterprise_industry
+title: 企業産業別の企業等数・売上・費用・付加価値
+description: |-
+  経済構造実態調査の企業等に関する集計1を、調査年・企業産業（小分類まで）・経営組織・表章項目ごとに縦に持つテーブルです。全国の値で、2019・2020・2022〜2025年を収録しています。
+
+  - 産業・経営組織に総数と内訳が並ぶので、段で絞ってから合計してください
+  - 2019・2020年は農林漁業・鉱業・建設業を含みません
+  - 表章項目は measure_code で絞ってください
+keywords:
+- e-stat
+- 経済構造実態調査
+- 総務省
+- 経済産業省
+- 企業等数
+- 売上
+- 付加価値額
+- 費用
+- 給与総額
+- 産業小分類
+published: true
+themes:
+- economy
+sources:
+- path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003414933
+- path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003433753
+- path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004007360
+- path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004018720
+- path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004030059
+- path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004055461
+fields:
+- name: year
+  title: 調査年
+  description: 調査年（西暦4桁）。前年1年間の売上・費用を、調査年の6月1日現在の企業等について集計した値。2021年は経済センサス‐活動調査の年でこの調査が無い
+- name: industry_code
+  title: 産業コード
+  description: 日本標準産業分類のコード（AR=全産業、A〜R=大分類、2桁=中分類、3桁=小分類）。2024年までの表は表内の通し番号を振っていたので、名称の先頭のコードに置き換えている。2024年から産業分類の改定で小分類が増えた（562 総合スーパーマーケットなど）
+- name: industry_name
+  title: 産業名
+  description: industry_code に対応する産業名。年によって読点が「，」と「、」で違う
+- name: industry_level
+  title: 産業の段
+  description: 産業の段。total=全産業（2019・2020年は E～R の産業計で、農林漁業・鉱業・建設業を含まない）、sector=農林漁業（AB）と非農林漁業（CR）、division=大分類、division_part=大分類の一部をまとめた区分（G1 など）、major_group=中分類、group=小分類、group_part=小分類の一部（32A など）。段の違う行が同じ列に並ぶので、段で絞ってから合計する
+- name: organization_code
+  title: 経営組織コード
+  description: 経営組織コード。0=総数、1=会社企業、2=会社以外の法人。1 の内訳が 11=株式会社・有限会社・相互会社、12=合名会社・合資会社、13=合同会社。総数と内訳が同じ列に並ぶ。個人経営は対象外
+- name: organization
+  title: 経営組織
+  description: organization_code に対応する経営組織名
+- name: measure_code
+  title: 表章項目コード
+  description: 表章項目。enterprises=企業等数、sales=売上（収入）金額、merchandise_sales=年間商品販売額、wholesale_sales・retail_sales=そのうち卸売・小売販売額、total_expenses=費用総額、payroll=給与総額、taxes_and_dues=租税公課、interest_expenses=支払利息等（2020年まで）、cost_of_goods_sold=商品売上原価（2022年から）、value_added=付加価値額。原典の表章項目コードは年で振り直されているので、名前をそろえたこの列で絞る
+- name: measure
+  title: 表章項目名
+  description: 表章項目の名称
+- name: unit
+  title: 単位
+  description: 単位。企業等数は企業等、金額は百万円
+- name: value
+  title: 値
+  description: 値。原典の「-」（該当なし）と「x」（秘匿）はどちらも NULL

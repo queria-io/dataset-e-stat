@@ -5,6 +5,8 @@ description: |-
   e-Stat の API と統計GIS から取得した日本の公的統計です。社会・人口統計体系、国勢調査、経済センサスなど約 30 の統計を、スキーマごとに収録しています。
   出典は政府統計の総合窓口（e-Stat）と各統計の作成府省です。このサービスは、政府統計総合窓口(e-Stat)のAPI機能を使用していますが、サービスの内容は国によって保証されたものではありません。
 keywords:
+  - 経済構造実態調査
+  - 付加価値額
   - 企業活動基本調査
   - 研究開発費
   - 外資系企業
@@ -182,6 +184,8 @@ sources:
     path: https://www.e-stat.go.jp/statistics/00600350
   - title: 港湾調査（国土交通省）
     path: https://www.e-stat.go.jp/statistics/00600280
+  - title: 経済構造実態調査（総務省・経済産業省）
+    path: https://www.e-stat.go.jp/statistics/00200555
   - title: 経済産業省企業活動基本調査（経済産業省）
     path: https://www.meti.go.jp/statistics/tyo/kikatu/
   - title: 法人企業統計調査（財務省）
@@ -234,6 +238,8 @@ schemas:
     title: 住民基本台帳に基づく人口・世帯数
   - name: economic_census
     title: 経済センサス‐活動調査
+  - name: economic_structure
+    title: 経済構造実態調査
   - name: enterprise_activity
     title: 経済産業省企業活動基本調査
   - name: household
