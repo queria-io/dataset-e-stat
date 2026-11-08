@@ -1,5 +1,16 @@
 # 保守の手順
 
+## 新しい統計表の公開に気付く（watch_stats.yml）
+
+Check updates のワークフローは毎週月曜に、`watch_stats.yml` に載せた統計について、過去 7 日に
+新しく公開された統計表を e-Stat の統計表情報（getStatsList）で探します。見つかったら統計ごとに
+issue を立てます。国勢調査の町丁・字別のような小地域の表は `search_kinds: [1, 2]` で探します。
+取り込むと決めたら、表を `tables.yml` か `local_tables.yml` に足します。
+
+見張る統計を足すときは `watch_stats.yml` に政府統計コードを足します。毎月・毎週の表が出る統計
+（家計調査・人口推計など）は issue が多くなるので入れません。手で回すときは Actions の画面から
+Check updates を実行し、`days` で探す日数を、`dry_run` で issue を立てずに結果だけ出すかを選びます。
+
 ## 手元で1回だけ取り込む統計表（local_tables.yml）
 
 数年に1度しか出ない統計は、毎日の更新（CI）で e-Stat から取り直しません。Sync の時間を

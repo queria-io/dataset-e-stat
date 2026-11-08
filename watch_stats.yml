@@ -1,0 +1,37 @@
+# 新しい統計表が出たら知らせる統計（scripts/check_new_tables.py）。
+# 毎週、過去 7 日に公開された統計表を e-Stat の統計表情報で探し、あれば統計ごとに issue を立てる。
+# 毎月・毎週の表が出る統計（家計調査・人口推計など）は数が多いので入れない。
+# search_kinds: 1 = 統計データ、2 = 小地域・地域メッシュ（国勢調査の町丁・字別など）
+stats:
+  - stats_code: "00200521"
+    title: 国勢調査
+    search_kinds: [1, 2]
+  - stats_code: "00200522"
+    title: 住宅・土地統計調査
+    search_kinds: [1, 2]
+  - stats_code: "00200532"
+    title: 就業構造基本調査
+  - stats_code: "00200552"
+    title: 経済センサス‐基礎調査
+    search_kinds: [1, 2]
+  - stats_code: "00200553"
+    title: 経済センサス‐活動調査
+    search_kinds: [1, 2]
+  - stats_code: "00200555"
+    title: 経済構造実態調査
+  - stats_code: "00550100"
+    title: 経済産業省企業活動基本調査
+  - stats_code: "00450011"
+    title: 人口動態調査
+  - stats_code: "00450021"
+    title: 医療施設調査
+  - stats_code: "00450091"
+    title: 賃金構造基本統計調査
+  - stats_code: "00250012"
+    title: 在留外国人統計
+  - stats_code: "00200251"
+    title: 地方財政状況調査
+  - stats_code: "00600280"
+    title: 港湾調査
+  - stats_code: "00600350"
+    title: 鉄道輸送統計調査
