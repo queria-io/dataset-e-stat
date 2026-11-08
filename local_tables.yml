@@ -493,3 +493,28 @@ groups:
         stats_data_id: "0004062649"
         updated_date: "2026-09-16"
         primary_key: [cat01, cat02]
+  trade:
+    title: 普通貿易統計 品別国別表（全国分）輸出・輸入の過去の年
+    # e-Stat のデータベースではなく、統計表ファイル (CSV) から取る。取得とパースは
+    # pipelines/trade.py の fetch_local。年ごとに 12 月分のデータセットを取り、全年を
+    # 1 つの表 (trade_history) にする。through_year より後の年は CI の Sync が毎日取り直す
+    # (main.py)。境目を進める手順は MAINTAINING.md。
+    # catalog_modified_date は through_year までの年の CSV の最終更新日の最大で、Check updates も
+    # catalog_filter に合うファイルだけを見張る。毎月差し替わる新しい年の分で issue を立てないため
+    fetcher: trade
+    stats_code: "00350300"
+    catalog_filter:
+      category: 貿易統計_全国分
+      sub_category: 品別国別表
+      data_type: CSV
+      through_year: 2024
+    catalog_modified_date: "2025-11-13"
+    # trade_history は品目順に並べて書く (pipelines/trade.py)。ロードで並びを崩さないよう、
+    # 挿入順を保ってロードする。品目で絞る問い合わせが行グループの統計で読む範囲を絞れる
+    preserve_insertion_order: true
+    dbt_select: "raw_trade_history raw_trade_country"
+    tables:
+      - name: trade_history
+        updated_date: "2025-11-13"
+      - name: trade_country
+        updated_date: "2025-11-13"

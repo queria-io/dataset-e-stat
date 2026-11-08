@@ -39,18 +39,26 @@ def updated_date(app_id: str, stats_data_id: str) -> str:
     return body["STATISTICAL_DATA"]["TABLE_INF"]["UPDATED_DATE"]
 
 
-def catalog_modified_date(app_id: str, stats_code: str) -> str:
+def catalog_modified_date(app_id: str, stats_code: str, catalog_filter: dict | None = None) -> str:
     """統計表ファイルで配られる統計の、全ファイルの最終更新日の最大。
 
     新しい年度のファイルが出ても、過去のファイルが直っても進む。
     pipelines/kaigo_insurance.py の catalog_modified_date と同じ定義。
+
+    catalog_filter があれば、表の分類（category・sub_category）が一致し、調査年が
+    through_year 以前のデータセットだけを見る。毎月差し替わる新しい年の分を CI が取る
+    統計 (pipelines/trade.py) で、手元で取り込んだ年だけを見張るため。
     """
     latest = ""
     start = 1
     while True:
-        query = urllib.parse.urlencode(
-            {"appId": app_id, "statsCode": stats_code, "limit": 100, "startPosition": start}
-        )
+        params = {"appId": app_id, "statsCode": stats_code, "limit": 100, "startPosition": start}
+        if catalog_filter:
+            # 絞らずに一覧すると数分かかる統計がある (貿易統計で 8 分)。表の名前と年で先に絞る
+            params["searchWord"] = catalog_filter["sub_category"]
+            params["surveyYears"] = f"198001-{catalog_filter['through_year']}12"
+            params["dataType"] = catalog_filter["data_type"]
+        query = urllib.parse.urlencode(params)
         with urllib.request.urlopen(f"{CATALOG_API}?{query}", timeout=120) as res:
             body = json.load(res)["GET_DATA_CATALOG"]
         status = int(body["RESULT"]["STATUS"])
@@ -59,6 +67,8 @@ def catalog_modified_date(app_id: str, stats_code: str) -> str:
         listing = body["DATA_CATALOG_LIST_INF"]
         items = listing["DATA_CATALOG_INF"]
         for item in [items] if isinstance(items, dict) else items:
+            if catalog_filter and not _matches(item["DATASET"]["TITLE"], catalog_filter):
+                continue
             resources = item["RESOURCES"]["RESOURCE"]
             for r in [resources] if isinstance(resources, dict) else resources:
                 latest = max(latest, r["LAST_MODIFIED_DATE"])
@@ -70,11 +80,19 @@ def catalog_modified_date(app_id: str, stats_code: str) -> str:
         start = int(next_key)
 
 
+def _matches(title: dict, catalog_filter: dict) -> bool:
+    return (
+        title["TABULATION_CATEGORY"] == catalog_filter["category"]
+        and title["TABULATION_SUB_CATEGORY1"] == catalog_filter["sub_category"]
+        and int(str(title["SURVEY_DATE"])[:4]) <= int(catalog_filter["through_year"])
+    )
+
+
 def changed_tables(app_id: str, group: dict) -> list[str]:
     if "stats_code" in group:
         # 統計表ファイルで配られる統計 (fetcher のあるグループ)。表ごとの更新日が無いので
         # 統計全体の最終更新日で見る
-        now = catalog_modified_date(app_id, group["stats_code"])
+        now = catalog_modified_date(app_id, group["stats_code"], group.get("catalog_filter"))
         # YAML で引用符を落とすと date になるので、文字列に揃えて比べる
         if now == str(group["catalog_modified_date"]):
             return []

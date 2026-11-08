@@ -1,0 +1,10 @@
+version: 2
+
+sources:
+  - name: estat_source
+    database: e_stat
+    schema: _source
+    tables:
+      # 手元でだけ取り込む (load_local.py の trade)。CI の main.py はロードしない
+      - name: trade_history
+      - name: trade_country

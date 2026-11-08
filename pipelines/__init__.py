@@ -64,7 +64,7 @@ logging.config.dictConfig(
 SOURCE_SCHEMA = "_source"
 
 
-def create_pipeline(pipeline_name: str = "estat"):
+def create_pipeline(pipeline_name: str = "estat", preserve_insertion_order: bool = False):
     """dlt パイプラインを queria の DuckLake (SQLite + R2) で構成する。
 
     queria run が注入する QUERIA_* 環境変数を使う:
@@ -113,14 +113,19 @@ def create_pipeline(pipeline_name: str = "estat"):
     #   - preserve_insertion_order=false: 挿入順保持のための全行バッファリングを
     #     やめ、ストリーミング挿入でピークメモリを下げる (DuckDB の INSERT OOM
     #     対策として公式に推奨)。
+    #     並べてから入れたい表 (品目順に並べた貿易統計など) は preserve_insertion_order=True
+    #     で呼ぶ。行が並び替わると、行グループの統計で読み飛ばせなくなる。
     #   - temp_directory: メモリ上限に達した演算子をディスクへスピルさせる
     #     (ducklake は in-memory DuckDB 接続のため明示しないとスピルできない)。
     spill_dir = Path(tempfile.gettempdir()) / "duckdb-estat-spill"
     spill_dir.mkdir(parents=True, exist_ok=True)
     credentials.global_config = {
-        "preserve_insertion_order": False,
+        "preserve_insertion_order": preserve_insertion_order,
         "temp_directory": str(spill_dir),
     }
+    if preserve_insertion_order:
+        # 挿入順の保持だけでは、並列の読み込みで行グループの順が入れ替わる (実測)。1 スレッドで入れる
+        credentials.global_config["threads"] = 1
 
     return dlt.pipeline(
         pipeline_name=pipeline_name,

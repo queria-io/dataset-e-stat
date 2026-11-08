@@ -181,7 +181,9 @@ def main():
     # _dlt_pipeline_state が大きく、R2 越しに読むと時間切れになる)。replace で全件を
     # 入れ直すので状態は要らない。CI の estat の状態に混ざらないよう名前も分ける
     os.environ["RESTORE_FROM_DESTINATION"] = "false"
-    pipeline = create_pipeline(f"estat_local_{group}")
+    pipeline = create_pipeline(
+        f"estat_local_{group}", preserve_insertion_order=spec.get("preserve_insertion_order", False)
+    )
     info = pipeline.run(resources)
     logger.info(f"  {group}: {info}")
     dbt_build(select=spec["dbt_select"])
