@@ -24,6 +24,7 @@ import io
 import json
 import logging
 import time
+from datetime import date
 import urllib.parse
 from http.client import IncompleteRead
 from pathlib import Path
@@ -45,6 +46,8 @@ RESOURCE_PREFIX = "業種別商業販売額及び前年"
 VALUE_SHEET = "販売額（value）(月次M)"
 CHANGE_SHEET = "前年比（change）(月次M)"
 FIRST_TIME = "1980000101"
+# 速報は翌月末、確報は翌々月中旬に出る。最新の月が今月から4か月より前なら、差し替えが止まっている
+MAX_LAG_MONTHS = 4
 _UA = "dataset-e-stat"
 _TIMEOUT = 300
 _MAX_RETRIES = 5
@@ -161,6 +164,12 @@ def build_commerce_sales(dest_dir: str, app_id: str) -> None:
     dest = Path(dest_dir)
     dest.mkdir(parents=True, exist_ok=True)
     table = parse(_fetch(sales_file_url(app_id)))
+    # Excel の差し替えが止まっても取り込みは成功するので、最新の月の遅れで気付く
+    latest = max(table.column("time").to_pylist())
+    today = date.today()
+    lag = (today.year * 12 + today.month) - (int(latest[:4]) * 12 + int(latest[8:10]))
+    if lag > MAX_LAG_MONTHS:
+        raise RuntimeError(f"業種別商業販売額の最新の月が {latest} で {lag} か月遅れている")
     pq.write_table(table, dest / "sales_by_business.parquet")
     months = len(set(table.column("time").to_pylist()))
     logger.info(f"  commerce sales_by_business: {table.num_rows} 行 ({months} か月)")
