@@ -315,8 +315,8 @@ groups:
     title: 経済産業省企業活動基本調査 確報 産業別・都道府県別・資本金規模別の財務、研究開発、外資系企業、子会社の表（2020〜2025年調査）
     dbt_select: "+industry_finance +prefecture_finance +capital_size_finance +research_development +foreign_affiliated_finance +subsidiary_count"
     # 調査年ごとに統計表が別になり、表番号も年で変わるので表題で選んでいる。
-    # 2019年以前の調査は行の軸（産業×内訳×年度をつないだ名称）の書き方が違い、大分類に
-    # 産業コードが付かないので取っていない。次の調査年の表は stats_data_id を足して取る。
+    # 2019年以前の調査は行の軸（産業×内訳×年度をつないだ名称）の書き方が違うので、別のグループ
+    # (enterprise_activity_legacy) にしている。次の調査年の表は stats_data_id を足して取る。
     tables:
       # 第1巻 総括表 第1表 産業別、企業数、事業所数、従業者数、資産、負債及び純資産、売上高、…付加価値額、子会社・関連会社数
       - name: enterprise_activity_summary_2020
@@ -518,3 +518,274 @@ groups:
         updated_date: "2025-11-13"
       - name: trade_country
         updated_date: "2025-11-13"
+  enterprise_activity_legacy:
+    title: 経済産業省企業活動基本調査 確報 2010〜2019年調査（enterprise_activity と同じ7種類の表）
+    dbt_select: "+industry_finance +prefecture_finance +capital_size_finance +research_development +foreign_affiliated_finance +subsidiary_count"
+    # 2020年以降の調査 (enterprise_activity) と同じ表の、それより前の調査。表側の名称の書き方が違い
+    # (全角空白で区切り、大分類にコードが付かない、年度は時系列の行にしか付かない)、
+    # stg_enterprise_activity_legacy で読み分ける。表頭（測定項目）は2020年以降と数と並びが同じなので、
+    # 並び順で2025年調査の測定項目に当てる。並びを残すため class_order を付ける。
+    # 2009年調査は資本金規模の表で産業と規模の間に区切りが無い行があるので取らない。
+    # 外資系企業の表は2010〜2014年調査に同じ表題の表が無い。
+    class_order: true
+    tables:
+      - name: enterprise_activity_summary_2010
+        stats_data_id: "0003059039"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_summary_2011
+        stats_data_id: "0003340739"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_summary_2012
+        stats_data_id: "0003327322"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_summary_2013
+        stats_data_id: "0003251702"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_summary_2014
+        stats_data_id: "0003240100"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_summary_2015
+        stats_data_id: "0003178940"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_summary_2016
+        stats_data_id: "0003454816"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_summary_2017
+        stats_data_id: "0003238706"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_summary_2018
+        stats_data_id: "0003350811"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_summary_2019
+        stats_data_id: "0003445823"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_prefecture_2010
+        stats_data_id: "0003059056"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_prefecture_2011
+        stats_data_id: "0003340775"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_prefecture_2012
+        stats_data_id: "0003327338"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_prefecture_2013
+        stats_data_id: "0003251718"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_prefecture_2014
+        stats_data_id: "0003240116"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_prefecture_2015
+        stats_data_id: "0003178944"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_prefecture_2016
+        stats_data_id: "0003454832"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_prefecture_2017
+        stats_data_id: "0003238722"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_prefecture_2018
+        stats_data_id: "0003350827"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_prefecture_2019
+        stats_data_id: "0003445667"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_capital_balance_2010
+        stats_data_id: "0003059041"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_capital_balance_2011
+        stats_data_id: "0003340741"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_capital_balance_2012
+        stats_data_id: "0003327324"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_capital_balance_2013
+        stats_data_id: "0003251704"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_capital_balance_2014
+        stats_data_id: "0003240102"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_capital_balance_2015
+        stats_data_id: "0003179761"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_capital_balance_2016
+        stats_data_id: "0003454818"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_capital_balance_2017
+        stats_data_id: "0003238708"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_capital_balance_2018
+        stats_data_id: "0003350813"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_capital_balance_2019
+        stats_data_id: "0003445824"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_capital_business_2010
+        stats_data_id: "0003059043"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_capital_business_2011
+        stats_data_id: "0003340743"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_capital_business_2012
+        stats_data_id: "0003327326"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_capital_business_2013
+        stats_data_id: "0003251706"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_capital_business_2014
+        stats_data_id: "0003240104"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_capital_business_2015
+        stats_data_id: "0003178941"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_capital_business_2016
+        stats_data_id: "0003454820"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_capital_business_2017
+        stats_data_id: "0003238710"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_capital_business_2018
+        stats_data_id: "0003350815"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_capital_business_2019
+        stats_data_id: "0003445659"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_research_2010
+        stats_data_id: "0003059049"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_research_2011
+        stats_data_id: "0003340749"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_research_2012
+        stats_data_id: "0003327332"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_research_2013
+        stats_data_id: "0003251712"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_research_2014
+        stats_data_id: "0003240110"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_research_2015
+        stats_data_id: "0003239700"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_research_2016
+        stats_data_id: "0003454826"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_research_2017
+        stats_data_id: "0003238716"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_research_2018
+        stats_data_id: "0003350821"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_research_2019
+        stats_data_id: "0003445662"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_foreign_2015
+        stats_data_id: "0003179003"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_foreign_2016
+        stats_data_id: "0003454831"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_foreign_2017
+        stats_data_id: "0003238721"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_foreign_2018
+        stats_data_id: "0003350826"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_foreign_2019
+        stats_data_id: "0003445666"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_subsidiary_2010
+        stats_data_id: "0003059411"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_subsidiary_2011
+        stats_data_id: "0003340800"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_subsidiary_2012
+        stats_data_id: "0003327383"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_subsidiary_2013
+        stats_data_id: "0003251743"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_subsidiary_2014
+        stats_data_id: "0003240141"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_subsidiary_2015
+        stats_data_id: "0003178949"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_subsidiary_2016
+        stats_data_id: "0003454851"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_subsidiary_2017
+        stats_data_id: "0003238741"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_subsidiary_2018
+        stats_data_id: "0003350846"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
+      - name: enterprise_activity_subsidiary_2019
+        stats_data_id: "0003445568"
+        updated_date: "2023-09-04"
+        primary_key: [cat01, cat02]
