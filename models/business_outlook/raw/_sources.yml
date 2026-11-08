@@ -1,0 +1,15 @@
+version: 2
+
+sources:
+  - name: estat_source
+    database: e_stat
+    schema: _source
+    tables:
+      # 手元でだけ取り込む (load_local.py の business_outlook)。CI の main.py はロードしない
+      - name: business_outlook_conditions_bsi
+      - name: business_outlook_employment_bsi
+      - name: business_outlook_equipment_bsi
+      - name: business_outlook_sales_profit_current
+      - name: business_outlook_investment_current
+      - name: business_outlook_sales_profit_next
+      - name: business_outlook_investment_next

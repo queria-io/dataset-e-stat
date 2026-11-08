@@ -35,6 +35,7 @@ e-Stat（政府統計の総合窓口）の API と統計GIS から取得した�
 | school_health | 学校保健統計調査 都道府県別・年齢別の身長・体重の平均値と標準偏差 growth_by_prefecture |
 | trade | 普通貿易統計 品別国別表（統計品目番号9桁 × 国 × 月の数量・金額、1988年〜） commodity_country_monthly |
 | crop | 作物統計調査 都道府県別の野菜の作付面積・収穫量・出荷量 vegetable_production |
+| business_outlook | 法人企業景気予測調査 景況判断・従業員数判断・設備判断の BSI bsi、売上高・経常利益・設備投資の見通し sales_profit_investment_outlook |
 | building_starts | 建築着工統計調査 市区町村別・用途別の建築着工 municipality_use |
 | construction | 建設総合統計 都道府県別・月次の建設工事出来高 prefecture_monthly、建設工事受注動態統計調査 都道府県別・発注機関別の公共工事の請負契約額 public_orders_prefecture_monthly |
 | rail_transport | 鉄道輸送統計調査 業態別・定期／定期外別・月次の鉄道旅客数量 passengers_monthly |

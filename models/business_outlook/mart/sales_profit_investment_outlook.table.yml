@@ -1,0 +1,68 @@
+schema: business_outlook
+name: sales_profit_investment_outlook
+title: 売上高・経常利益・設備投資の見通し
+description: |-
+  法人企業景気予測調査の売上高・経常利益・設備投資の見通し（金額と前年同期比）を、調査期・年度・業種ごとに持つテーブルです。2004年4〜6月期の調査から収録しています。
+
+  - 原典の前年度・当年度・翌年度を、実際の年度（fiscal_year）に読み替えています
+  - 同じ年度の値は調査期ごとに変わります。最新の見通しは最新の調査期の行です
+keywords:
+- e-stat
+- 法人企業景気予測調査
+- 財務省
+- 内閣府
+- 売上高
+- 経常利益
+- 設備投資
+- 見通し
+published: true
+themes:
+- economy
+sources:
+- path: https://www.e-stat.go.jp/dbview?sid=0003326060
+- path: https://www.e-stat.go.jp/dbview?sid=0003326044
+- path: https://www.e-stat.go.jp/dbview?sid=0003326161
+- path: https://www.e-stat.go.jp/dbview?sid=0003326163
+fields:
+- name: survey_time
+  title: 調査期コード
+  description: 調査期のコード（YYYY00MMMM。2026000709 = 2026年7〜9月期の調査）
+- name: survey_name
+  title: 調査期
+  description: 調査期の名称（2026年7〜9月期 など）
+- name: survey_year
+  title: 調査年
+  description: 調査期の暦年
+- name: survey_quarter
+  title: 調査四半期
+  description: 調査期の暦年の四半期（1=1〜3月期 … 4=10〜12月期）
+- name: outlook_table
+  title: 見通しの表
+  description: 当年度見通し または 翌年度見通し（1〜3月期の調査だけ）。1〜3月期の調査では同じ年度が両方の表にあるが、値は一致しない
+- name: fiscal_year
+  title: 年度
+  description: 実際の年度（4月始まり）。原典の前年度・当年度・翌年度を、調査期から読み替えた
+- name: half
+  title: 期
+  description: 上期・下期・通期。上期・下期は2019年1〜3月期の調査まで。それより後は通期だけ
+- name: industry_code
+  title: 業種コード
+  description: 業種コード。10=全産業、20=製造業、240=非製造業、それ以外は製造業・非製造業の内訳。全産業・製造業・非製造業と内訳が同じ列に並ぶ。「（2008年度まで）」「（2009年度から）」の付いた業種は、その期間だけ値がある
+- name: industry_name
+  title: 業種名
+  description: industry_code に対応する業種名
+- name: industry_level
+  title: 業種の段
+  description: 業種の段（1=全産業、2=製造業・非製造業、3=内訳）
+- name: item
+  title: 項目
+  description: 売上高・経常利益と、設備投資（ソフトウェアを含む、土地を除く など4種）
+- name: measure
+  title: 表章項目
+  description: 金額 または 前年同期比
+- name: unit
+  title: 単位
+  description: 金額は百万円、前年同期比は %
+- name: value
+  title: 値
+  description: 値。原典の空欄は NULL

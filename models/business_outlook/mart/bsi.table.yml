@@ -1,0 +1,63 @@
+schema: business_outlook
+name: bsi
+title: 景況判断・従業員数判断・設備判断 BSI
+description: |-
+  法人企業景気予測調査の BSI（景況判断・従業員数判断・設備判断）を、調査期・業種・規模・当期翌期ごとに持つテーブルです。2004年4〜6月期の調査から収録しています。
+
+  - 規模は大企業・中堅企業・中小企業の3つで、全規模の行はありません
+  - 業種は全産業・製造業・非製造業と内訳が同じ列に並びます
+keywords:
+- e-stat
+- 法人企業景気予測調査
+- 財務省
+- 内閣府
+- BSI
+- 景況判断
+- 景気
+published: true
+themes:
+- economy
+sources:
+- path: https://www.e-stat.go.jp/dbview?sid=0003325983
+- path: https://www.e-stat.go.jp/dbview?sid=0003326004
+- path: https://www.e-stat.go.jp/dbview?sid=0003326002
+fields:
+- name: survey_time
+  title: 調査期コード
+  description: 調査期のコード（YYYY00MMMM。2026000709 = 2026年7〜9月期の調査）
+- name: survey_name
+  title: 調査期
+  description: 調査期の名称（2026年7〜9月期 など）
+- name: survey_year
+  title: 調査年
+  description: 調査期の暦年
+- name: survey_quarter
+  title: 調査四半期
+  description: 調査期の暦年の四半期（1=1〜3月期 … 4=10〜12月期）
+- name: indicator
+  title: 指標
+  description: BSI の指標。景況判断（貴社）・景況判断（国内）・従業員数判断・設備判断
+- name: horizon_code
+  title: 見通しの時期コード
+  description: 10=当期、20=翌期、30=翌々期
+- name: horizon
+  title: 見通しの時期
+  description: 当期（調査期）・翌期・翌々期。翌期・翌々期は回答時点の見通し
+- name: size_code
+  title: 規模コード
+  description: 20=大企業、30=中堅企業、40=中小企業。全規模の行は無い
+- name: size
+  title: 規模
+  description: 資本金による規模。大企業=10億円以上、中堅企業=1億円以上10億円未満、中小企業=1千万円以上1億円未満
+- name: industry_code
+  title: 業種コード
+  description: 業種コード。10=全産業、20=製造業、240=非製造業、それ以外は製造業・非製造業の内訳。全産業・製造業・非製造業と内訳が同じ列に並ぶ。「（2008年度まで）」「（2009年度から）」の付いた業種は、その期間だけ値がある
+- name: industry_name
+  title: 業種名
+  description: industry_code に対応する業種名
+- name: industry_level
+  title: 業種の段
+  description: 業種の段（1=全産業、2=製造業・非製造業、3=内訳）
+- name: value
+  title: BSI
+  description: BSI（%ポイント）。前期と比べて「上昇」と答えた企業の割合から「下降」の割合を引いた値。従業員数判断は期末の水準について「不足気味」-「過剰気味」、設備判断は「不足」-「過大」
