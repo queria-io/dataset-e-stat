@@ -9,7 +9,8 @@
 -- 2. キー（scope・季節調整・調査項目・業種・資本金規模・期）が一意で、単位が空でない
 -- 3. 金融業、保険業以外の業種の四半期（原数値・金額の項目）で、次の恒等式がちょうど成り立つ（実測で差0）。
 --    内訳の規模・業種が無い組（業種 102・103 には 10億円以上が無い）はその内訳を0として足す。
---    資本金規模の式は1967年4〜6月期から（それより前は全規模が3区分の和にならない）。
+--    1959年4〜6月期までは10億円以上・1億円以上10億円未満の区分が無いので、全規模 = 1億円以上 + 19 で見る。
+--    原典で一致しない6つの期は数えない。
 --    合計の行が無い組は失敗にする
 --    - 全規模（26）= 10億円以上（25）+ 1億円以上10億円未満（24）+ 1千万円以上1億円未満（19）
 --    - 1億円以上（23）= 25 + 24
@@ -120,10 +121,18 @@ size_sums AS (
         FROM nonfinancial
         GROUP BY item_code, industry_code, time
     )
-    -- 1967年1〜3月期までは全規模が3区分の和にならない（実測）ので、それより後の期だけ見る
-    WHERE time >= '19672'
-        AND (NOT coalesce(abs(s26 - (coalesce(s25, 0) + coalesce(s24, 0) + coalesce(s19, 0))) <= 1, false)
-            OR NOT coalesce(abs(s23 - (coalesce(s25, 0) + coalesce(s24, 0))) <= 1, true))
+    -- 1959年4〜6月期までは 10億円以上・1億円以上10億円未満の区分が無いので、全規模 = 1億円以上 + 19 で見る。
+    -- 原典で一致しない期（実測で 1955年1〜3月期、1959年7〜12月期、1961年1〜3月期、1965年10〜12月期、
+    -- 1967年1〜3月期）は数えない
+    WHERE time NOT IN ('19551', '19593', '19594', '19611', '19654', '19671')
+        -- 規模の内訳が1つも無い組（1957年1〜3月期の業種 135 など）は数えない
+        AND (s25 IS NOT NULL OR s24 IS NOT NULL OR s23 IS NOT NULL OR s19 IS NOT NULL)
+        AND CASE
+            -- 内訳の片方が無い組（1957年1〜3月期の業種 135 の 1千万円以上1億円未満など）は数えない
+            WHEN time < '19593' THEN s23 IS NOT NULL AND s19 IS NOT NULL AND NOT coalesce(abs(s26 - (s23 + s19)) <= 1, false)
+            ELSE NOT coalesce(abs(s26 - (coalesce(s25, 0) + coalesce(s24, 0) + coalesce(s19, 0))) <= 1, false)
+                OR NOT coalesce(abs(s23 - (coalesce(s25, 0) + coalesce(s24, 0))) <= 1, true)
+        END
 ),
 
 industry_sums AS (
