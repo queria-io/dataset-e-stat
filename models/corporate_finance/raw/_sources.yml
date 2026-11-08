@@ -24,3 +24,6 @@ sources:
       - name: corporate_finance_insurance_annual
       - name: corporate_finance_other_insurance_quarterly
       - name: corporate_finance_other_insurance_annual
+      # 手元でだけ取り込む (load_local.py の corporate_finance_history)。CI の main.py はロードしない
+      - name: corporate_finance_nonfinancial_quarterly_pre2008
+      - name: corporate_finance_nonfinancial_annual_pre2008
