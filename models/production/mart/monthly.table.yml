@@ -1,0 +1,61 @@
+schema: production
+name: monthly
+title: 品目別の生産・出荷・在庫（月次）
+description: |-
+  経済産業省生産動態統計の月報の統計表（確報）を、月・調査票・品目・アイテム（生産・出荷・在庫など）ごとに縦に持つテーブルです。2022年1月から最新の公表月まで、約110の調査票・2,200品目を収録しています。
+
+  - 単位はアイテムごとに違います（t・台・千円 など）
+  - 合計・中間計の品目と内訳の品目が同じ列に並びます
+  - 秘匿の値（X）は NULL です
+- 品目番号・品目名・単位は年の切れ目で変わることがあります。確定した年の値は年間補正の前の値です
+keywords:
+- e-stat
+- 生産動態統計
+- 経済産業省
+- 鉱工業
+- 生産
+- 出荷
+- 在庫
+- 月次
+published: true
+themes:
+- mining_manufacturing
+sources:
+- path: https://www.e-stat.go.jp/stat-search/files?toukei=00550200
+fields:
+- name: time
+  title: 時間軸コード
+  description: 時間軸コード（YYYY00MMMM。2026000808 = 2026年8月）
+- name: year
+  title: 年
+  description: 暦年（西暦4桁）
+- name: month
+  title: 月
+  description: 月（1〜12）
+- name: form_code
+  title: 調査票番号
+  description: 調査票の番号（4桁。1010 = 鉄鋼月報（その１） など）
+- name: form_name
+  title: 調査票名
+  description: 調査票の名前（鉄鋼月報（その１）銑鉄・フェロアロイ・粗鋼… など）
+- name: category
+  title: 項目
+  description: 品目の項目（製品・原材料・労務・生産能力 など）
+- name: product_code
+  title: 品目番号
+  description: 調査票の中の品目の番号（4桁）。調査票をまたいで同じ番号が出るので、form_code と組で使う。調査票の改正で年の切れ目に別の品目へ振り直されることがある（3010/0106 は2022年がポリエステル短繊維、2026年がポリエチレン長繊維）ので、年をまたいで系列にするときは品目名も確かめる
+- name: product_name
+  title: 品目名
+  description: 品目の名前。合計・中間計の品目も同じ列に並ぶ（原典の「参考資料(中間計項目一覧)」）
+- name: item_symbol
+  title: アイテム記号
+  description: 品目の中のアイテムの記号（A・B…）
+- name: item_name
+  title: アイテム名
+  description: 生産数量・販売金額・月末在庫などの名前。調査票ごとに名前と並びが違う
+- name: unit
+  title: 単位
+  description: 単位（t・kl・台・千円・人 など）。アイテムごとに違うので、アイテムをまたいで足さない。同じ品目でも年によって単位が変わることがある（6121/0119 は2023年まで t、2024年から kg）
+- name: value
+  title: 値
+  description: 値。原典の「X」（秘匿）は NULL。品種振替・投入（石油製品）は負の値がある
