@@ -11,7 +11,7 @@
 セットが 1 年分すべてを持つ。
 
 - 過去の年 (local_tables.yml の trade グループの through_year まで) は、12月分の CSV を
-  手元で 1 回だけ取り込む (load_local.py の fetch_local)。全期間で約 4,000 万行あり、
+  手元で 1 回だけ取り込む (load_local.py の fetch_local)。全期間で約 5,000 万行あり、
   毎日取り直すと Sync の時間を食うため
 - それより後の年は、毎日の Sync (main.py の build_trade_recent) で年ごとの最新の
   データセットを取り直して置き換える。確報で前の月の値が直ることがあり、年の途中の
