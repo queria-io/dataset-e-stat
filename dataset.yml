@@ -8,6 +8,8 @@ keywords:
   - 法人企業景気予測調査
   - BSI
   - 景況判断
+  - 商業動態統計
+  - 商業販売額
   - 経済構造実態調査
   - 付加価値額
   - 企業活動基本調査
@@ -193,6 +195,8 @@ sources:
     path: https://www.e-stat.go.jp/statistics/00600280
   - title: 法人企業景気予測調査（内閣府・財務省）
     path: https://www.mof.go.jp/pri/reference/bos/
+  - title: 商業動態統計調査（経済産業省）
+    path: https://www.meti.go.jp/statistics/tyo/syoudou/
   - title: 経済構造実態調査（総務省・経済産業省）
     path: https://www.e-stat.go.jp/statistics/00200555
   - title: 経済産業省企業活動基本調査（経済産業省）
@@ -290,6 +294,8 @@ schemas:
     title: 法人企業景気予測調査
   - name: building_starts
     title: 建築着工統計調査
+  - name: commerce
+    title: 商業動態統計調査
   - name: construction
     title: 建設総合統計・建設工事受注動態統計調査
   - name: rail_transport

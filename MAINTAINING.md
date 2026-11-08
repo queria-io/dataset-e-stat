@@ -27,6 +27,9 @@ QUERIA_TOKEN=... uv run --env-file .env queria sync -- uv run --env-file .env py
 
 `local_tables.yml` の `updated_date` は取り込んだときの e-Stat の更新日です。毎週
 Check updates のワークフローが e-Stat の更新日と比べ、変わっていたら issue を立てます。
+表に `watch: false` を付けると見張りから外れます。毎期更新される統計表の過去の期だけを取る表
+（`api_params` の `cdTimeTo` で期を絞った corporate_finance_history）に使います。この表の境目は
+tables.yml の `initial_time` と接しているので、動かすときは両方を一緒に直します。
 取り込み直すときは `updated_date` を直してから 1 と 2 を回します（fetch は食い違うと止まります）。
 
 表を足すときは `local_tables.yml` にグループ（`tables` と、ロード後にビルドする `dbt_select`）を

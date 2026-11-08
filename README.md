@@ -45,6 +45,7 @@
 | `school_health` | 学校保健統計調査 | [school-health.md](docs/school-health.md) |
 | `business_outlook` | 法人企業景気予測調査 | [business-outlook.md](docs/business-outlook.md) |
 | `building_starts` | 建築着工統計調査 | [building-starts.md](docs/building-starts.md) |
+| `commerce` | 商業動態統計調査 | [commerce.md](docs/commerce.md) |
 | `construction` | 建設総合統計・建設工事受注動態統計調査 | [construction.md](docs/construction.md) |
 | `rail_transport` | 鉄道輸送統計調査 | [rail-transport.md](docs/rail-transport.md) |
 | `port` | 港湾調査 | [port.md](docs/port.md) |
