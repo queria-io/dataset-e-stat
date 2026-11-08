@@ -1,0 +1,52 @@
+schema: economic_structure
+name: establishment_prefecture
+title: 都道府県別・産業大分類別の事業所数と売上
+description: |-
+  経済構造実態調査の事業所に関する集計1を、調査年・都道府県・産業大分類ごとに持つテーブルです。2022〜2025年を収録しています。
+
+  - 全国と都道府県、全産業と大分類が同じ列に並ぶので、絞ってから合計してください
+  - 個人経営の事業所を含みません
+keywords:
+- e-stat
+- 経済構造実態調査
+- 総務省
+- 経済産業省
+- 事業所数
+- 売上
+- 都道府県
+published: true
+themes:
+- economy
+sources:
+- path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004009880
+- path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004021920
+- path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004032882
+- path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004068497
+fields:
+- name: year
+  title: 調査年
+  description: 調査年（西暦4桁）。この表は2022年から
+- name: area
+  title: 地域コード
+  description: 地域コード（5桁）。00000=全国、01000〜47000=都道府県
+- name: area_name
+  title: 地域名
+  description: area に対応する地域名
+- name: area_level
+  title: 地域の段
+  description: national=全国、prefecture=都道府県。全国と都道府県が同じ列に並ぶ
+- name: industry_code
+  title: 産業コード
+  description: 日本標準産業分類のコード（AR=全産業、AB=農林漁業、CR=非農林漁業、A〜R=大分類）。AB と CR は2024年から
+- name: industry_name
+  title: 産業名
+  description: industry_code に対応する産業名
+- name: industry_level
+  title: 産業の段
+  description: total=全産業、sector=農林漁業・非農林漁業、division=大分類。段の違う行が同じ列に並ぶ
+- name: establishments
+  title: 事業所数
+  description: 事業所数。個人経営を含まない
+- name: sales_million_yen
+  title: 売上（収入）金額
+  description: 売上（収入）金額（百万円）。全産業・非農林漁業と、建設業（D）・電気・ガス・熱供給・水道業（F）・運輸業、郵便業（H）・金融業、保険業（J）の行は原典に値が無く NULL。大分類の売上を足しても全産業にはならない

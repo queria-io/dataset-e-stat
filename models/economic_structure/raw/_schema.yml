@@ -1,0 +1,19 @@
+version: 2
+
+models:
+  - name: raw_economic_structure_enterprise_2019
+  - name: raw_economic_structure_enterprise_2020
+  - name: raw_economic_structure_enterprise_2022
+  - name: raw_economic_structure_enterprise_2023
+  - name: raw_economic_structure_enterprise_2024
+  - name: raw_economic_structure_enterprise_2025
+  - name: raw_economic_structure_cost_2019
+  - name: raw_economic_structure_cost_2020
+  - name: raw_economic_structure_cost_2022
+  - name: raw_economic_structure_cost_2023
+  - name: raw_economic_structure_cost_2024
+  - name: raw_economic_structure_cost_2025
+  - name: raw_economic_structure_establishment_2022
+  - name: raw_economic_structure_establishment_2023
+  - name: raw_economic_structure_establishment_2024
+  - name: raw_economic_structure_establishment_2025
