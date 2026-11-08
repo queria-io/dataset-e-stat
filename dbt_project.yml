@@ -51,6 +51,9 @@ models:
         +materialized: table
       stg:
         +materialized: table
+    corporate_finance:
+      stg:
+        +materialized: table
     cpi:
       stg:
         +materialized: table
@@ -58,6 +61,16 @@ models:
       raw:
         +materialized: table
     economic_census:
+      raw:
+        +materialized: table
+      stg:
+        +materialized: table
+    economic_structure:
+      raw:
+        +materialized: table
+      stg:
+        +materialized: table
+    enterprise_activity:
       raw:
         +materialized: table
       stg:
