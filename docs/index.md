@@ -36,6 +36,7 @@ e-Stat（政府統計の総合窓口）の API と統計GIS から取得した�
 | trade | 普通貿易統計 品別国別表（統計品目番号9桁 × 国 × 月の数量・金額、1988年〜） commodity_country_monthly |
 | crop | 作物統計調査 都道府県別の野菜の作付面積・収穫量・出荷量 vegetable_production |
 | building_starts | 建築着工統計調査 市区町村別・用途別の建築着工 municipality_use |
+| commerce | 商業動態統計調査 業種別の商業販売額と前年同月比（月次、1980年〜） sales_by_business_monthly |
 | construction | 建設総合統計 都道府県別・月次の建設工事出来高 prefecture_monthly、建設工事受注動態統計調査 都道府県別・発注機関別の公共工事の請負契約額 public_orders_prefecture_monthly |
 | rail_transport | 鉄道輸送統計調査 業態別・定期／定期外別・月次の鉄道旅客数量 passengers_monthly |
 | port | 港湾調査 甲種港湾の港別・輸移出入別・年次の海上出入貨物トン数 cargo_tonnage_annual |
