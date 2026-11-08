@@ -1,12 +1,14 @@
 -- enterprise_activity の mart が、原典の構造どおりに読めていることを検証する。
 -- 結果が0行ならテスト成功。
 --
--- 1. 表の種類ごとに 2020〜2025年の調査がそろい、どの行も年度と（内訳のある表は）内訳コードが読める
+-- 1. 表の種類ごとに 2020〜2025年の調査がそろい、どの行も年度と（内訳のある表は）内訳コードが読める。
+--    2010〜2019年調査（stg_enterprise_activity_legacy）を取り込んだ後は、そちらの行も産業コード・
+--    内訳コード・測定項目が読める
 -- 2. mart のキーが一意
 -- 3. 企業数で次の恒等式がちょうど成り立つ（実測で全年度・差0）
 --    - 産業: 合計（000）= 大分類（C・E・F・G・I1・I2・J1・K1・L・M・N・O・R1）の和、
 --      総合計 = 合計（000）+ サービス業（その他のサービス業）（R2）+ その他の産業（Z）
---    - 都道府県: 全国（00000）= 47都道府県の和（企業数・事業所数）
+--    - 都道府県: 全国（00000）= 47都道府県の和（企業数・事業所数）。2018年度までで秘匿で空欄の県がある組は、和が全国を超えないこと
 --    - 資本金規模: 計（00）= 8区分の和
 --    表側の名称を「_」で区切る位置を読み違えると、産業・内訳・年度がずれてこれらが外れる
 --
@@ -14,6 +16,8 @@
 -- (CI でまだ公開していないとき) では 0 行の表になるので検査しない。
 
 {% if local_source_loaded('enterprise_activity_summary_2025') %}
+{# 2010〜2019年調査（enterprise_activity_legacy）を取り込んだ後は、年度の数が増える #}
+{% set legacy = local_source_loaded('enterprise_activity_summary_2010') %}
 WITH stg AS (
     SELECT * FROM {{ ref('stg_enterprise_activity') }}
 ),
@@ -33,6 +37,14 @@ coverage AS (
     WHERE fiscal_year IS NULL OR industry_code IS NULL OR unit IS NULL
         OR (kind IN ('prefecture', 'capital_balance', 'capital_business', 'subsidiary') AND breakdown_code IS NULL)
     GROUP BY kind, survey_year
+    {% if legacy %}
+    UNION ALL
+    SELECT 'unparsed legacy ' || kind || ' ' || survey_year, count(*)::VARCHAR, '0'
+    FROM {{ ref('stg_enterprise_activity_legacy') }}
+    WHERE fiscal_year IS NULL OR industry_code IS NULL OR measure IS NULL
+        OR (kind IN ('prefecture', 'capital_balance', 'capital_business', 'subsidiary') AND breakdown_code IS NULL)
+    GROUP BY kind, survey_year
+    {% endif %}
 ),
 
 duplicates AS (
@@ -89,7 +101,11 @@ prefecture_sums AS (
     WHERE industry_code = '総合計' AND measure IN ('企業数', '事業所数')
     GROUP BY fiscal_year, measure
     HAVING count(*) FILTER (WHERE area <> '00000') <> 47
-        OR sum(value) FILTER (WHERE area <> '00000') IS DISTINCT FROM max(value) FILTER (WHERE area = '00000')
+        -- 2019年以前の調査（2018年度まで）は秘匿で空欄の県がある（2013年度の事業所数）ので、空欄のある
+        -- 組だけ和が全国を超えないことを見る。2019年度以降は空欄が無いので、いつも一致を見る
+        OR ((fiscal_year >= 2019 OR count(value) FILTER (WHERE area <> '00000') = 47)
+            AND sum(value) FILTER (WHERE area <> '00000') IS DISTINCT FROM max(value) FILTER (WHERE area = '00000'))
+        OR sum(value) FILTER (WHERE area <> '00000') > max(value) FILTER (WHERE area = '00000')
 ),
 
 capital_sums AS (
@@ -106,12 +122,12 @@ capital_sums AS (
 year_counts AS (
     SELECT 'fiscal years ' || name AS check_name, n::VARCHAR AS actual, expected::VARCHAR AS expected
     FROM (
-        SELECT 'industry_finance' AS name, count(DISTINCT fiscal_year) AS n, 10 AS expected FROM {{ ref('industry_finance') }}
-        UNION ALL SELECT 'prefecture_finance', count(DISTINCT fiscal_year), 6 FROM {{ ref('prefecture_finance') }}
-        UNION ALL SELECT 'capital_size_finance', count(DISTINCT fiscal_year), 6 FROM {{ ref('capital_size_finance') }}
-        UNION ALL SELECT 'research_development', count(DISTINCT fiscal_year), 6 FROM {{ ref('research_development') }}
-        UNION ALL SELECT 'foreign_affiliated_finance', count(DISTINCT fiscal_year), 6 FROM {{ ref('foreign_affiliated_finance') }}
-        UNION ALL SELECT 'subsidiary_count', count(DISTINCT fiscal_year), 6 FROM {{ ref('subsidiary_count') }}
+        SELECT 'industry_finance' AS name, count(DISTINCT fiscal_year) AS n, {{ 20 if legacy else 10 }} AS expected FROM {{ ref('industry_finance') }}
+        UNION ALL SELECT 'prefecture_finance', count(DISTINCT fiscal_year), {{ 16 if legacy else 6 }} FROM {{ ref('prefecture_finance') }}
+        UNION ALL SELECT 'capital_size_finance', count(DISTINCT fiscal_year), {{ 16 if legacy else 6 }} FROM {{ ref('capital_size_finance') }}
+        UNION ALL SELECT 'research_development', count(DISTINCT fiscal_year), {{ 16 if legacy else 6 }} FROM {{ ref('research_development') }}
+        UNION ALL SELECT 'foreign_affiliated_finance', count(DISTINCT fiscal_year), {{ 11 if legacy else 6 }} FROM {{ ref('foreign_affiliated_finance') }}
+        UNION ALL SELECT 'subsidiary_count', count(DISTINCT fiscal_year), {{ 16 if legacy else 6 }} FROM {{ ref('subsidiary_count') }}
     )
     WHERE n <> expected
 )

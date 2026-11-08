@@ -3,7 +3,7 @@ version: 2
 models:
   - name: industry_finance
     description: |
-      経済産業省企業活動基本調査の産業別の企業数・事業所数・従業者数・資産・負債及び純資産・売上高・利益・付加価値額・子会社数を、年度ごとに縦に持つテーブルです。2015〜2024年度を収録しています。
+      経済産業省企業活動基本調査の産業別の企業数・事業所数・従業者数・資産・負債及び純資産・売上高・利益・付加価値額・子会社数を、年度ごとに縦に持つテーブルです。2005〜2024年度を収録しています。
       出典: 経済産業省 経済産業省企業活動基本調査。https://www.meti.go.jp/statistics/tyo/kikatu/
     access: public
     columns:
@@ -16,7 +16,7 @@ models:
       - name: industry_name
         description: "industry_code に対応する産業名"
       - name: measure_code
-        description: "測定項目のコード（原典の表頭のコード）。表の種類ごとに振られていて、2020〜2025年調査で同じ"
+        description: "測定項目のコード（2025年調査の表頭のコード）。表の種類ごとに振られている。2019年以前の調査の行は、表頭の並び順でこのコードに当てている"
       - name: measure
         description: "測定項目の名称。「資産_流動資産」のように上位の項目と「_」でつないである。計と内訳（資産_計 と 資産_流動資産 など）が同じ列に並ぶ"
       - name: unit
@@ -25,7 +25,7 @@ models:
         description: "値。原典の「-」（該当なし）と「x」（秘匿）はどちらも NULL"
   - name: prefecture_finance
     description: |
-      経済産業省企業活動基本調査の都道府県別・産業別の企業数・事業所数・従業者数・財務を、年度ごとに縦に持つテーブルです。2019〜2024年度を収録しています。
+      経済産業省企業活動基本調査の都道府県別・産業別の企業数・事業所数・従業者数・財務を、年度ごとに縦に持つテーブルです。2009〜2024年度を収録しています。
       出典: 経済産業省 経済産業省企業活動基本調査。https://www.meti.go.jp/statistics/tyo/kikatu/
     access: public
     columns:
@@ -42,7 +42,7 @@ models:
       - name: prefecture_name
         description: "area に対応する名称"
       - name: measure_code
-        description: "測定項目のコード（原典の表頭のコード）。表の種類ごとに振られていて、2020〜2025年調査で同じ"
+        description: "測定項目のコード（2025年調査の表頭のコード）。表の種類ごとに振られている。2019年以前の調査の行は、表頭の並び順でこのコードに当てている"
       - name: measure
         description: "測定項目の名称。「資産_流動資産」のように上位の項目と「_」でつないである。計と内訳（資産_計 と 資産_流動資産 など）が同じ列に並ぶ"
       - name: unit
@@ -51,7 +51,7 @@ models:
         description: "値。原典の「-」（該当なし）と「x」（秘匿）はどちらも NULL"
   - name: capital_size_finance
     description: |
-      経済産業省企業活動基本調査の資本金規模別・産業別の資産・負債及び純資産・損益・費用の内訳を、年度ごとに縦に持つテーブルです。第3-1表と第4表を1つに積んでいます。2019〜2024年度を収録しています。
+      経済産業省企業活動基本調査の資本金規模別・産業別の資産・負債及び純資産・損益・費用の内訳を、年度ごとに縦に持つテーブルです。第3-1表と第4表を1つに積んでいます。2009〜2024年度を収録しています。
       出典: 経済産業省 経済産業省企業活動基本調査。https://www.meti.go.jp/statistics/tyo/kikatu/
     access: public
     columns:
@@ -68,7 +68,7 @@ models:
       - name: capital_size_name
         description: "capital_size_code に対応する名称"
       - name: measure_code
-        description: "測定項目のコード（原典の表頭のコード）。表の種類ごとに振られていて、2020〜2025年調査で同じ"
+        description: "測定項目のコード（2025年調査の表頭のコード）。表の種類ごとに振られている。2019年以前の調査の行は、表頭の並び順でこのコードに当てている"
       - name: measure
         description: "測定項目の名称。「資産_流動資産」のように上位の項目と「_」でつないである。計と内訳（資産_計 と 資産_流動資産 など）が同じ列に並ぶ"
       - name: unit
@@ -77,7 +77,7 @@ models:
         description: "値。原典の「-」（該当なし）と「x」（秘匿）はどちらも NULL"
   - name: research_development
     description: |
-      経済産業省企業活動基本調査の産業別の研究開発費・受託研究費・研究開発投資・能力開発費を、年度ごとに縦に持つテーブルです。2019〜2024年度を収録しています。
+      経済産業省企業活動基本調査の産業別の研究開発費・受託研究費・研究開発投資・能力開発費を、年度ごとに縦に持つテーブルです。2009〜2024年度を収録しています。
       出典: 経済産業省 経済産業省企業活動基本調査。https://www.meti.go.jp/statistics/tyo/kikatu/
     access: public
     columns:
@@ -90,7 +90,7 @@ models:
       - name: industry_name
         description: "industry_code に対応する産業名"
       - name: measure_code
-        description: "測定項目のコード（原典の表頭のコード）。表の種類ごとに振られていて、2020〜2025年調査で同じ"
+        description: "測定項目のコード（2025年調査の表頭のコード）。表の種類ごとに振られている。2019年以前の調査の行は、表頭の並び順でこのコードに当てている"
       - name: measure
         description: "測定項目の名称。「資産_流動資産」のように上位の項目と「_」でつないである。計と内訳（資産_計 と 資産_流動資産 など）が同じ列に並ぶ"
       - name: unit
@@ -99,7 +99,7 @@ models:
         description: "値。原典の「-」（該当なし）と「x」（秘匿）はどちらも NULL"
   - name: foreign_affiliated_finance
     description: |
-      経済産業省企業活動基本調査のうち外資系企業の、産業別の企業数・事業所数・従業者数・財務を、年度ごとに縦に持つテーブルです。2019〜2024年度を収録しています。
+      経済産業省企業活動基本調査のうち外資系企業の、産業別の企業数・事業所数・従業者数・財務を、年度ごとに縦に持つテーブルです。2014〜2024年度を収録しています。
       出典: 経済産業省 経済産業省企業活動基本調査。https://www.meti.go.jp/statistics/tyo/kikatu/
     access: public
     columns:
@@ -112,7 +112,7 @@ models:
       - name: industry_name
         description: "industry_code に対応する産業名"
       - name: measure_code
-        description: "測定項目のコード（原典の表頭のコード）。表の種類ごとに振られていて、2020〜2025年調査で同じ"
+        description: "測定項目のコード（2025年調査の表頭のコード）。表の種類ごとに振られている。2019年以前の調査の行は、表頭の並び順でこのコードに当てている"
       - name: measure
         description: "測定項目の名称。「資産_流動資産」のように上位の項目と「_」でつないである。計と内訳（資産_計 と 資産_流動資産 など）が同じ列に並ぶ"
       - name: unit
@@ -121,7 +121,7 @@ models:
         description: "値。原典の「-」（該当なし）と「x」（秘匿）はどちらも NULL"
   - name: subsidiary_count
     description: |
-      経済産業省企業活動基本調査の、親会社の産業別・子会社の業種別に、子会社・関連会社を持つ企業数と子会社・関連会社数（議決権所有割合別、国内・海外別）を、年度ごとに縦に持つテーブルです。2019〜2024年度を収録しています。
+      経済産業省企業活動基本調査の、親会社の産業別・子会社の業種別に、子会社・関連会社を持つ企業数と子会社・関連会社数（議決権所有割合別、国内・海外別）を、年度ごとに縦に持つテーブルです。2009〜2024年度を収録しています。
       出典: 経済産業省 経済産業省企業活動基本調査。https://www.meti.go.jp/statistics/tyo/kikatu/
     access: public
     columns:
@@ -138,7 +138,7 @@ models:
       - name: subsidiary_industry_name
         description: "subsidiary_industry_code に対応する業種名"
       - name: measure_code
-        description: "測定項目のコード（原典の表頭のコード）。表の種類ごとに振られていて、2020〜2025年調査で同じ"
+        description: "測定項目のコード（2025年調査の表頭のコード）。表の種類ごとに振られている。2019年以前の調査の行は、表頭の並び順でこのコードに当てている"
       - name: measure
         description: "測定項目の名称。「資産_流動資産」のように上位の項目と「_」でつないである。計と内訳（資産_計 と 資産_流動資産 など）が同じ列に並ぶ"
       - name: unit
