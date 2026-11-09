@@ -7,9 +7,14 @@
 
 記録はデータのロードが成功したあとに書く。ロードが途中で落ちたときは記録が
 残らないので、次の Sync で取り直す。
+
+更新日は日付単位なので、e-Stat が同じ日に表を 2 回直すと、古いデータに新しい
+更新日が付いたまま残ることがある。毎月 1 日 (UTC) の Sync は記録を見ずに全表を
+取り直して、こうしたずれを直す。
 """
 
 import logging
+from datetime import date
 
 import dlt
 from dlt.destinations.exceptions import DatabaseUndefinedRelation
@@ -25,6 +30,11 @@ def updated_date(table_inf: dict) -> str | None:
     if isinstance(value, dict):
         value = value.get("$")
     return str(value) if value else None
+
+
+def refetch_all(today: date) -> bool:
+    """記録を見ずに全表を取り直す日か。毎月 1 日に取り直す。"""
+    return today.day == 1
 
 
 def loaded_updated_dates(pipeline) -> dict[str, dict[str, str]]:
