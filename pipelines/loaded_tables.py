@@ -27,17 +27,24 @@ def updated_date(table_inf: dict) -> str | None:
     return str(value) if value else None
 
 
-def loaded_updated_dates(pipeline) -> dict[str, str]:
-    """前回までに取り込んだ統計表の更新日を {統計表 ID: 更新日} で返す。"""
+def loaded_updated_dates(pipeline) -> dict[str, dict[str, str]]:
+    """前回までに取り込んだ統計表の更新日を {テーブル名: {統計表 ID: 更新日}} で返す。
+
+    同じ統計表を別のテーブルへ取り込んだときや、取り込み先のテーブル名を変えたときに
+    取り込み済みと見なさないよう、取り込み先のテーブルごとに分ける。
+    """
     try:
         with pipeline.sql_client() as client:
             table = client.make_qualified_table_name(TABLE_NAME)
             rows = client.execute_sql(
-                f"SELECT stats_data_id, updated_date FROM {table}"
+                f"SELECT table_name, stats_data_id, updated_date FROM {table}"
             )
     except DatabaseUndefinedRelation:
         return {}
-    return {sid: date for sid, date in rows}
+    loaded: dict[str, dict[str, str]] = {}
+    for table_name, sid, date in rows:
+        loaded.setdefault(table_name, {})[sid] = date
+    return loaded
 
 
 def changed_ids(current: dict[str, str | None], loaded: dict[str, str]) -> list[str]:
@@ -66,14 +73,14 @@ def record(pipeline, table_name: str, current: dict[str, str | None], ids: list[
             rows,
             name=TABLE_NAME,
             write_disposition="merge",
-            primary_key="stats_data_id",
+            primary_key=["table_name", "stats_data_id"],
         )
     )
 
 
-def load_changed(pipeline, table_name: str, current: dict[str, str | None], loaded: dict[str, str], make_source) -> None:
+def load_changed(pipeline, table_name: str, current: dict[str, str | None], loaded: dict[str, dict[str, str]], make_source) -> None:
     """更新された表だけを make_source(ids) で取り込み、更新日を記録する。"""
-    ids = changed_ids(current, loaded)
+    ids = changed_ids(current, loaded.get(table_name, {}))
     logger.info(f"  {table_name}: {len(current)} 表のうち {len(ids)} 表を取得")
     if not ids:
         return
