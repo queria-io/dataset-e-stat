@@ -34,6 +34,7 @@
 
 import logging
 import os
+from datetime import date
 from pathlib import Path
 
 import yaml
@@ -66,7 +67,7 @@ from pipelines.economic_census import (
 )
 from pipelines.industry_code import build_industry_code
 from pipelines.kaigo_service import build_kaigo_service
-from pipelines.loaded_tables import load_changed, loaded_updated_dates
+from pipelines.loaded_tables import load_changed, loaded_updated_dates, refetch_all
 from pipelines.local_finance import build_local_finance
 from pipelines.manufacture import (
     create_manufacture_source,
@@ -158,8 +159,8 @@ def main():
     logger.info(f"  {info}")
 
     # 8〜9 は数年に 1 度しか変わらないので、e-Stat の更新日が前回の取り込みから
-    # 変わった表だけを取得する (pipelines/loaded_tables.py)
-    loaded = loaded_updated_dates(pipeline)
+    # 変わった表だけを取得する。毎月 1 日は全表を取り直す (pipelines/loaded_tables.py)
+    loaded = {} if refetch_all(date.today()) else loaded_updated_dates(pipeline)
 
     # 8. 国勢調査 小地域(町丁・字等)統計データ
     logger.info("8/26: census_small_area (小地域統計)")
