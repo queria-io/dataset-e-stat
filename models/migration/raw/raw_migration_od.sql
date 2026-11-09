@@ -4,7 +4,10 @@
    migration_od_sources に表ごとに書いた向きで origin / destination に読み替える。
    国籍の軸 (cat04) は 2020 年以降の表にしかないので、ここでは持たない
    (2017 年以前は日本人移動者、2018 年以降は外国人を含む移動者で、表ごとに 1 区分)。
-   元表が揃っていないカタログ (手元で取り込む前) では 0 行にする。 #}
+   元表が揃っていないカタログ (手元で取り込む前) では 0 行にする。
+   全 28 表で 1 億 4 千万行あるので、migration の raw の既定 (table) にせず view にする。
+   毎日の CI で全行を複製しないため (census の 250m メッシュと同じ)。 #}
+{{ config(materialized='view') }}
 {% if migration_od_sources_loaded() %}
 {% for year, kind, name, origin_in_cat01 in migration_od_sources() %}
 {% set origin = 'cat01' if origin_in_cat01 else 'area' %}
