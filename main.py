@@ -8,8 +8,8 @@
 5. stats_list:         統計表カタログ取得 (getStatsList)
 6. meta_info:          メタ情報取得 (getMetaInfo) — 直近更新分のみ
 7. ssds:               社会・人口統計体系データ取得 (getStatsData)
-8. census_small_area:  国勢調査小地域(町丁・字等)統計取得 (searchKind=2 + getStatsData)
-9. mesh_stats:         1kmメッシュ統計取得 (searchKind=2 + getStatsData)
+8. census_small_area:  国勢調査小地域(町丁・字等)統計取得 (searchKind=2 + getStatsData)、更新された表だけ
+9. mesh_stats:         1kmメッシュ統計取得 (searchKind=2 + getStatsData)、更新された表だけ
 10. census_municipality: 国勢調査 市区町村・都道府県別 基本集計取得 (getStatsData)
 11. resident_registry: 住民基本台帳 人口・世帯数・人口動態取得 (getDataCatalog + Excel DL)
 12. economic_census:   経済センサス‐活動調査 産業横断的集計取得 (getStatsData)
@@ -66,6 +66,7 @@ from pipelines.economic_census import (
 )
 from pipelines.industry_code import build_industry_code
 from pipelines.kaigo_service import build_kaigo_service
+from pipelines.loaded_tables import load_changed, loaded_updated_dates
 from pipelines.local_finance import build_local_finance
 from pipelines.manufacture import (
     create_manufacture_source,
@@ -156,32 +157,44 @@ def main():
     info = pipeline.run(create_source(app_id, tables_config))
     logger.info(f"  {info}")
 
+    # 8〜9 は数年に 1 度しか変わらないので、e-Stat の更新日が前回の取り込みから
+    # 変わった表だけを取得する (pipelines/loaded_tables.py)
+    loaded = loaded_updated_dates(pipeline)
+
     # 8. 国勢調査 小地域(町丁・字等)統計データ
     logger.info("8/26: census_small_area (小地域統計)")
     for spec in SMALL_AREA_TABLES:
-        ids = fetch_small_area_ids(app_id, spec["title_prefix"])
-        if ids:
-            info = pipeline.run(
-                create_small_area_source(
-                    app_id, ids, spec["name"], spec["primary_key"]
-                )
-            )
-            logger.info(f"  {spec['name']}: {info}")
-        else:
+        tables = fetch_small_area_ids(app_id, spec["title_prefix"])
+        if not tables:
             logger.info(f"  skip {spec['name']} (no tables)")
+            continue
+        load_changed(
+            pipeline,
+            spec["name"],
+            tables,
+            loaded,
+            lambda ids, spec=spec: create_small_area_source(
+                app_id, ids, spec["name"], spec["primary_key"]
+            ),
+        )
 
     # 9. 国勢調査・経済センサス 1kmメッシュ統計データ
     logger.info("9/26: mesh_stats (1kmメッシュ統計)")
     # fetch_mesh_ids は 0 件のとき例外を投げる。表題が変わってロードが飛ばされても
     # dbt は前回分でビルドが通ってしまい、CI が緑のままテーブルが更新されなくなるため。
     for spec in MESH_STATS_TABLES:
-        ids = fetch_mesh_ids(
+        tables = fetch_mesh_ids(
             app_id, spec["stats_code"], spec["statistics_name"], spec["table_name"]
         )
-        info = pipeline.run(
-            create_mesh_source(app_id, ids, spec["name"], spec["primary_key"])
+        load_changed(
+            pipeline,
+            spec["name"],
+            tables,
+            loaded,
+            lambda ids, spec=spec: create_mesh_source(
+                app_id, ids, spec["name"], spec["primary_key"]
+            ),
         )
-        logger.info(f"  {spec['name']}: {info}")
 
     # 10. 国勢調査 市区町村・都道府県別 基本集計
     logger.info("10/26: census_municipality (市区町村・都道府県別 基本集計)")

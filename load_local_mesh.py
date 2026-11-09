@@ -45,7 +45,7 @@ def fetch(app_id: str, spec: dict) -> None:
     """統計表を 1 次メッシュの表ごとに CACHE_DIR/<name>/<id>.parquet へ保存する。"""
     out = CACHE_DIR / spec["name"]
     out.mkdir(parents=True, exist_ok=True)
-    ids = fetch_mesh_ids(app_id, spec["stats_code"], spec["statistics_name"], spec["table_name"])
+    ids = list(fetch_mesh_ids(app_id, spec["stats_code"], spec["statistics_name"], spec["table_name"]))
     (out / IDS_FILE).write_text(json.dumps(ids))
     todo = [sid for sid in ids if not (out / f"{sid}.parquet").exists()]
     logger.info(f"  {spec['name']}: {len(ids)} 表、未取得 {len(todo)}")

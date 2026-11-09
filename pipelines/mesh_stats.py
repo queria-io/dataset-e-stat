@@ -35,6 +35,7 @@ from typing import List, Optional
 from estat_api_dlt_helper import estat_source, estat_table
 
 from pipelines import EstatStatus
+from pipelines.loaded_tables import updated_date
 from pipelines.ssds import drop_stat_inf
 
 # TABLE_INF の COLLECT_AREA 欠落に対応する互換パッチ。import した時点で当たる。
@@ -92,8 +93,8 @@ def _text(value) -> str:
 
 def fetch_mesh_ids(
     app_id: str, stats_code: str, statistics_name: str, table_name: str
-) -> List[str]:
-    """指定した統計・集計単位・表名のメッシュ統計表 ID を集める。
+) -> dict[str, str | None]:
+    """指定した統計・集計単位・表名のメッシュ統計表 ID と e-Stat の更新日を集める。
 
     Args:
         app_id: e-Stat API アプリケーション ID。
@@ -103,7 +104,7 @@ def fetch_mesh_ids(
         table_name: TITLE_SPEC.TABLE_NAME の完全一致値。例: "人口及び世帯"
 
     Returns:
-        条件に合致する statsDataId のリスト(配布単位である 1次メッシュの数だけ返る)。
+        条件に合致する statsDataId と更新日 (配布単位である 1次メッシュの数だけ返る)。
 
     Raises:
         RuntimeError: API がエラーを返したとき、および条件に合致する表が 1 件も
@@ -128,14 +129,14 @@ def fetch_mesh_ids(
     if isinstance(tables, dict):
         tables = [tables]
 
-    ids: List[str] = []
+    ids: dict[str, str | None] = {}
     for t in tables:
         if _text(t.get("STATISTICS_NAME")) != statistics_name:
             continue
         spec = t.get("TITLE_SPEC") or {}
         if _text(spec.get("TABLE_NAME")) != table_name:
             continue
-        ids.append(t["@id"])
+        ids[t["@id"]] = updated_date(t)
 
     if not ids:
         raise RuntimeError(
