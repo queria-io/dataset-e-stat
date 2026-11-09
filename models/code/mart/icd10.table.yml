@@ -1,0 +1,41 @@
+schema: code
+name: icd10
+title: 疾病、傷害及び死因の統計分類（基本分類）
+description: |-
+  ICD-10 に準拠した「疾病、傷害及び死因の統計分類」の基本分類を、3つの版（2013年版・2003年版・1994年）ごとに持つテーブルです。章・中間分類・3桁分類・4桁分類と、一部の5桁分類があります。
+
+  - 同じコードでも版によって中身が違うので、revision で版を揃えて結合してください
+  - コードには原典の剣印（†）・星印（*）と、日本独自の細分の英小文字（F15a など）が付いたままです。記号の無いコードと結合するときは記号を落としてください
+  - 中間分類は入れ子になることがあります（C00-C97 の下に C00-C14 など）
+keywords:
+  - e-stat
+  - ICD-10
+  - 国際疾病分類
+  - 疾病分類
+  - 傷病名
+  - 病名コード
+  - 基本分類
+published: true
+themes: [social_security_health]
+primary_key: [revision, code]
+sources:
+  - path: https://www.e-stat.go.jp/classifications/terms/40
+fields:
+  - name: revision
+    title: 版（2013 / 2003 / 1994）
+    description: 分類の版。2013=ICD-10（2013年版）準拠、2003=ICD-10（2003年版）準拠、1994=e-Stat で ICD-10(1994) と表示されている最初の版。結合では必ずこの列を揃える
+  - name: level
+    title: 階層（chapter / block / category / subcategory / detail）
+    description: 分類の階層。chapter=章（ローマ数字）、block=中間分類（A00-A09 のような範囲）、category=3桁分類、subcategory=4桁分類、detail=5桁分類。階層が同じ表に並ぶので、件数を数えるときはこの列で1つの階層に絞る
+  - name: code
+    title: 分類コード
+    description: 分類コードの原文。剣印（†）・星印（*）と日本独自の細分の英小文字を含む。2003年版には後ろの英字が抜けた中間分類のコード（U80-89）があり、原文のまま収録している
+  - name: name
+    title: 項目名
+    description: 分類項目の名称。章と中間分類は括弧書きで範囲を含む
+  - name: parent_code
+    title: 1つ上の階層のコード（章は NULL）
+    description: 1つ上の階層の分類コード。中間分類は章か外側の中間分類、3桁分類は中間分類（中間分類の無い章では章）、4桁・5桁分類は3桁・4桁分類が入る。章は NULL
+  - name: chapter_code
+    title: 章のコード
+    description: その行が属する章のローマ数字。章の行では自分自身

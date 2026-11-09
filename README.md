@@ -23,7 +23,7 @@
 | `main` | 統計表カタログ・指標定義 | [catalog.md](docs/catalog.md) |
 | `census` | 国勢調査（小地域・市区町村・昼夜間人口・通勤通学・メッシュ） | [census.md](docs/census.md) |
 | `boundary` | 町丁・字等と1kmメッシュの境界 | [boundary.md](docs/boundary.md) |
-| `code` | 標準地域コードと日本標準産業分類 | [code.md](docs/code.md) |
+| `code` | 標準地域コードと統計分類（産業・職業・商品・ICD-10 など） | [code.md](docs/code.md) |
 | `resident_registry` | 住民基本台帳の人口・世帯数・人口動態 | [resident-registry.md](docs/resident-registry.md) |
 | `economic_census` | 経済センサス‐活動調査 | [economic-census.md](docs/economic-census.md) |
 | `economic_structure` | 経済構造実態調査 | [economic-structure.md](docs/economic-structure.md) |

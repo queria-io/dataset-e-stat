@@ -4,6 +4,7 @@
 2. mesh_boundary:      1kmメッシュ境界データ取得 (統計GIS GML DL)
 3. municipality_code:  統計に用いる標準地域コード取得 (総務省統計局 CSV/Excel DL)
 4. industry_code:      日本標準産業分類取得 (e-Stat 統計分類 CSV DL)
+   classification_code: 職業・商品・ICD-10 などの統計分類取得 (同上)
 5. stats_list:         統計表カタログ取得 (getStatsList)
 6. meta_info:          メタ情報取得 (getMetaInfo) — 直近更新分のみ
 7. ssds:               社会・人口統計体系データ取得 (getStatsData)
@@ -54,6 +55,7 @@ from pipelines.census_small_area import (
     create_small_area_source,
     fetch_small_area_ids,
 )
+from pipelines.classification_code import build_classification_code
 from pipelines.commerce import build_commerce_sales
 from pipelines.construction_orders import build_construction_orders
 from pipelines.crop import build_crop
@@ -129,6 +131,8 @@ def main():
     # 4. 日本標準産業分類 (e-Stat 統計分類 CSV DL、API 不要)
     logger.info("4/26: industry_code (日本標準産業分類)")
     build_industry_code("data/industry_code")
+    logger.info("4/26: classification_code (職業・商品・ICD-10 などの統計分類)")
+    build_classification_code("data/classification_code")
 
     pipeline = create_pipeline()
     app_id = os.environ["ESTAT_API_KEY"]
