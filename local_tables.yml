@@ -849,3 +849,122 @@ groups:
         watch: false
         api_params:
           cdTimeTo: "20070"
+  migration_od:
+    title: 住民基本台帳人口移動報告 参考表 移動後の住所地別転出者数・移動前の住所地別転入者数（年齢10歳階級・男女、2012年～）
+    # 市区町村から市区町村への移動者数。年に 1 表ずつ、転出先別と転入元別の 2 種類がある。
+    # 1 表が 500 万セル前後あり、14 年 × 2 種類を CI で毎日取り直すと Sync の上限を超えるので手元で取る。
+    # 新しい年の表は Check updates が issue を立てるので、表を 2 つ足して fetch と load を回す。
+    dbt_select: "+municipality_migration_flow"
+    tables:
+      - name: migration_od_outflow_2012
+        stats_data_id: "0003150320"
+        updated_date: "2023-09-26"
+        primary_key: [cat01, cat02, cat03, area]
+      - name: migration_od_outflow_2013
+        stats_data_id: "0003149540"
+        updated_date: "2023-09-26"
+        primary_key: [cat01, cat02, cat03, area]
+      - name: migration_od_outflow_2014
+        stats_data_id: "0003147000"
+        updated_date: "2023-09-26"
+        primary_key: [cat01, cat02, cat03, area]
+      - name: migration_od_outflow_2015
+        stats_data_id: "0003145600"
+        updated_date: "2023-09-26"
+        primary_key: [cat01, cat02, cat03, area]
+      - name: migration_od_outflow_2016
+        stats_data_id: "0003159840"
+        updated_date: "2023-09-26"
+        primary_key: [cat01, cat02, cat03, area]
+      - name: migration_od_outflow_2017
+        stats_data_id: "0003213974"
+        updated_date: "2023-09-26"
+        primary_key: [cat01, cat02, cat03, area]
+      - name: migration_od_outflow_2018
+        stats_data_id: "0003283046"
+        updated_date: "2023-09-26"
+        primary_key: [cat01, cat02, cat03, area]
+      - name: migration_od_outflow_2019
+        stats_data_id: "0003413174"
+        updated_date: "2023-09-26"
+        primary_key: [cat01, cat02, cat03, area]
+      - name: migration_od_outflow_2020
+        stats_data_id: "0003420494"
+        updated_date: "2026-05-15"
+        primary_key: [cat01, cat02, cat03, area]
+      - name: migration_od_outflow_2021
+        stats_data_id: "0003448459"
+        updated_date: "2026-05-15"
+        primary_key: [cat01, cat02, cat03, area]
+      - name: migration_od_outflow_2022
+        stats_data_id: "0004003461"
+        updated_date: "2026-05-15"
+        primary_key: [cat01, cat02, cat03, area]
+      - name: migration_od_outflow_2023
+        stats_data_id: "0004014381"
+        updated_date: "2026-05-15"
+        primary_key: [cat01, cat02, cat03, area]
+      - name: migration_od_outflow_2024
+        stats_data_id: "0004026701"
+        updated_date: "2026-05-15"
+        primary_key: [cat01, cat02, cat03, area]
+      - name: migration_od_outflow_2025
+        stats_data_id: "0004044294"
+        updated_date: "2026-05-15"
+        primary_key: [cat01, cat02, cat03, area]
+      - name: migration_od_inflow_2012
+        stats_data_id: "0003150300"
+        updated_date: "2023-09-26"
+        primary_key: [cat01, cat02, cat03, area]
+      - name: migration_od_inflow_2013
+        stats_data_id: "0003149520"
+        updated_date: "2023-09-26"
+        primary_key: [cat01, cat02, cat03, area]
+      - name: migration_od_inflow_2014
+        stats_data_id: "0003146921"
+        updated_date: "2023-09-26"
+        primary_key: [cat01, cat02, cat03, area]
+      - name: migration_od_inflow_2015
+        stats_data_id: "0003150940"
+        updated_date: "2023-09-26"
+        primary_key: [cat01, cat02, cat03, area]
+      - name: migration_od_inflow_2016
+        stats_data_id: "0003159820"
+        updated_date: "2023-09-26"
+        primary_key: [cat01, cat02, cat03, area]
+      - name: migration_od_inflow_2017
+        stats_data_id: "0003213995"
+        updated_date: "2023-09-26"
+        primary_key: [cat01, cat02, cat03, area]
+      - name: migration_od_inflow_2018
+        stats_data_id: "0003283015"
+        updated_date: "2023-09-26"
+        primary_key: [cat01, cat02, cat03, area]
+      - name: migration_od_inflow_2019
+        stats_data_id: "0003413173"
+        updated_date: "2023-09-26"
+        primary_key: [cat01, cat02, cat03, area]
+      - name: migration_od_inflow_2020
+        stats_data_id: "0003420493"
+        updated_date: "2026-05-15"
+        primary_key: [cat01, cat02, cat03, area]
+      - name: migration_od_inflow_2021
+        stats_data_id: "0003448458"
+        updated_date: "2026-05-15"
+        primary_key: [cat01, cat02, cat03, area]
+      - name: migration_od_inflow_2022
+        stats_data_id: "0004003460"
+        updated_date: "2026-05-15"
+        primary_key: [cat01, cat02, cat03, area]
+      - name: migration_od_inflow_2023
+        stats_data_id: "0004014380"
+        updated_date: "2026-05-15"
+        primary_key: [cat01, cat02, cat03, area]
+      - name: migration_od_inflow_2024
+        stats_data_id: "0004026700"
+        updated_date: "2026-05-15"
+        primary_key: [cat01, cat02, cat03, area]
+      - name: migration_od_inflow_2025
+        stats_data_id: "0004044293"
+        updated_date: "2026-05-15"
+        primary_key: [cat01, cat02, cat03, area]
