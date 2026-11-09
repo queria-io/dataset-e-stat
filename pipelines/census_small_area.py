@@ -14,6 +14,7 @@ from estat_api_dlt_helper import estat_source, estat_table
 from estat_api_dlt_helper.api.client import EstatApiClient
 
 from pipelines import EstatStatus
+from pipelines.loaded_tables import updated_date
 
 # TABLE_INF の COLLECT_AREA 欠落に対応する互換パッチ。import した時点で当たる。
 from pipelines import estat_compat  # noqa: F401
@@ -67,7 +68,7 @@ SMALL_AREA_TABLES = [
 ]
 
 
-def fetch_small_area_ids(app_id: str, title_prefix: str) -> List[str]:
+def fetch_small_area_ids(app_id: str, title_prefix: str) -> dict[str, str | None]:
     """指定表題の国勢調査小地域統計表 ID を都道府県分収集する。
 
     Args:
@@ -76,7 +77,7 @@ def fetch_small_area_ids(app_id: str, title_prefix: str) -> List[str]:
             例: "年齢（５歳階級、４区分）別、男女別人口"
 
     Returns:
-        条件に合致する statsDataId のリスト(通常 47 件)。
+        条件に合致する statsDataId と e-Stat の更新日 (通常 47 件)。
     """
     client = EstatApiClient(app_id=app_id, timeout=300)
     result = client.get_stats_list(
@@ -94,7 +95,7 @@ def fetch_small_area_ids(app_id: str, title_prefix: str) -> List[str]:
     if isinstance(tables, dict):
         tables = [tables]
 
-    ids: List[str] = []
+    ids: dict[str, str | None] = {}
     for t in tables:
         if str(t.get("SMALL_AREA")) != "1":
             continue
@@ -102,7 +103,7 @@ def fetch_small_area_ids(app_id: str, title_prefix: str) -> List[str]:
         if isinstance(title, dict):
             title = title.get("$")
         if title and str(title).startswith(title_prefix):
-            ids.append(t["@id"])
+            ids[t["@id"]] = updated_date(t)
 
     logger.info(f"small_area: {len(ids)} tables for '{title_prefix}'")
     return ids
