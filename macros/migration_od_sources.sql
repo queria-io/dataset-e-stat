@@ -26,3 +26,21 @@
     {% endfor %}
     {{ return(true) }}
 {% endmacro %}
+
+{# 参考表の地域の粒度。
+   粒度はメタ情報の level と名称で決める。
+     level 1 総数 / 2 都道府県 / 3 市・町村・政令指定都市・東京都特別区部 /
+     4 政令指定都市の区・特別区
+   「その他の…」の行はコード (99000 / xx999 / xxx99) だけでは区とまぎれる年があるので、
+   名称で見分ける。 #}
+{% macro migration_od_area_level(code, name, level) %}
+CASE
+    WHEN {{ name }} = 'その他の県' THEN 'other_prefectures'
+    WHEN {{ name }} = 'その他の市町村' THEN 'other_municipalities'
+    WHEN {{ name }} = 'その他の区' THEN 'other_wards'
+    WHEN {{ level }} = '1' THEN 'national'
+    WHEN {{ level }} = '2' THEN 'prefecture'
+    WHEN {{ level }} = '3' THEN 'municipality'
+    WHEN {{ level }} = '4' THEN 'ward'
+END
+{% endmacro %}

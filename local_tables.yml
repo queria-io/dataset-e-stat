@@ -854,7 +854,7 @@ groups:
     # 市区町村から市区町村への移動者数。年に 1 表ずつ、転出先別と転入元別の 2 種類がある。
     # 1 表が 500 万セル前後あり、14 年 × 2 種類を CI で毎日取り直すと Sync の上限を超えるので手元で取る。
     # 新しい年の表は Check updates が issue を立てるので、表を 2 つ足して fetch と load を回す。
-    dbt_select: "+municipality_migration_flow"
+    dbt_select: "+municipality_migration_destination +municipality_migration_origin"
     tables:
       - name: migration_od_outflow_2012
         stats_data_id: "0003150320"

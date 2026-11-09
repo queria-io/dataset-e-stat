@@ -13,3 +13,33 @@ sources:
       - name: migration_municipality_age_inflow_pre2020
       - name: migration_municipality_age_outflow_pre2020
       - name: migration_municipality_age_net_pre2020
+      # 手元でだけ取り込む (load_local.py の migration_od)。CI の main.py はロードしない。
+      # 年ごとに転出先別 (outflow) と転入元別 (inflow) が 1 つずつ
+      - name: migration_od_outflow_2012
+      - name: migration_od_inflow_2012
+      - name: migration_od_outflow_2013
+      - name: migration_od_inflow_2013
+      - name: migration_od_outflow_2014
+      - name: migration_od_inflow_2014
+      - name: migration_od_outflow_2015
+      - name: migration_od_inflow_2015
+      - name: migration_od_outflow_2016
+      - name: migration_od_inflow_2016
+      - name: migration_od_outflow_2017
+      - name: migration_od_inflow_2017
+      - name: migration_od_outflow_2018
+      - name: migration_od_inflow_2018
+      - name: migration_od_outflow_2019
+      - name: migration_od_inflow_2019
+      - name: migration_od_outflow_2020
+      - name: migration_od_inflow_2020
+      - name: migration_od_outflow_2021
+      - name: migration_od_inflow_2021
+      - name: migration_od_outflow_2022
+      - name: migration_od_inflow_2022
+      - name: migration_od_outflow_2023
+      - name: migration_od_inflow_2023
+      - name: migration_od_outflow_2024
+      - name: migration_od_inflow_2024
+      - name: migration_od_outflow_2025
+      - name: migration_od_inflow_2025
