@@ -1,0 +1,36 @@
+schema: code
+name: commodity
+title: 日本標準商品分類
+description: |-
+  日本標準商品分類（平成2年6月改定）の分類項目を持つテーブルです。大分類（1桁）から10桁までの階層があります。
+
+  - 中分類（2桁）の先頭の数字は大分類のコードと一致しません（大分類 1 の下に 01 が並びます）。大分類で集計するときは parent_code をたどってください
+  - 3桁以上の項目の親は、途中の桁の分類が無いときは2桁以上短いコードになります
+  - 原典で別の分類の下に重ねて載っている再掲の行は収録していません
+keywords:
+  - e-stat
+  - 日本標準商品分類
+  - 商品分類
+  - 商品コード
+  - 品目
+published: true
+themes: [economy]
+primary_key: [revision, code]
+sources:
+  - path: https://www.e-stat.go.jp/classifications/terms/30
+fields:
+  - name: revision
+    title: 改定年（1990）
+    description: 日本標準商品分類の改定年。1990=平成2年6月改定（第5回改定）で、e-Stat で公開されているのはこの改定だけ
+  - name: level
+    title: 階層（コードの桁数 1〜10）
+    description: コードの桁数。1=大分類、2=中分類、3=小分類、4=細分類、5 以上はさらに細かい分類。件数を数えるときはこの列で1つの階層に絞る
+  - name: code
+    title: 分類コード
+    description: 分類コード。1〜10桁の数字の文字列で、先頭のゼロを保つ
+  - name: name
+    title: 項目名
+    description: 分類項目の名称
+  - name: parent_code
+    title: 親の分類コード（大分類は NULL）
+    description: 1つ上の分類コード。中分類は直前の大分類、3桁以上はコードの先頭が一致する直近の上位の項目。大分類は NULL

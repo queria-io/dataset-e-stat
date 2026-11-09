@@ -4,3 +4,9 @@ models:
   - name: stg_municipality
   - name: stg_municipality_change
   - name: stg_industry
+  - name: stg_occupation
+  - name: stg_commodity
+  - name: stg_icd10
+  - name: stg_icd10_disease
+  - name: stg_icd10_cause_of_death
+  - name: stg_industry_economic_census

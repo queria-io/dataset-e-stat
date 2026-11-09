@@ -1,0 +1,49 @@
+schema: code
+name: occupation
+title: 日本標準職業分類
+description: |-
+  日本標準職業分類の分類項目を、2つの改定（平成21年・平成9年）ごとに持つテーブルです。
+
+  - 同じコードでも改定によって中身が違うので、revision で改定を揃えて結合してください
+  - 平成9年改定は大分類 I（生産工程・労務作業者）を I-1〜I-3 の区分に分けていて、その中分類の親は区分のコードです
+keywords:
+  - e-stat
+  - 日本標準職業分類
+  - 職業分類
+  - 職業コード
+  - 大分類
+  - 中分類
+  - 小分類
+published: true
+themes: [labour]
+primary_key: [revision, code]
+sources:
+  - path: https://www.e-stat.go.jp/classifications/terms/20
+fields:
+  - name: revision
+    title: 改定年（2009 / 1997）
+    description: 日本標準職業分類の改定年。2009=平成21年12月統計基準設定、1997=平成9年12月改定。コードの意味は改定ごとに違うので、結合では必ずこの列を揃える
+  - name: level
+    title: 階層（major / major_group / middle / minor）
+    description: 分類の階層。major=大分類、major_group=大分類の区分（平成9年改定の I-1〜I-3 だけ）、middle=中分類、minor=小分類。階層が同じ表に並ぶので、件数を数えるときはこの列で1つの階層に絞る
+  - name: code
+    title: 分類コード
+    description: 分類コード。大分類は英字1文字、中分類は数字2桁、小分類は3桁の文字列で、先頭のゼロ（01、011 など）を保つ
+  - name: name
+    title: 項目名
+    description: 分類項目の名称
+  - name: parent_code
+    title: 1つ上の階層のコード（大分類は NULL）
+    description: 1つ上の階層の分類コード。中分類なら大分類の英字（平成9年改定の大分類 I の下では I-1〜I-3）、小分類なら中分類の2桁が入る。大分類は NULL
+  - name: major_code
+    title: 大分類のコード
+    description: その行が属する大分類の英字。大分類の行では自分自身。大分類の文字は改定によって指す職業が違う
+  - name: description
+    title: 項目の説明
+    description: 分類項目の説明の原文
+  - name: examples
+    title: 事例
+    description: この分類に含まれる職業の例の原文。「；」で区切られている
+  - name: non_examples
+    title: 不適合事例
+    description: この分類に含まれない職業の例の原文。移る先の分類コードが添えられている

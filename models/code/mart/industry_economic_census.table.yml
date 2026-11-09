@@ -1,0 +1,43 @@
+schema: code
+name: industry_economic_census
+title: 経済センサス産業分類
+description: |-
+  経済センサス‐基礎調査で使った産業分類を、2回の調査（平成26年・平成21年）ごとに持つテーブルです。日本標準産業分類を基に、調査の集計に合わせて一部の小分類を分けたり合わせたりしたものです。
+
+  - 日本標準産業分類（code.industry）にない小分類のコード（32A など）があります
+  - 同じコードでも調査によって中身が違うので、revision で調査を揃えて結合してください
+keywords:
+  - e-stat
+  - 経済センサス
+  - 産業分類
+  - 産業コード
+  - 大分類
+  - 中分類
+  - 小分類
+published: true
+themes: [economy]
+primary_key: [revision, code]
+sources:
+  - path: https://www.e-stat.go.jp/classifications/terms/80
+fields:
+  - name: revision
+    title: 調査年（2014 / 2009）
+    description: 分類を使った経済センサス‐基礎調査の年。2014=平成26年（日本標準産業分類 平成25年改定が基）、2009=平成21年（同 平成19年改定が基）
+  - name: level
+    title: 階層（major / middle / minor）
+    description: 分類の階層。major=大分類、middle=中分類、minor=小分類。件数を数えるときはこの列で1つの階層に絞る
+  - name: code
+    title: 分類コード
+    description: 分類コード。大分類は英字1文字、中分類は数字2桁、小分類は数字3桁か、数字2桁と英字1文字（32A など）の文字列
+  - name: name
+    title: 項目名
+    description: 分類項目の名称
+  - name: parent_code
+    title: 1つ上の階層のコード（大分類は NULL）
+    description: 1つ上の階層の分類コード。中分類なら大分類の英字、小分類なら中分類の2桁が入る。大分類は NULL
+  - name: major_code
+    title: 大分類のコード
+    description: その行が属する大分類の英字。大分類の行では自分自身
+  - name: description
+    title: 項目の説明
+    description: 分類項目の説明の原文。大分類・中分類の行には総説が入る

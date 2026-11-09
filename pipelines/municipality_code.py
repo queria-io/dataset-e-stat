@@ -32,12 +32,12 @@ _MAX_RETRIES = 4
 _TRANSIENT_HTTP_CODES = {500, 502, 503, 504}
 
 
-def _fetch(url: str) -> bytes:
+def _fetch(url: str, timeout: int = _TIMEOUT) -> bytes:
     """再試行付きで URL を取得する。総務省サイトは混雑時に一時エラーを返す。"""
     for attempt in range(_MAX_RETRIES):
         try:
             req = Request(url, headers={"User-Agent": _UA})
-            with urlopen(req, timeout=_TIMEOUT) as resp:
+            with urlopen(req, timeout=timeout) as resp:
                 return resp.read()
         # 応答の読み取り中に起きる失敗は URLError に包まれない。urllib が包むのは
         # 送信時の OSError だけで、getresponse() 以降はソケット層の

@@ -1,9 +1,9 @@
 ---
-title: 標準地域コードと日本標準産業分類
+title: 標準地域コードと統計分類
 order: 36
 ---
 
-# 標準地域コードと日本標準産業分類
+# 標準地域コードと統計分類
 
 ## 統計に用いる標準地域コード
 
@@ -117,6 +117,44 @@ xx0・xx00・xx09）は平成19年改定からの項目で、平成14年改定�
 出典: 政府統計の総合窓口(e-Stat)（https://www.e-stat.go.jp/）統計分類・用語の検索
 「日本標準産業分類」をもとに作成。
 https://www.e-stat.go.jp/classifications/terms/10
+
+## そのほかの統計分類
+
+e-Stat の統計分類・用語の検索で公開されている、産業分類以外の統計分類です。どれも
+改定（版）の年 `revision` と分類コード `code` の組で 1 行ずつ収録し、`parent_code` で
+1 つ上の項目をたどれます。
+
+| テーブル | 内容 | 改定（版） | 行数 |
+|---------|------|-----------|-----:|
+| occupation | 日本標準職業分類 | 2009 / 1997 | 415 / 458 |
+| commodity | 日本標準商品分類 | 1990 | 37,041 |
+| icd10 | 疾病、傷害及び死因の統計分類（基本分類） | 2013 / 2003 / 1994 | 15,339 / 14,553 / 14,531 |
+| icd10_disease | 同 疾病分類（大分類表・中分類表・小分類表） | 2013 / 2003 / 1994 | 607 / 605 / 596 |
+| icd10_cause_of_death | 同 死因分類 | 2013 / 2003 / 1994 | 133 / 133 / 130 |
+| industry_economic_census | 経済センサス‐基礎調査の産業分類 | 2014 / 2009 | 705 / 707 |
+
+- occupation は industry と同じ列（説明・事例・不適合事例）を持ちます。平成9年改定は
+  大分類 I を I-1〜I-3 に分けていて、`level = 'major_group'` の行になります
+- commodity の中分類（2桁）は先頭の数字が大分類と一致しません（大分類 1 の下に 01）。
+  大分類へは `parent_code` でたどります。原典の再掲の行は収録していません
+- icd10 のコードには原典の剣印（†）・星印（*）が付いたままです。記号の無いコードと
+  結合するときは `rtrim(code, '†*')` で落とします
+- icd10_disease の大分類表・中分類表・小分類表は細かさの違う別々の表で、
+  `table_kind` で分かれます。icd10_disease と icd10_cause_of_death の `icd10_codes` は、
+  その項目が含む基本分類のコードの範囲の原文です
+
+```sql
+-- ICD-10 の3桁分類に、属する章の名称を付ける
+SELECT c.code, c.name, ch.name AS chapter_name
+FROM e_stat.code.icd10 c
+JOIN e_stat.code.icd10 ch
+    ON ch.revision = c.revision AND ch.code = c.chapter_code
+WHERE c.revision = 2013 AND c.level = 'category'
+```
+
+出典: 政府統計の総合窓口(e-Stat)（https://www.e-stat.go.jp/）統計分類・用語の検索
+「日本標準職業分類」「日本標準商品分類」「疾病、傷害及び死因の統計分類」「経済センサス産業分類」をもとに作成。
+https://www.e-stat.go.jp/classifications/terms
 
 ## 補足: code.industry
 

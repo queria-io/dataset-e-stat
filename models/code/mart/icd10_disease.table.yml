@@ -1,0 +1,39 @@
+schema: code
+name: icd10_disease
+title: 疾病、傷害及び死因の統計分類（疾病分類）
+description: |-
+  患者調査などの集計に使う疾病分類表を、3つの版（2013年版・2003年版・1994年）ごとに持つテーブルです。疾病分類表には細かさの違う大分類表・中分類表・小分類表の3つがあり、table_kind で分けて収録しています。
+
+  - 3つの表は別々の分類です。集計に使った表に合わせて table_kind で1つに絞ってください
+  - 各項目がどの基本分類のコードを含むかは icd10_codes にあります
+keywords:
+  - e-stat
+  - ICD-10
+  - 疾病分類
+  - 疾病分類表
+  - 傷病分類
+  - 患者調査
+published: true
+themes: [social_security_health]
+primary_key: [revision, code]
+sources:
+  - path: https://www.e-stat.go.jp/classifications/terms/50
+fields:
+  - name: revision
+    title: 版（2013 / 2003 / 1994）
+    description: 分類の版。ICD-10 の版に対応する。結合では必ずこの列を揃える
+  - name: table_kind
+    title: 表（major / middle / minor）
+    description: どの疾病分類表の項目か。major=大分類表（コードが a-）、middle=中分類表（b-）、minor=小分類表（c-）。表ごとに別の分類なので、混ぜて数えない
+  - name: code
+    title: 分類コード
+    description: 分類コード。表を表す英小文字と4桁の数字（a-0100 など）で、下2桁が 00 の行が章
+  - name: name
+    title: 項目名
+    description: 分類項目の名称
+  - name: parent_code
+    title: 章のコード（章は NULL）
+    description: 項目が属する章のコード（同じ表の下2桁が 00 の行）。章の行は NULL
+  - name: icd10_codes
+    title: 含む基本分類のコード
+    description: この項目に含まれる基本分類（code.icd10）のコードの範囲の原文（A00－B99 など）。複数の範囲は区切って並び、「の残り」のような書き方もある
