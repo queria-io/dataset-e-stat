@@ -25,7 +25,7 @@ e-Stat（政府統計の総合窓口）の API と統計GIS から取得した�
 | code | 統計に用いる標準地域コード municipality と、その変更（廃置分合）履歴 municipality_change、日本標準産業分類の4改定 industry |
 | production | 経済産業省生産動態統計 品目別の生産・出荷・在庫（月次、2022年〜） monthly |
 | manufacture | 工業統計調査 市区町村別・産業中分類別の製造業統計 municipality_industry |
-| migration | 住民基本台帳人口移動報告 市区町村別の転入・転出・転入超過 municipality_migration |
+| migration | 住民基本台帳人口移動報告 市区町村別の転入・転出・転入超過 municipality_migration、転出先別・転入元別 municipality_migration_destination / municipality_migration_origin |
 | local_finance | 地方財政状況調査 決算収支 settlement_balance と市区町村の財政力 fiscal_capacity |
 | retail_price | 小売物価統計調査 調査品目の年平均価格 item_price |
 | welfare_facility | 社会福祉施設等調査 施設数・定員・在所者数・従事者数 facility_statistics |

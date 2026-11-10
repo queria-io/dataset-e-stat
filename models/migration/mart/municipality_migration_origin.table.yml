@@ -1,0 +1,86 @@
+schema: migration
+name: municipality_migration_origin
+title: 市区町村別 転入元別の転入者数（住民基本台帳人口移動報告）
+description: |-
+  現住地（転入先）ごとに、転入元の都道府県・市区町村・区別の転入者数を、年齢10歳階級・男女別に2012年から年次で持つテーブルです。
+
+  - 前住地は、その年の移動者の総数が10人以上の地域だけが個別の行になり、残りは「その他の県」「その他の市町村」「その他の区」にまとまります
+  - 総数・都道府県・市区町村・区が同じ列に並ぶので、origin_level で絞ってから合計してください
+  - 2017年以前は日本人移動者、2018年以降は外国人を含む移動者です
+keywords:
+  - e-stat
+  - 住民基本台帳
+  - 人口移動
+  - 転入元
+  - 転入
+  - 年齢階級
+  - 市区町村
+published: true
+themes: [population]
+sources:
+  - path: https://www.stat.go.jp/data/idou/sankouhyo.htm
+  - path: https://www.e-stat.go.jp/dbview?sid=0003150300
+  - path: https://www.e-stat.go.jp/dbview?sid=0003149520
+  - path: https://www.e-stat.go.jp/dbview?sid=0003146921
+  - path: https://www.e-stat.go.jp/dbview?sid=0003150940
+  - path: https://www.e-stat.go.jp/dbview?sid=0003159820
+  - path: https://www.e-stat.go.jp/dbview?sid=0003213995
+  - path: https://www.e-stat.go.jp/dbview?sid=0003283015
+  - path: https://www.e-stat.go.jp/dbview?sid=0003413173
+  - path: https://www.e-stat.go.jp/dbview?sid=0003420493
+  - path: https://www.e-stat.go.jp/dbview?sid=0003448458
+  - path: https://www.e-stat.go.jp/dbview?sid=0004003460
+  - path: https://www.e-stat.go.jp/dbview?sid=0004014380
+  - path: https://www.e-stat.go.jp/dbview?sid=0004026700
+  - path: https://www.e-stat.go.jp/dbview?sid=0004044293
+fields:
+  - name: year
+    title: 年
+    description: 西暦の年。1月から12月までの移動を積んだ年次の値で、年度ではない
+  - name: origin_code
+    title: 前住地の標準地域コード（5桁）
+    description: 移動前の住所地（前住地）の地域コード（5桁）。標準地域コード（6桁）とは桁が違う。code.municipality の area_code・municipality_migration の area と同じ体系。00005=総数、99000=その他の県、末尾999=その他の市町村、政令指定都市コード+99（01199 など）=その他の区。この表では前住地が相手の地域で、総数とその他の行を持つ
+    semantic: { role: entity, name: city }
+  - name: origin_name
+    title: 前住地の地域名
+    description: 前住地の地域名。政令指定都市の区は2019年以前が「札幌市中央区」、2020年以降が「中央区」のように年で表記が違うので、区は origin_code で見分ける
+  - name: origin_level
+    title: 前住地の粒度
+    description: national=総数、prefecture=都道府県、municipality=市・町村・政令指定都市・東京都特別区部、ward=政令指定都市の区・特別区、other_prefectures=その他の県、other_municipalities=その他の市町村、other_wards=その他の区。ward は municipality の内訳なので、粒度を絞らずに合計すると二重に数える
+  - name: origin_parent
+    title: 前住地の上位地域コード
+    description: 1つ上の階層の地域コード。市区町村とその他の市町村の親は都道府県、区とその他の区の親は政令指定都市または東京都特別区部（13100）。総数・都道府県・その他の県は NULL
+  - name: destination_code
+    title: 現住地の標準地域コード（5桁）
+    description: 移動後の住所地（現住地）の地域コード（5桁）。体系は origin_code と同じ。この表では現住地が表の主の地域で、総数とその他の行は持たない
+    semantic: { role: entity, name: city }
+  - name: destination_name
+    title: 現住地の地域名
+    description: 現住地の地域名。区の表記は origin_name と同じく年で違う
+  - name: destination_level
+    title: 現住地の粒度
+    description: origin_level と同じ区分
+  - name: destination_parent
+    title: 現住地の上位地域コード
+    description: origin_parent と同じ
+  - name: sex_code
+    title: 性別コード
+    description: 0=総数、1=男、2=女。総数と内訳が同じ列にあるので、絞らずに集計すると二重に数える
+  - name: sex
+    title: 性別
+    description: sex_code に対応する性別名（総数／男／女）
+  - name: age_code
+    title: 年齢階級コード
+    description: 000=総数、501=0～9歳 から 507=60歳以上まで10歳刻み、508=不詳/その他。総数と内訳が同じ列にある
+  - name: age
+    title: 年齢階級
+    description: age_code に対応する年齢階級名。移動した時点の年齢
+  - name: nationality_code
+    title: 国籍コード
+    description: 61000=日本人移動者（2012〜2017年）、60000=移動者（日本人と外国人の合計、2018年以降）。原典の表が年で切り替わるため、年ごとにどちらか一方だけが入る
+  - name: nationality
+    title: 国籍区分
+    description: nationality_code に対応する国籍区分名
+  - name: movers
+    title: 移動者数
+    description: 前住地から現住地へ移動した人数（人）

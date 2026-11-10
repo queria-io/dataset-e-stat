@@ -10,6 +10,8 @@ order: 21
 | テーブル | 内容 | 区分の列 | 主な値 |
 |---------|------|---------|-------|
 | municipality_migration | 全国・都道府県・市区町村・区別の転入者数・転出者数・転入超過数 | area / year / sex_code / nationality_code | inflow / outflow / net_inflow |
+| municipality_migration_destination | 前住地ごとの転出先別の転出者数（年齢10歳階級・男女別、2012年から） | origin_code / destination_code / year / sex_code / age_code | movers |
+| municipality_migration_origin | 現住地ごとの転入元別の転入者数（年齢10歳階級・男女別、2012年から） | destination_code / origin_code / year / sex_code / age_code | movers |
 
 2010年から2025年までの210,927行です。市区町村をまたぐ移動だけを数えるので、同一市区町村内の引っ越しと国外との出入りは入りません。全国の転入超過数は、どの移動も転入と転出の両方に数えられるため定義上 0 になります。
 
@@ -140,12 +142,46 @@ LIMIT 10
 
 政令指定都市に移行した年だけは、市の値が通年で区の値が4月以降になるため、区の和が市に届きません（相模原市の2010年・熊本市の2012年）。
 
+## どこへ出て、どこから来たか
+
+`municipality_migration_destination`（転出先別）と `municipality_migration_origin`（転入元別）は、市区町村の間の移動者数を前住地（`origin_*`）と現住地（`destination_*`）の組で持つ表です。出典は住民基本台帳人口移動報告の[参考表](https://www.stat.go.jp/data/idou/sankouhyo.htm)で、年齢10歳階級（`age_code` 501=0～9歳 … 507=60歳以上、508=不詳/その他、000=総数）・男女別に2012年から入っています。
+
+転出先別は前住地が表の主で、全国の都道府県・市区町村・区がそろいます。転出先の側は、その年の移動者の総数が10人以上の都道府県・市区町村・区だけが個別の行になり、残りは「その他の県」（`other_prefectures`）「その他の市町村」（`other_municipalities`）「その他の区」（`other_wards`）にまとまります。転入元別はその逆で、現住地が表の主です。2つの表は同じ移動を別の向きから数えたものです。両方の表に個別の行がある組は値が一致します（2024年の市区町村・区の組で実測）。個別に立つ相手は表の主ごとに決まるので、片方の表にしか無い組があります。小さな町村からの転出先を見るときは、転入元別の表に相手の側から立っている行も使えます。
+
+### 和歌山市の20代はどこへ出たか
+
+```sql
+SELECT destination_name, movers
+FROM e_stat.migration.municipality_migration_destination
+WHERE year = 2024 AND origin_code = '30201'
+  AND sex_code = '0' AND age_code = '503'
+  AND destination_level = 'municipality'
+ORDER BY movers DESC
+LIMIT 10
+```
+
+2024年は大阪市524人、東京都特別区部286人、岩出市162人の順です。
+
+### 粒度を絞り、自分自身を除く
+
+相手の側には総数（`national`、コード `00005`）・都道府県・市区町村・区とまとめの行が同じ列に並びます。`destination_level`（転入元別なら `origin_level`）を絞らずに合計すると何重にも数えます。
+
+政令指定都市と東京都特別区部の行は区の間の移動を含み、都道府県の行はその都道府県の中の市区町村の間の移動を含みます。2024年の札幌市から札幌市への移動は53,631人で、札幌市の転出者数103,003人のうち半分あまりが区の間の移動です。市や都道府県の外へ出た人数を見るときは、相手が自分自身の行を除きます。
+
+### 年をまたいで比べるとき
+
+2017年以前は日本人移動者（`nationality_code` 61000）、2018年以降は外国人を含む移動者（60000）の表です。2017年と2018年の間に外国人の分だけ段差があります。政令指定都市の区の名称は、2019年以前が「札幌市中央区」、2020年以降が「中央区」です。区はコードで引きます。
+
+相手の総数は `municipality_migration` の転出者数（転出先別）・転入者数（転入元別）に一致します。
+
 ## 補足: 住民基本台帳人口移動報告 市区町村別の転入・転出（migration スキーマ）
 
 | テーブル | 内容 | 主なカラム |
 |---------|------|-----------|
 | municipality_migration | 全国・都道府県・市区町村・区別の転入者数・転出者数・転入超過数（年次） | area / area_level / year / sex_code / nationality_code / inflow / outflow / net_inflow |
 | municipality_migration_age | 上の表を年齢5歳階級（0～4歳 … 85～89歳、90歳以上）に分けたもの（2014年から） | 上の列 + age_code / age |
+| municipality_migration_destination | 前住地ごとの転出先別の転出者数（年齢10歳階級・男女別、2012年から） | origin_code / destination_code / destination_level / year / sex_code / age_code / movers |
+| municipality_migration_origin | 現住地ごとの転入元別の転入者数（年齢10歳階級・男女別、2012年から） | destination_code / origin_code / origin_level / year / sex_code / age_code / movers |
 
 #### 国籍区分で収録の始まる年が違う
 

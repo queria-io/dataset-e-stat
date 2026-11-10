@@ -1,0 +1,46 @@
+{# 住民基本台帳人口移動報告の参考表 (load_local.py の migration_od) の元表。
+   年ごとに転出先別 (outflow: 移動後の住所地別転出者数) と転入元別 (inflow: 移動前の
+   住所地別転入者数) が 1 表ずつある。
+
+   前住地と現住地のどちらが cat01 に入るかは表で違う。e-Stat のメタ情報の軸名で確かめた
+   (2026-11-09 時点):
+     outflow 2012〜2017 年: cat01=現住地 / area=前住地、2018 年〜: cat01=前住地 / area=現住地
+     inflow  2012〜2018 年: cat01=前住地 / area=現住地、2019 年〜: cat01=現住地 / area=前住地
+   値の側から見分ける手がかりは無い (どちらの軸も同じ地域コードの体系) ので、表ごとに書く。
+   新しい年の表を足すときは getMetaInfo の CLASS_OBJ の @name で確かめる。 #}
+{% macro migration_od_sources() %}
+    {% set out = [] %}
+    {% for year in range(2012, 2026) %}
+        {% do out.append((year, 'outflow', 'migration_od_outflow_' ~ year, year >= 2018)) %}
+        {% do out.append((year, 'inflow', 'migration_od_inflow_' ~ year, year <= 2018)) %}
+    {% endfor %}
+    {{ return(out) }}
+{% endmacro %}
+
+{# 元表が全部カタログにあるか。1 つでも欠けるとモデルは 0 行、テストは検査しない。 #}
+{% macro migration_od_sources_loaded() %}
+    {% for _, _, name, _ in migration_od_sources() %}
+        {% if not local_source_loaded(name) %}
+            {{ return(false) }}
+        {% endif %}
+    {% endfor %}
+    {{ return(true) }}
+{% endmacro %}
+
+{# 参考表の地域の粒度。
+   粒度はメタ情報の level と名称で決める。
+     level 1 総数 / 2 都道府県 / 3 市・町村・政令指定都市・東京都特別区部 /
+     4 政令指定都市の区・特別区
+   「その他の…」の行は名称で見分ける。コード (99000 / xx999 / 政令指定都市のコード + 99) は
+   その他の行の規則だが、level だけでは市区町村・区と同じ値になるため。 #}
+{% macro migration_od_area_level(code, name, level) %}
+CASE
+    WHEN {{ name }} = 'その他の県' THEN 'other_prefectures'
+    WHEN {{ name }} = 'その他の市町村' THEN 'other_municipalities'
+    WHEN {{ name }} = 'その他の区' THEN 'other_wards'
+    WHEN {{ level }} = '1' THEN 'national'
+    WHEN {{ level }} = '2' THEN 'prefecture'
+    WHEN {{ level }} = '3' THEN 'municipality'
+    WHEN {{ level }} = '4' THEN 'ward'
+END
+{% endmacro %}

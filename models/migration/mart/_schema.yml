@@ -98,3 +98,99 @@ models:
         description: "他市区町村への転出者数（人）。同一市区町村内の移動と国外への転出は含まない。矢祭町の2014年は原典が欠測値としているため NULL"
       - name: net_inflow
         description: "転入超過数（人）。inflow - outflow に等しく、負なら転出超過。矢祭町の2014〜2015年は原典が欠測値としているため NULL。原典には「移動前の住所地不詳」（2020年以降）と「その他」（2019年以前）という別枠の表章もあるが、どちらも転入者数にも転入超過数にも含まれず、指しているものが年代で違うのでこの表には取っていない"
+  - name: municipality_migration_destination
+    description: |
+      移動後の住所地別転出者数（転出先別）。
+      住民基本台帳人口移動報告の参考表から、市区町村の間の移動者数を、年齢10歳階級・男女別に
+      2012年から年次で持つ。住民票の異動届にもとづく実績で、推計ではない。
+      表の主の地域（前住地）は都道府県・市区町村・政令指定都市の区の全部を持つ。相手の地域（現住地）は、
+      その年の移動者の総数（年齢・男女とも総数）が10人以上の都道府県・市区町村・区だけが個別の行になり、
+      残りは「その他の県」「その他の市町村」「その他の区」にまとめられる。まとめの行も足すと、
+      都道府県の和は総数に、市区町村の和は都道府県に、区の和は政令指定都市に一致する。
+      政令指定都市と東京都特別区部の行は区の間の移動を含み、都道府県の行はその都道府県内の市区町村の
+      間の移動を含む（2024年の札幌市から札幌市へは53,631人）。市の外へ出た人数を見るときは、
+      相手が自分自身の行を除く。総数は municipality_migration のoutflow（同じ年・同じ国籍区分）と一致する。
+      2017年以前は日本人移動者、2018年以降は外国人を含む移動者の表なので、2017年と2018年の間に段差がある。
+      出典: 総務省統計局 住民基本台帳人口移動報告 参考表 https://www.stat.go.jp/data/idou/sankouhyo.htm
+    access: public
+    columns:
+      - name: year
+        description: 西暦の年。1月から12月までの移動を積んだ年次の値で、年度ではない
+      - name: origin_code
+        description: 移動前の住所地（前住地）の地域コード（5桁）。標準地域コード（6桁）とは桁が違う。code.municipality の area_code・municipality_migration の area と同じ体系。00005=総数、99000=その他の県、末尾999=その他の市町村、政令指定都市コード+99（01199 など）=その他の区。この表では前住地が表の主の地域で、総数とその他の行は持たない
+      - name: origin_name
+        description: 前住地の地域名。政令指定都市の区は2019年以前が「札幌市中央区」、2020年以降が「中央区」のように年で表記が違うので、区は origin_code で見分ける
+      - name: origin_level
+        description: national=総数、prefecture=都道府県、municipality=市・町村・政令指定都市・東京都特別区部、ward=政令指定都市の区・特別区、other_prefectures=その他の県、other_municipalities=その他の市町村、other_wards=その他の区。ward は municipality の内訳なので、粒度を絞らずに合計すると二重に数える
+      - name: origin_parent
+        description: 1つ上の階層の地域コード。市区町村とその他の市町村の親は都道府県、区とその他の区の親は政令指定都市または東京都特別区部（13100）。総数・都道府県・その他の県は NULL
+      - name: destination_code
+        description: 移動後の住所地（現住地）の地域コード（5桁）。体系は origin_code と同じ。この表では現住地が相手の地域で、総数とその他の行を持つ
+      - name: destination_name
+        description: 現住地の地域名。区の表記は origin_name と同じく年で違う
+      - name: destination_level
+        description: origin_level と同じ区分
+      - name: destination_parent
+        description: origin_parent と同じ
+      - name: sex_code
+        description: 0=総数、1=男、2=女。総数と内訳が同じ列にあるので、絞らずに集計すると二重に数える
+      - name: sex
+        description: sex_code に対応する性別名（総数／男／女）
+      - name: age_code
+        description: 000=総数、501=0～9歳 から 507=60歳以上まで10歳刻み、508=不詳/その他。総数と内訳が同じ列にある
+      - name: age
+        description: age_code に対応する年齢階級名。移動した時点の年齢
+      - name: nationality_code
+        description: 61000=日本人移動者（2012〜2017年）、60000=移動者（日本人と外国人の合計、2018年以降）。原典の表が年で切り替わるため、年ごとにどちらか一方だけが入る
+      - name: nationality
+        description: nationality_code に対応する国籍区分名
+      - name: movers
+        description: 前住地から現住地へ移動した人数（人）
+  - name: municipality_migration_origin
+    description: |
+      移動前の住所地別転入者数（転入元別）。
+      住民基本台帳人口移動報告の参考表から、市区町村の間の移動者数を、年齢10歳階級・男女別に
+      2012年から年次で持つ。住民票の異動届にもとづく実績で、推計ではない。
+      表の主の地域（現住地）は都道府県・市区町村・政令指定都市の区の全部を持つ。相手の地域（前住地）は、
+      その年の移動者の総数（年齢・男女とも総数）が10人以上の都道府県・市区町村・区だけが個別の行になり、
+      残りは「その他の県」「その他の市町村」「その他の区」にまとめられる。まとめの行も足すと、
+      都道府県の和は総数に、市区町村の和は都道府県に、区の和は政令指定都市に一致する。
+      政令指定都市と東京都特別区部の行は区の間の移動を含み、都道府県の行はその都道府県内の市区町村の
+      間の移動を含む（2024年の札幌市から札幌市へは53,631人）。市の外へ出た人数を見るときは、
+      相手が自分自身の行を除く。総数は municipality_migration のinflow（同じ年・同じ国籍区分）と一致する。
+      2017年以前は日本人移動者、2018年以降は外国人を含む移動者の表なので、2017年と2018年の間に段差がある。
+      出典: 総務省統計局 住民基本台帳人口移動報告 参考表 https://www.stat.go.jp/data/idou/sankouhyo.htm
+    access: public
+    columns:
+      - name: year
+        description: 西暦の年。1月から12月までの移動を積んだ年次の値で、年度ではない
+      - name: origin_code
+        description: 移動前の住所地（前住地）の地域コード（5桁）。標準地域コード（6桁）とは桁が違う。code.municipality の area_code・municipality_migration の area と同じ体系。00005=総数、99000=その他の県、末尾999=その他の市町村、政令指定都市コード+99（01199 など）=その他の区。この表では前住地が相手の地域で、総数とその他の行を持つ
+      - name: origin_name
+        description: 前住地の地域名。政令指定都市の区は2019年以前が「札幌市中央区」、2020年以降が「中央区」のように年で表記が違うので、区は origin_code で見分ける
+      - name: origin_level
+        description: national=総数、prefecture=都道府県、municipality=市・町村・政令指定都市・東京都特別区部、ward=政令指定都市の区・特別区、other_prefectures=その他の県、other_municipalities=その他の市町村、other_wards=その他の区。ward は municipality の内訳なので、粒度を絞らずに合計すると二重に数える
+      - name: origin_parent
+        description: 1つ上の階層の地域コード。市区町村とその他の市町村の親は都道府県、区とその他の区の親は政令指定都市または東京都特別区部（13100）。総数・都道府県・その他の県は NULL
+      - name: destination_code
+        description: 移動後の住所地（現住地）の地域コード（5桁）。体系は origin_code と同じ。この表では現住地が表の主の地域で、総数とその他の行は持たない
+      - name: destination_name
+        description: 現住地の地域名。区の表記は origin_name と同じく年で違う
+      - name: destination_level
+        description: origin_level と同じ区分
+      - name: destination_parent
+        description: origin_parent と同じ
+      - name: sex_code
+        description: 0=総数、1=男、2=女。総数と内訳が同じ列にあるので、絞らずに集計すると二重に数える
+      - name: sex
+        description: sex_code に対応する性別名（総数／男／女）
+      - name: age_code
+        description: 000=総数、501=0～9歳 から 507=60歳以上まで10歳刻み、508=不詳/その他。総数と内訳が同じ列にある
+      - name: age
+        description: age_code に対応する年齢階級名。移動した時点の年齢
+      - name: nationality_code
+        description: 61000=日本人移動者（2012〜2017年）、60000=移動者（日本人と外国人の合計、2018年以降）。原典の表が年で切り替わるため、年ごとにどちらか一方だけが入る
+      - name: nationality
+        description: nationality_code に対応する国籍区分名
+      - name: movers
+        description: 前住地から現住地へ移動した人数（人）
