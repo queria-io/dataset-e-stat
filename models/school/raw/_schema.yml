@@ -2,3 +2,6 @@ version: 2
 
 models:
   - name: raw_school_enrollment_by_grade
+  - name: raw_school_municipality_schools
+  - name: raw_school_municipality_students
+  - name: raw_school_municipality_teachers

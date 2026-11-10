@@ -32,7 +32,7 @@ e-Stat（政府統計の総合窓口）の API と統計GIS から取得した�
 | kaigo_service | 介護サービス施設・事業所調査 市区町村別の介護保険施設数・定員 insurance_facility と都道府県別の居宅サービス・地域密着型サービスの事業所数 service_establishment |
 | employment_structure | 就業構造基本調査 就業状態・雇用形態別の15歳以上人口 employment_status |
 | wage_structure | 賃金構造基本統計調査 都道府県別の賃金 prefecture_wage と都道府県・産業別の賃金 prefecture_industry_wage |
-| school | 学校基本調査 小学校・中学校の学年別児童生徒数 enrollment_by_grade |
+| school | 学校基本調査 小学校・中学校の都道府県別の学年別児童生徒数 enrollment_by_grade と、市区町村別の学校数 municipality_schools・児童生徒数 municipality_students・本務教員数 municipality_teachers |
 | school_health | 学校保健統計調査 都道府県別・年齢別の身長・体重の平均値と標準偏差 growth_by_prefecture |
 | trade | 普通貿易統計 品別国別表（統計品目番号9桁 × 国 × 月の数量・金額、1988年〜） commodity_country_monthly |
 | crop | 作物統計調査 都道府県別の野菜の作付面積・収穫量・出荷量 vegetable_production |
