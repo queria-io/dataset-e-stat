@@ -3,6 +3,10 @@ name: item_catalog
 title: 分類項目定義
 description: |-
   社会・人口統計体系（SSDS）の22テーブルで使う統計指標と分類体系の一覧です。
+
+  社会・人口統計体系（SSDS）の基礎データ項目一覧。
+  都道府県・市区町村の全22表で利用可能な統計指標とその分類体系を提供する。
+  分類体系の詳細: https://www.stat.go.jp/data/ssds/2.html
 keywords:
   - e-stat
   - 社会・人口統計体系
