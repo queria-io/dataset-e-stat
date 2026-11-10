@@ -1,5 +1,0 @@
-version: 2
-
-models:
-  - name: raw_local_finance_settlement
-  - name: raw_local_finance_capacity

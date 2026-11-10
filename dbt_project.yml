@@ -11,6 +11,13 @@ seeds:
   e_stat:
     +database: e_stat
     +schema: main
+    # kaigo_insurance_union_member: 介護保険の広域連合・一部事務組合を構成する市町村。介護保険事業状況報告の保険者別の表には
+    # 構成市町村が無いので、最新年度（2024年度末）の保険者の一覧から手で起こした。
+    # kaigo_insurance.union_member が読む。正しさは tests/kaigo_insurance_union_member_is_exhaustive.sql が押さえる。
+    kaigo_insurance_union_member:
+      +column_types:
+        area_code: varchar
+        insurer_name: varchar
 
 models:
   e_stat:

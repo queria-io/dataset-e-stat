@@ -1,6 +1,0 @@
-version: 2
-
-models:
-  - name: stg_economic_structure_enterprise
-  - name: stg_economic_structure_cost
-  - name: stg_economic_structure_establishment
