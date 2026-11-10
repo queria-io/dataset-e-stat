@@ -1,0 +1,5 @@
+version: 2
+
+models:
+  - name: raw_energy_consumption_industry
+  - name: raw_energy_consumption_energy_type

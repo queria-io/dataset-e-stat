@@ -55,6 +55,7 @@
 | `crop` | 作物統計調査（野菜） | [vegetable-production.md](docs/vegetable-production.md) |
 | `household_structure` | 全国家計構造調査 | [household-structure.md](docs/household-structure.md) |
 | `vital_statistics` | 人口動態調査 | [vital-statistics.md](docs/vital-statistics.md) |
+| `energy_consumption` | エネルギー消費統計調査 | [energy-consumption.md](docs/energy-consumption.md) |
 
 ## 使い方
 

@@ -190,6 +190,23 @@ groups:
         updated_date: "2026-08-27"
       - name: kaigo_insurance_certified
         updated_date: "2026-08-27"
+  energy_consumption:
+    title: エネルギー消費統計調査 都道府県別・業種別／エネルギー種別のエネルギー消費量（2009〜2024年度）
+    # e-Stat のデータベースに都道府県別の表が無く、統計表ファイル (Excel) で配られる。
+    # 取得とパースは pipelines/energy_consumption.py の fetch_local。見張り方は kaigo_insurance と
+    # 同じで、統計全体のファイルの最終更新日を catalog_modified_date に記録し、表の
+    # updated_date は同じ日付にそろえる
+    fetcher: energy_consumption
+    stats_code: "00551005"
+    catalog_modified_date: "2026-03-31"
+    dbt_select: "path:models/energy_consumption"
+    tables:
+      - name: energy_consumption_industry
+        updated_date: "2026-03-31"
+        primary_key: [fiscal_year, prefecture_name, industry_code]
+      - name: energy_consumption_energy_type
+        updated_date: "2026-03-31"
+        primary_key: [fiscal_year, prefecture_name, energy_type]
   vital_statistics:
     title: 人口動態調査 人口動態統計 確定数（全国・都道府県・市区町村、2015〜2024年）
     dbt_select: "path:models/vital_statistics"
