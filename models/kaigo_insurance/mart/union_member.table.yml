@@ -16,6 +16,7 @@ themes: [social_security_health]
 temporal_coverage: { start: "2024", end: "2024" }
 sources:
   - path: https://www.e-stat.go.jp/stat-search/files?toukei=00450351
+primary_key: [area_code]
 fields:
   - name: insurer_name
     title: 保険者名

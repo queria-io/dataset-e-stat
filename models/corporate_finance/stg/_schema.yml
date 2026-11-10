@@ -1,5 +1,0 @@
-version: 2
-
-models:
-  - name: stg_corporate_finance_quarterly
-  - name: stg_corporate_finance_annual

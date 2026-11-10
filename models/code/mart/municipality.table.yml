@@ -15,6 +15,7 @@ published: true
 themes: [land_climate]
 sources:
   - path: https://www.soumu.go.jp/toukei_toukatsu/index/seido/9-5.htm
+primary_key: [area_code]
 fields:
   - name: area_code
     title: 標準地域コード（5桁）

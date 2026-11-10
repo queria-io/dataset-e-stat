@@ -1,5 +1,0 @@
-version: 2
-
-models:
-  - name: stg_household_expenditure
-  - name: stg_household_quantity

@@ -1,6 +1,0 @@
-version: 2
-
-models:
-  - name: raw_trade_history
-  - name: raw_trade_country
-  - name: raw_trade_recent

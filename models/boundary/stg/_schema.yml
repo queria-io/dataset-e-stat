@@ -1,5 +1,0 @@
-version: 2
-
-models:
-  - name: stg_census_boundary
-  - name: stg_mesh_boundary

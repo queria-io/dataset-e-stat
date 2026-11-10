@@ -1,7 +1,0 @@
-version: 2
-
-models:
-  - name: raw_household_expenditure_monthly
-  - name: raw_household_expenditure_annual
-  - name: raw_household_quantity_monthly
-  - name: raw_household_quantity_annual
