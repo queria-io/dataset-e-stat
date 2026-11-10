@@ -190,6 +190,41 @@ groups:
         updated_date: "2026-08-27"
       - name: kaigo_insurance_certified
         updated_date: "2026-08-27"
+  energy_consumption:
+    title: エネルギー消費統計調査 都道府県別・業種別／エネルギー種別のエネルギー消費量（2009〜2024年度）
+    # e-Stat のデータベースに都道府県別の表が無く、統計表ファイル (Excel) で配られる。
+    # 取得とパースは pipelines/energy_consumption.py の fetch_local。見張り方は kaigo_insurance と
+    # 同じで、統計全体のファイルの最終更新日を catalog_modified_date に記録し、表の
+    # updated_date は同じ日付にそろえる
+    fetcher: energy_consumption
+    stats_code: "00551005"
+    catalog_modified_date: "2026-03-31"
+    dbt_select: "path:models/energy_consumption"
+    tables:
+      - name: energy_consumption_industry
+        updated_date: "2026-03-31"
+        primary_key: [fiscal_year, prefecture_name, industry_code]
+      - name: energy_consumption_energy_type
+        updated_date: "2026-03-31"
+        primary_key: [fiscal_year, prefecture_name, energy_type]
+  school_municipality:
+    title: 学校基本調査 小学校・中学校の市町村別の学校数・学年別児童生徒数・職名別本務教員数（2021〜2025年）
+    # 統計表ファイル (Excel) でだけ配られる。取得とパースは pipelines/school_municipality.py の
+    # fetch_local。見張り方は kaigo_insurance と同じで、学校基本調査全体のファイルの最終更新日を
+    # catalog_modified_date に記録し、表の updated_date は同じ日付にそろえる。都道府県別の
+    # 学年別児童生徒数 (school.enrollment_by_grade) は CI の Sync が別に取る
+    fetcher: school_municipality
+    stats_code: "00400001"
+    catalog_modified_date: "2026-09-02"
+    dbt_select: "raw_school_municipality_schools raw_school_municipality_students raw_school_municipality_teachers stg_school_municipality_area municipality_schools municipality_students municipality_teachers"
+    # 都道府県の計の行は市区町村コードが NULL なので primary_key は置かない
+    tables:
+      - name: school_municipality_schools
+        updated_date: "2026-09-02"
+      - name: school_municipality_students
+        updated_date: "2026-09-02"
+      - name: school_municipality_teachers
+        updated_date: "2026-09-02"
   vital_statistics:
     title: 人口動態調査 人口動態統計 確定数（全国・都道府県・市区町村、2015〜2024年）
     dbt_select: "path:models/vital_statistics"

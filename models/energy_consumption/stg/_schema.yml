@@ -1,0 +1,4 @@
+version: 2
+
+models:
+  - name: stg_energy_consumption_prefecture

@@ -1,9 +1,13 @@
 ---
-title: 学年別の児童生徒数（学校基本調査）
+title: 児童生徒数・学校数・教員数（学校基本調査）
 order: 28
 ---
 
-# 学校基本調査（enrollment_by_grade）
+# 学校基本調査（school）
+
+小学校・中学校の児童生徒数・学校数・教員数を収録します。都道府県別の学年別児童生徒数（enrollment_by_grade）と、市区町村別の3表（municipality_*）があります。
+
+## 都道府県別の学年別児童生徒数（enrollment_by_grade）
 
 小学校の学年別児童数と中学校の学年別生徒数を、都道府県別・設置者別・男女別に収録します。
 
@@ -63,6 +67,51 @@ ORDER BY private_pct DESC
 ## 原典の値を直したセル
 
 原典で「-」のセルは 0 です。2003年の小学校 公立 福岡県 男 の計は原典で 14656 と1桁欠けているので、男女・学年・都道府県・設置者の合計がそろう 146656 に直しています。
+
+
+## 市区町村別の学校数・児童生徒数・教員数（municipality_*）
+
+- `e_stat.school.municipality_schools`: 学校数。設置者（計・国立・公立・私立）× 公立の内訳（市(区)立・町立など）× 本校・分校。417,831行
+- `e_stat.school.municipality_students`: 児童生徒数。学年 × 男女（国立・公立・私立の計）。320,661行
+- `e_stat.school.municipality_teachers`: 本務教員数。職名 × 男女（国立・公立・私立の計）。757,926行
+
+収録は2021〜2025年で、毎年5月1日現在です。
+
+出典: [文部科学省 学校基本調査（市町村別集計）](https://www.e-stat.go.jp/stat-search/files?toukei=00400001)
+
+### 地域の列
+
+- area: 地域コード（5桁）。都道府県の計は `XX000`
+- area_level: `prefecture`（都道府県の計）・`municipality`（市区町村）・`ward`（政令指定都市の区）・`outside`（原典の「東京都外」「大阪市外」の行）
+- city_code: 市区町村コード。政令指定都市の区は市のコード（札幌市中央区なら `01100`）、ほかの市区町村は area と同じ
+
+政令指定都市は区の行だけで、市の行はありません。市の値は city_code で区を足して出します。都道府県の計は、市区町村・区・outside の行を足した値に一致します。全国の行は無いので、都道府県の計を足して出します。
+
+浜松市は2024年1月に区を再編したので、2023年までの旧区（22131〜22137）は現行の code.municipality にありません。city_code は浜松市（22130）です。
+
+### 小学校の児童数が増えた市区町村
+
+```sql
+SELECT city_code,
+    sum(students) FILTER (WHERE year = 2021) AS y2021,
+    sum(students) FILTER (WHERE year = 2025) AS y2025,
+    round(100.0 * sum(students) FILTER (WHERE year = 2025) / sum(students) FILTER (WHERE year = 2021) - 100, 1) AS change_pct
+FROM e_stat.school.municipality_students
+WHERE school_type = 'elementary' AND grade = 0 AND sex = '計' AND city_code IS NOT NULL
+GROUP BY city_code
+HAVING sum(students) FILTER (WHERE year = 2021) >= 10000
+ORDER BY change_pct DESC
+```
+
+児童数が1万人以上の市区町村では、2021年から2025年に流山市（12220）が14.8%、つくば市（08220）が14.5%、文京区（13105）が9.0%増えました。名前は `e_stat.code.municipality` と city_code で結合して付けます。
+
+### 計と内訳
+
+学校数は設置者・公立の内訳・本校分校の計が、児童生徒数は学年の計（grade = 0）と男女の計（sex = '計'）が、教員数は職名の計と男女の計が、内訳と同じ列に並びます。教員数の「市町村費負担の者(再掲)」は計の内数です。小学校の学校数の表には都道府県立の列が無く、都立の小学校（立川市の1校）は公立の計にだけ入ります。
+
+都道府県の計の児童生徒数は enrollment_by_grade の計と一致します。義務教育学校・中等教育学校・特別支援学校は入りません。
+
+この3表は毎日の更新（CI）では取らず、手元で1回だけ取り込んでいます（`local_tables.yml` の `school_municipality`）。
 
 ## 補足: 学校基本調査 学年別の児童生徒数（school スキーマ）
 

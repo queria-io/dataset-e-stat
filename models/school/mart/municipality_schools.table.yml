@@ -1,0 +1,64 @@
+schema: school
+name: municipality_schools
+title: 市区町村別の学校数（小学校・中学校）
+description: |-
+  学校基本調査の小学校・中学校の学校数を、市区町村別・設置者別・本校分校別に2021年から持つテーブルです。
+
+  - 政令指定都市は区の行だけです。市の値は city_code で区を足して出してください
+  - 都道府県の計の行が市区町村と同じ列に並ぶので、area_level で絞ってから合計してください
+  - 設置者・公立の内訳・本校分校の計が内訳と同じ列に並びます
+keywords:
+- e-stat
+- 学校基本調査
+- 小学校
+- 中学校
+- 学校数
+- 公立
+- 私立
+- 分校
+- 市区町村
+published: true
+themes: [education_culture]
+temporal_coverage: { start: "2021", end: "2025" }
+sources:
+- path: https://www.e-stat.go.jp/stat-search/files?toukei=00400001
+fields:
+- name: year
+  title: 調査年
+  description: 調査年（西暦4桁）。2021〜2025。毎年5月1日現在
+- name: school_type
+  title: 学校種コード
+  description: 学校種。elementary=小学校、junior_high=中学校
+- name: school_type_name
+  title: 学校種
+  description: school_type に対応する名称（小学校・中学校）
+- name: area
+  title: 地域コード
+  description: 地域コード（5桁）。XX000=都道府県の計。東京都外・大阪市外の行は NULL
+  semantic: { role: entity, name: city }
+- name: area_name
+  title: 地域名
+  description: 地域名（原典の表記）。政令指定都市の区は区名だけ
+- name: area_level
+  title: 地域の階層
+  description: prefecture=都道府県の計、municipality=市区町村、ward=政令指定都市の区、outside=原典の「東京都外」「大阪市外」の行
+- name: prefecture_code
+  title: 都道府県コード
+  description: 都道府県コード（2桁）
+  semantic: { role: entity, name: prefecture }
+- name: city_code
+  title: 市区町村コード
+  description: 市区町村コード（5桁）。政令指定都市の区は市のコード、ほかの市区町村は area と同じ。都道府県の計と outside の行は NULL
+  semantic: { role: entity, name: city }
+- name: founder
+  title: 設置者
+  description: 計・国立・公立・私立
+- name: founder_detail
+  title: 公立の内訳
+  description: 計・市(区)立・町立・村立・組合立（中学校は都道府県立も）。国立と私立の行は founder と同じ値
+- name: campus
+  title: 本校・分校
+  description: 計・本校・分校
+- name: schools
+  title: 学校数
+  description: 学校数

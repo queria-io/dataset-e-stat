@@ -27,6 +27,13 @@ sources:
       # 介護保険事業状況報告。手元でだけ取り込む (load_local.py kaigo_insurance)。CI の main.py はロードしない
       - name: kaigo_insurance_insured
       - name: kaigo_insurance_certified
+      # エネルギー消費統計調査。手元でだけ取り込む (load_local.py energy_consumption)。CI の main.py はロードしない
+      - name: energy_consumption_industry
+      - name: energy_consumption_energy_type
+      # 学校基本調査の市町村別の表。手元でだけ取り込む (load_local.py school_municipality)。CI の main.py はロードしない
+      - name: school_municipality_schools
+      - name: school_municipality_students
+      - name: school_municipality_teachers
       - name: mesh_population
       - name: mesh_establishment
       # 手元でだけ取り込む (load_local_mesh.py)。CI の main.py はロードしない

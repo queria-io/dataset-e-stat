@@ -80,6 +80,11 @@ models:
         +materialized: table
       stg:
         +materialized: table
+    energy_consumption:
+      raw:
+        +materialized: table
+      stg:
+        +materialized: table
     employment_structure:
       raw:
         +materialized: table

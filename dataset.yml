@@ -51,6 +51,8 @@ keywords:
   - 小学校
   - 中学校
   - 児童数
+  - 学校数
+  - 教員数
   - 生徒数
   - 建築着工統計調査
   - 建築着工
@@ -108,6 +110,8 @@ keywords:
   - 要支援
   - 第1号被保険者
   - 広域連合
+  - エネルギー消費統計調査
+  - エネルギー消費量
   - 特別養護老人ホーム
   - 介護
   - 福祉
@@ -143,7 +147,7 @@ keywords:
   - 商店街
 homepage: https://github.com/queria-io/dataset-e-stat
 language: ja
-themes: [population, economy, labour, social_security_health, education_culture, land_climate, government_finance, housing_land, transport_tourism, justice_safety_environment, agriculture, mining_manufacturing]
+themes: [population, economy, labour, social_security_health, education_culture, land_climate, government_finance, housing_land, transport_tourism, justice_safety_environment, agriculture, mining_manufacturing, energy_water]
 
 licenses:
   - JP-GOV-STD-2.0
@@ -177,6 +181,8 @@ sources:
     path: https://www.e-stat.go.jp/stat-search/files?toukei=00450042
   - title: 介護保険事業状況報告（厚生労働省）
     path: https://www.e-stat.go.jp/stat-search/files?toukei=00450351
+  - title: エネルギー消費統計調査（資源エネルギー庁）
+    path: https://www.e-stat.go.jp/stat-search/files?toukei=00551005
   - title: 就業構造基本調査（総務省統計局）
     path: https://www.stat.go.jp/data/shugyou/
   - title: 賃金構造基本統計調査（厚生労働省）
@@ -288,6 +294,8 @@ schemas:
     title: 医療施設調査
   - name: kaigo_insurance
     title: 介護保険事業状況報告
+  - name: energy_consumption
+    title: エネルギー消費統計調査
   - name: employment_structure
     title: 就業構造基本調査
   - name: wage_structure
