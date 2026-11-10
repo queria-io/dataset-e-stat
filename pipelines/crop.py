@@ -35,6 +35,13 @@
 「…」(事実不詳・調査を欠く)・「－」(事実のないもの)・「X」(秘匿)・「nc」(計算不能)
 は NULL にする。主産県だけを調べる年は、それ以外の県が「…」になる。
 
+■ 取り直すのは更新された表だけ
+
+1,425 表を毎日取り直すと 25 分かかる。getStatsData の応答を表ごとに e-Stat の
+更新日と一緒に _source.crop_responses に置き、次の Sync では更新日が変わった表と
+新しい表だけを取得する。整形は毎回すべての表の応答から作り直すので、結果は
+全部を取り直したときと変わらない。
+
 データソース: 農林水産省 作物統計調査 作況調査（野菜）
 https://www.e-stat.go.jp/statistics/00500215
 """
@@ -46,7 +53,11 @@ import unicodedata
 import urllib.parse
 from pathlib import Path
 
+import dlt
+from dlt.destinations.exceptions import DatabaseUndefinedRelation
+
 from pipelines import EstatStatus, check_latest_year
+from pipelines.loaded_tables import updated_date
 from pipelines.school import NATIONWIDE_CODE, PREFECTURES, _fetch
 
 logger = logging.getLogger("pipelines")
@@ -54,6 +65,8 @@ logger = logging.getLogger("pipelines")
 API_URL = "https://api.e-stat.go.jp/rest/3.0/app/json"
 STATS_CODE = "00500215"
 PAGE_LIMIT = 100000
+# getStatsData の応答を置くテーブル (_source)
+RESPONSES_TABLE = "crop_responses"
 
 FIRST_YEAR = 2003
 # N 年産の確報は N+2 年か N+3 年の春に出る (令和6年産は 2026 年、令和4年産は
@@ -134,8 +147,10 @@ def survey_year(statistics_name: str) -> int | None:
     return ERA_BASE[m[1]] + (1 if m[2] == "元" else int(m[2]))
 
 
-def catalog(app_id: str, cache_dir: Path | None = None) -> list[tuple[int, str, str]]:
-    """都道府県別の表を (年産, 統計表 ID, 表題) で集める。"""
+def catalog(
+    app_id: str, cache_dir: Path | None = None
+) -> list[tuple[int, str, str, str | None]]:
+    """都道府県別の表を (年産, 統計表 ID, 表題, 更新日) で集める。"""
     cached = cache_dir / "stats_list.json" if cache_dir else None
     if cached and cached.exists():
         root = json.loads(cached.read_text(encoding="utf-8"))
@@ -146,7 +161,7 @@ def catalog(app_id: str, cache_dir: Path | None = None) -> list[tuple[int, str, 
     if root.get("DATALIST_INF", {}).get("RESULT_INF", {}).get("NEXT_KEY"):
         raise RuntimeError(f"getStatsList: {STATS_CODE} が {PAGE_LIMIT} 件に収まらない")
     tables = {
-        t["@id"]: (year, title)
+        t["@id"]: (year, title, updated_date(t))
         for t in _as_list(root["DATALIST_INF"].get("TABLE_INF"))
         if (year := survey_year(t.get("STATISTICS_NAME")))
         and TITLE_KEY
@@ -156,8 +171,10 @@ def catalog(app_id: str, cache_dir: Path | None = None) -> list[tuple[int, str, 
             )
         )
     }
-    found = sorted((year, id_, title) for id_, (year, title) in tables.items())
-    years = sorted({y for y, _, _ in found})
+    found = sorted(
+        (year, id_, title, updated) for id_, (year, title, updated) in tables.items()
+    )
+    years = sorted({y for y, *_ in found})
     if not years:
         raise RuntimeError(f"getStatsList に {STATS_CODE} の都道府県別の表が無い")
     check_latest_year(years[-1], LATEST_LAG_YEARS)
@@ -429,19 +446,52 @@ def fetch_table(app_id: str, stats_data_id: str, cache_dir: Path | None = None) 
     return data
 
 
-def build_crop(dest_dir: str, app_id: str, cache_dir: str | None = None) -> None:
-    """野菜の都道府県別の表を取得し、NDJSON に整形する。"""
+def stored_responses(pipeline) -> dict[str, tuple[str, str]]:
+    """前回までに置いた応答を {統計表 ID: (更新日, 応答の JSON)} で返す。"""
+    try:
+        with pipeline.sql_client() as client:
+            table = client.make_qualified_table_name(RESPONSES_TABLE)
+            rows = client.execute_sql(
+                f"SELECT stats_data_id, updated_date, data FROM {table}"
+            )
+    except DatabaseUndefinedRelation:
+        return {}
+    return {sid: (date, data) for sid, date, data in rows}
+
+
+def build_crop(
+    dest_dir: str,
+    app_id: str,
+    cache_dir: str | None = None,
+    pipeline=None,
+    refetch_all: bool = False,
+) -> None:
+    """野菜の都道府県別の表を取得し、NDJSON に整形する。
+
+    pipeline を渡すと、更新日が前回と同じ表は _source.crop_responses に置いた応答を
+    使い、取得した表の応答をそこへ書く。refetch_all なら置いた応答を使わない。
+    """
     dest = Path(dest_dir)
     dest.mkdir(parents=True, exist_ok=True)
     cache = Path(cache_dir) if cache_dir else None
     if cache:
         cache.mkdir(parents=True, exist_ok=True)
 
+    stored = {} if pipeline is None or refetch_all else stored_responses(pipeline)
+    fetched: dict[str, tuple[str | None, dict]] = {}
+
+    def response(id_: str, updated: str | None) -> dict:
+        date, data = stored.get(id_, (None, None))
+        if updated is not None and date == updated:
+            return json.loads(data)
+        fetched[id_] = (updated, fetch_table(app_id, id_, cache))
+        return fetched[id_][1]
+
     tables = catalog(app_id, cache)
-    years = {y for y, _, _ in tables}
+    years = {y for y, *_ in tables}
     rows: list[dict] = []
-    for year, id_, title in tables:
-        parsed = parse_table(fetch_table(app_id, id_, cache), year, title, years)
+    for year, id_, title, updated in tables:
+        parsed = parse_table(response(id_, updated), year, title, years)
         if not parsed:
             raise RuntimeError(
                 f"{year} {id_} {title}: 全国・都道府県の値が 1 つも読めない"
@@ -454,5 +504,25 @@ def build_crop(dest_dir: str, app_id: str, cache_dir: str | None = None) -> None
             f.write(json.dumps(record, ensure_ascii=False) + "\n")
     got = sorted({r["year"] for r in records})
     logger.info(
-        f"  vegetable_prefecture={len(records)} rows, {got[0]}-{got[-1]}年産, {len(tables)} tables"
+        f"  vegetable_prefecture={len(records)} rows, {got[0]}-{got[-1]}年産, "
+        f"{len(tables)} tables ({len(fetched)} fetched)"
     )
+
+    responses = [
+        {
+            "stats_data_id": id_,
+            "updated_date": updated,
+            "data": json.dumps(data, ensure_ascii=False),
+        }
+        for id_, (updated, data) in fetched.items()
+        if updated is not None
+    ]
+    if pipeline is not None and responses:
+        pipeline.run(
+            dlt.resource(
+                responses,
+                name=RESPONSES_TABLE,
+                write_disposition="merge",
+                primary_key="stats_data_id",
+            )
+        )

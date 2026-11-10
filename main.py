@@ -251,7 +251,10 @@ def main():
 
     # 21. 作物統計調査 野菜の都道府県別 (getStatsList + getStatsData)
     logger.info("21/26: crop (作物統計調査 野菜)")
-    build_crop("data/crop", app_id)
+    # 更新日が前回と同じ表は、前回置いた応答を使う。毎月 1 日は全表を取り直す
+    build_crop(
+        "data/crop", app_id, pipeline=pipeline, refetch_all=refetch_all(date.today())
+    )
 
     # 22. 建設工事受注動態統計調査 公共工事の発注機関別・施工都道府県別請負契約額
     logger.info("22/26: construction_orders (建設工事受注動態統計調査 公共工事)")
