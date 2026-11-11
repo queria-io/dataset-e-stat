@@ -17,7 +17,11 @@
 
 -- 元表が揃っていないカタログ (手元で取り込む前) では検査しない。0 行の表を検査して落とすと
 -- 他のテーブルの更新まで止まるため。
+-- depends_on: {{ ref('municipality_migration') }}
 {% if migration_od_sources_loaded() %}
+{#- 手元の load は対象のモデルだけをビルドするので、municipality_migration がカタログに無い。
+    そのときは 2) を飛ばし、毎日の Sync (全体のビルド) で検査する -#}
+{% set migration = load_relation(ref('municipality_migration')) if execute else none %}
 {% set tables = [
     ('municipality_migration_destination', 'origin', 'destination', 'outflow'),
     ('municipality_migration_origin', 'destination', 'origin', 'inflow'),
@@ -58,11 +62,16 @@ totals AS (
     SELECT '{{ model }}: 総数が municipality_migration の {{ measure }} と違う' AS failure,
         t.year, t.subj AS area, t.sex_code AS detail, t.movers AS got, m.{{ measure }} AS expected
     FROM t
-    LEFT JOIN {{ ref('municipality_migration') }} m
+{% if migration is not none %}
+    LEFT JOIN {{ migration }} m
         ON m.year = t.year AND m.area = t.subj AND m.sex_code = t.sex_code
         AND m.nationality_code = t.nationality_code
     WHERE t.code = '00005' AND t.age_code = '000'
         AND COALESCE(m.{{ measure }}, -1) <> t.movers
+{% else %}
+    CROSS JOIN (SELECT NULL::BIGINT AS {{ measure }}) m
+    WHERE FALSE
+{% endif %}
 ),
 
 -- 3) 表の主の地域
