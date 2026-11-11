@@ -20,8 +20,6 @@ keywords:
   - 医療
   - 市区町村
   - 都道府県
-published: true
-themes: [social_security_health]
 temporal_coverage: { start: "2008", end: "2024" }
 sources:
   - path: https://www.e-stat.go.jp/statistics/00450021
@@ -38,14 +36,14 @@ fields:
   - name: area_code
     title: 標準地域コード（5桁）
     description: "統計に用いる標準地域コード（5桁）。都道府県は 13000 のように末尾が 000。二次医療圏の行は NULL。市区町村はその年のコードで、合併で無くなった市町村のコードも入る（2024年に無いコードは2008年で94、2023年で7）。全国地方公共団体コード（6桁）とは別体系"
-    semantic: { role: entity, name: city }
+    annotations: { queria: { semantic: { role: entity, name: city } } }
   - name: area_name
     title: 地域名
     description: "地域の名称。政令指定都市は区ごとの行（中央区・北区など）で、市の行は無い。区名だけでは市が分からないので area_code で見分ける"
   - name: prefecture_code
     title: 都道府県コード（2桁）
     description: "都道府県コード（2桁）。どの粒度の行にも入る"
-    semantic: { role: entity, name: prefecture }
+    annotations: { queria: { semantic: { role: entity, name: prefecture } } }
   - name: medical_area_code
     title: 二次医療圏コード（4桁）
     description: "二次医療圏のコード（4桁、先頭2桁が都道府県）。二次医療圏と市区町村の行に入り、都道府県の行は NULL。市区町村の行にはその市区町村が属する圏が入る。圏の区切りとコードは医療計画の見直しで変わる（圏の数は2008年の348から2024年の330まで）ので、年をまたいで圏を突き合わせるときは名称と構成市区町村も確かめる"
@@ -121,3 +119,6 @@ fields:
   - name: dental_clinics_without_beds
     title: 無床の歯科診療所数
     description: "無床の歯科診療所数"
+annotations:
+  queria:
+    themes: [social_security_health]

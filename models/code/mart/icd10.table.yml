@@ -15,8 +15,6 @@ keywords:
   - 傷病名
   - 病名コード
   - 基本分類
-published: true
-themes: [social_security_health]
 primary_key: [revision, code]
 sources:
   - path: https://www.e-stat.go.jp/classifications/terms/40
@@ -39,3 +37,6 @@ fields:
   - name: chapter_code
     title: 章のコード
     description: その行が属する章のローマ数字。章の行では自分自身
+annotations:
+  queria:
+    themes: [social_security_health]

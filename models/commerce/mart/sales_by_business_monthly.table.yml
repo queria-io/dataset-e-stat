@@ -14,9 +14,6 @@ keywords:
 - 卸売
 - 小売
 - 月次
-published: true
-themes:
-- economy
 sources:
 - path: https://www.e-stat.go.jp/stat-search/files?toukei=00550030
 fields:
@@ -50,3 +47,7 @@ fields:
 - name: yoy_index
   title: 前年同月比
   description: 販売額の前年同月比。前年同月を100とした値（101.1 = 1.1%増）
+annotations:
+  queria:
+    themes:
+    - economy

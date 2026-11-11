@@ -11,9 +11,6 @@ logs/
 .user.yml
 package-lock.yml
 
-# DuckLake
-.queria/
-
 # Environment
 .env
 
@@ -26,3 +23,6 @@ data/
 
 
 dist/
+
+# fdl checkout の作業カタログ
+.fdl/

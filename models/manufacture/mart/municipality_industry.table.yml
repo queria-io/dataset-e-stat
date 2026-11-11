@@ -17,8 +17,6 @@ keywords:
   - 産業中分類
   - 市区町村
   - 都道府県
-published: true
-themes: [mining_manufacturing]
 sources:
   - path: https://www.e-stat.go.jp/statistics/00550010
 fields:
@@ -31,7 +29,7 @@ fields:
   - name: area
     title: 標準地域コード（5桁）
     description: 標準地域コード。都道府県は 13000 のように市区町村部が 000。census_municipality の area・code.municipality の area_code と同じ体系。全国の行は無い
-    semantic: { role: entity, name: city }
+    annotations: { queria: { semantic: { role: entity, name: city } } }
   - name: area_name
     title: 地域名
     description: 地域の名称。2012年までは政令指定都市の区が市名を含まず（中央区）、2013年以降は含む（札幌市中央区）。年をまたぐ集計は名称でなく area で束ねる
@@ -80,3 +78,6 @@ fields:
   - name: tangible_fixed_assets_10k_yen
     title: 有形固定資産年末現在高
     description: 有形固定資産年末現在高（従業者30人以上、万円）。2014年までの統計表にしかなく、2017年以降は NULL
+annotations:
+  queria:
+    themes: [mining_manufacturing]

@@ -11,8 +11,6 @@ keywords:
   - 消費者物価指数
   - 物価
   - CPI
-published: true
-themes: [economy]
 sources:
   - path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003427113
 fields:
@@ -49,3 +47,6 @@ fields:
   - name: value
     title: 統計値
     description: 統計値。tab=1 は2020年=100 とする指数、tab=2/3 は変化率（%）。元データが非数値だった場合は NULL
+annotations:
+  queria:
+    themes: [economy]

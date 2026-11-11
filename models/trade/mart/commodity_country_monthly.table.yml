@@ -17,9 +17,6 @@ keywords:
 - HS コード
 - 品目
 - 国別
-published: true
-themes:
-- economy
 sources:
 - path: https://www.e-stat.go.jp/stat-search/files?toukei=00350300
 fields:
@@ -71,3 +68,7 @@ fields:
 - name: release
   title: 公表の段階
   description: その行を取ったファイルの公表の段階（確定・確々報・確報・輸入9桁速報 など）。新しい年の値は確報や速報で、後で直ることがある
+annotations:
+  queria:
+    themes:
+    - economy

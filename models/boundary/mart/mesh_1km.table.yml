@@ -9,27 +9,28 @@ keywords:
   - 境界
   - GIS
   - 地域メッシュ統計
-published: true
-themes: [land_climate]
 sources:
   - path: https://www.e-stat.go.jp/gis/statmap-search?page=1&type=2&aggregateUnitForBoundary=S&coordsys=1&format=gml
 fields:
   - name: mesh_code
     title: メッシュコード
     description: 3次メッシュコード（8桁）。地域メッシュ統計の集計単位コードと同一体系
-    semantic: { role: entity, name: mesh }
+    annotations: { queria: { semantic: { role: entity, name: mesh } } }
   - name: mesh1_code
     title: 1次メッシュコード
     description: 上位区画である1次メッシュ（約80km四方）のコード（4桁）。配布単位でもある
-    semantic: { role: dimension }
+    annotations: { queria: { semantic: { role: dimension } } }
   - name: mesh2_code
     title: 2次メッシュ番号
     description: 1次メッシュ内の2次メッシュ（約10km四方）の位置（2桁）
-    semantic: { role: dimension }
+    annotations: { queria: { semantic: { role: dimension } } }
   - name: mesh3_code
     title: 3次メッシュ番号
     description: 2次メッシュ内の3次メッシュ（約1km四方）の位置（2桁）
-    semantic: { role: dimension }
+    annotations: { queria: { semantic: { role: dimension } } }
   - name: geometry
     title: メッシュポリゴン
     description: 'CRS: EPSG:4612'
+annotations:
+  queria:
+    themes: [land_climate]

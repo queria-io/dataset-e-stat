@@ -64,15 +64,44 @@ logging.config.dictConfig(
 SOURCE_SCHEMA = "_source"
 
 
-def create_pipeline(pipeline_name: str = "estat", preserve_insertion_order: bool = False):
-    """dlt パイプラインを queria の DuckLake (SQLite + R2) で構成する。
+def _storage_secret(data_url: str):
+    """build-fdl.sh が置いた DuckDB の永続 secret から、書き込み先の endpoint と region を読む。
 
-    queria run が注入する QUERIA_* 環境変数を使う:
-    - catalog: ローカル SQLite ライブカタログ (QUERIA_CATALOG_URL = sqlite:///...)
-    - storage: Parquet データの保存先 (QUERIA_DATA_URL、R2)
+    データファイルを公開ストレージ (data/) に直接書くとき、build-fdl.sh
+    (shared/scripts/storage_key.py) は鍵を値として渡さず、鍵を取り直す
+    AWS のプロファイルと、それを使う DuckDB の永続 secret を作る
+    (FDL_STORAGE_SECRET が名前)。dlt はその secret を読まずに自分の secret を
+    作るので、同じプロファイルを辿らせ、endpoint と region をそろえる。
     """
-    catalog_url = os.environ["QUERIA_CATALOG_URL"]
-    data_url = os.environ["QUERIA_DATA_URL"]
+    import duckdb
+
+    name = os.environ.get("FDL_STORAGE_SECRET")
+    if not name:
+        raise SystemExit(f"{data_url} に書く鍵がない。shared/scripts/build-fdl.sh から実行する")
+    con = duckdb.connect()
+    try:
+        con.execute("LOAD httpfs")
+        row = con.execute(
+            "SELECT secret_string FROM duckdb_secrets() WHERE name = ?", [name]
+        ).fetchone()
+    finally:
+        con.close()
+    if row is None:
+        raise SystemExit(f"DuckDB の secret {name} が無い")
+    fields = dict(part.split("=", 1) for part in row[0].split(";") if "=" in part)
+    use_ssl = fields.get("use_ssl", "true") != "false"
+    return f"{'https' if use_ssl else 'http'}://{fields['endpoint']}", fields.get("region", "auto")
+
+
+def create_pipeline(pipeline_name: str = "estat", preserve_insertion_order: bool = False):
+    """dlt パイプラインを fdl checkout の作業場 (SQLite のカタログ + データの置き場) で構成する。
+
+    shared/scripts/build-fdl.sh が渡す環境変数を使う:
+    - FDL_WORKING: 作業場のカタログ (SQLite) のパス
+    - FDL_DATA_PATH: 新しいデータファイルの置き場。手元のフォルダか、公開ストレージの data/ (s3://)
+    """
+    catalog_url = f"sqlite:///{os.environ['FDL_WORKING']}"
+    data_url = os.environ["FDL_DATA_PATH"]
 
     # DuckLake へのコミットを直列化し、スナップショット採番の競合を防ぐ
     # (SQLite カタログは単一ライター前提)。
@@ -83,16 +112,17 @@ def create_pipeline(pipeline_name: str = "estat", preserve_insertion_order: bool
         from dlt.common.configuration.specs import AwsCredentials
         from dlt.common.storages.configuration import FilesystemConfiguration
 
+        endpoint, region = _storage_secret(data_url)
         # 鍵は渡さない。dlt は既定チェーンから解決した認証情報を見つけると
         # DuckDB 側に PROVIDER credential_chain / REFRESH auto の secret を書くので、
-        # 15 分で切れる一時認証情報でも取り直される (値を渡すと凍結される)。
-        # チェーンが辿るプロファイルは queria run が AWS_CONFIG_FILE と
-        # AWS_PROFILE で指す。実測: secret の provider=credential_chain
+        # 数分で切れる鍵でも取り直される (値を渡すと凍結される)。
+        # チェーンが辿るのは storage_key.py が AWS_CONFIG_FILE に書いたプロファイル
+        os.environ.setdefault("AWS_PROFILE", "fdl_build")
         storage = FilesystemConfiguration(
             bucket_url=data_url,
             credentials=AwsCredentials(
-                endpoint_url=os.environ.get("QUERIA_S3_ENDPOINT"),
-                region_name=os.environ.get("QUERIA_S3_REGION", "auto"),
+                endpoint_url=endpoint,
+                region_name=region,
                 s3_url_style="path",
             ),
         )
@@ -122,6 +152,9 @@ def create_pipeline(pipeline_name: str = "estat", preserve_insertion_order: bool
     credentials.global_config = {
         "preserve_insertion_order": preserve_insertion_order,
         "temp_directory": str(spill_dir),
+        # dlt の ATTACH は DATA_INLINING_ROW_LIMIT を付けないので、小さい表が
+        # カタログの中に収まる。fdl commit はインライン化された行を断るので切る
+        "ducklake_default_data_inlining_row_limit": 0,
     }
     if preserve_insertion_order:
         # 挿入順の保持だけでは、並列の読み込みで行グループの順が入れ替わる (実測)。1 スレッドで入れる

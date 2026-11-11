@@ -17,8 +17,6 @@ keywords:
   - 世帯
   - 人口密度
   - 人口増減
-published: true
-themes: [population]
 temporal_coverage: { start: "2025", end: "2025" }
 sources:
   - path: https://www.e-stat.go.jp/statistics/00200521
@@ -26,7 +24,7 @@ fields:
   - name: area
     title: 標準地域コード（5桁）
     description: 標準地域コード。全国は 00000、都道府県は 13000 のように市区町村部が 000。census_municipality（令和2年）・code.municipality の area_code と同じ体系。全国地方公共団体コード（6桁）とは別体系
-    semantic: { role: entity, name: city }
+    annotations: { queria: { semantic: { role: entity, name: city } } }
   - name: area_name
     title: 地域名
     description: 地域の名称（全国／東京都／特別区部／千代田区／札幌市／札幌市中央区 など）。2000年市区町村の行は「（旧：戸井町）」のように括弧付きで入る
@@ -90,3 +88,6 @@ fields:
   - name: population_density
     title: 人口密度
     description: 1km2当たりの人口。原典の公表値で、分母は北方領土と竹島を除いた面積
+annotations:
+  queria:
+    themes: [population]

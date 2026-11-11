@@ -7,7 +7,7 @@ e_stat:
       database: e_stat
       schema: main
       threads: 1
-      # ビルドが公開ストレージを読むときの名乗り。queria run が
+      # ビルドが公開ストレージを読むときの名乗り。shared/scripts/build-fdl.sh が
       # queria-build として渡す。無いと data.queria.io の利用統計に
       # 自分のビルドが利用者として混ざる。
       # settings: ではなく config_options: — custom_user_agent は接続を開く
@@ -17,29 +17,18 @@ e_stat:
       extensions:
         - httpfs
         - ducklake
-        # credential_chain はこの拡張にある
-        - aws
         - spatial
-      # 認証情報を値として持たず、期限が切れたら取り直させる。一時認証情報は
-      # 15 分で切れるのに対しビルドはそれより長く走るので、値を渡す形にすると
-      # 途中で書けなくなる。process が実行するのは queria で、鍵はどこにも置かない
-      secrets:
-        - type: s3
-          provider: credential_chain
-          chain: process
-          refresh: auto
-          endpoint: "{{ env_var('QUERIA_S3_ENDPOINT_HOST', '') }}"
-          url_style: path
-          region: "{{ env_var('QUERIA_S3_REGION', 'auto') }}"
-          use_ssl: "{{ env_var('QUERIA_S3_USE_SSL', 'true') }}"
+        - sqlite
+      # fdl checkout が作った作業場のカタログ (SQLite) に書く。新しいデータファイルは
+      # FDL_DATA_PATH に書き、fdl commit が新しいバージョンにする (shared/scripts/build-fdl.sh)
       attach:
-        - path: "ducklake:{{ env_var('QUERIA_CATALOG_PATH', '') }}"
+        - path: "ducklake:{{ env_var('FDL_WORKING') }}"
           alias: e_stat
           is_ducklake: true
           options:
-            DATA_PATH: "{{ env_var('QUERIA_DATA_URL', '') }}"
+            DATA_PATH: "{{ env_var('FDL_DATA_PATH') }}"
             OVERRIDE_DATA_PATH: true
             META_TYPE: "'sqlite'"
             # 既定のままだと小さいテーブルがカタログの中に収まり parquet が
-            # 1 つも生成されない。データファイルの無いデータセットが公開されるので、常に切る
+            # 1 つも生成されない。fdl commit はインライン化された行を断るので、常に切る
             DATA_INLINING_ROW_LIMIT: 0

@@ -16,6 +16,10 @@ concurrency:
 
 jobs:
   sync:
+    # Queria への書き込みは GitHub Actions の OIDC で 1 時間のトークンを取って行う
+    permissions:
+      contents: read
+      id-token: write
     uses: queria-io/dataset-shared/.github/workflows/sync.yml@main
     with:
       dataset_name: e_stat

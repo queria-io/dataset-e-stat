@@ -121,8 +121,8 @@ def issue_body(name: str, group: dict, lines: list[str]) -> str:
             "",
             "1. local_tables.yml の updated_date（統計表ファイルのグループは catalog_modified_date と各表の updated_date）を新しい日付に直す",
             f"2. `uv run --env-file .env python load_local.py fetch {name}`",
-            "3. CI の Sync が走っていないときに `uv lock --upgrade-package queria && uv sync` のあと "
-            f"`QUERIA_TOKEN=... uv run --env-file .env queria sync -- uv run --env-file .env python load_local.py load {name}`",
+            "3. CI の Sync が走っていないときに `uv lock --upgrade-package fdl-cli && uv sync` のあと "
+            f"`FDL_TOKEN=... scripts/build.sh --env-file .env python load_local.py load {name}`",
             "4. 1 の変更を PR にする",
         ]
     )

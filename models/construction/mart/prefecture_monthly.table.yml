@@ -14,15 +14,13 @@ keywords:
   - 建設工事
   - 都道府県
   - 月次
-published: true
-themes: [housing_land]
 sources:
   - path: https://www.e-stat.go.jp/dbview?sid=0003458459
 fields:
   - name: prefecture_code
     title: 都道府県コード
     description: "都道府県コード（2桁）。01=北海道〜47=沖縄県"
-    semantic: { role: entity, name: prefecture }
+    annotations: { queria: { semantic: { role: entity, name: prefecture } } }
   - name: area
     title: 地域コード
     description: "都道府県の地域コード（5桁、下3桁が000）。統計に用いる標準地域コードと同じ体系"
@@ -50,4 +48,7 @@ fields:
   - name: output
     title: 出来高
     description: "その月の建設工事出来高（億円）。億円未満を丸めた値で、都道府県を足すと全国の値と丸めの分だけずれる。最小107、最大7,433"
-    semantic: { role: measure, agg: sum }
+    annotations: { queria: { semantic: { role: measure, agg: sum } } }
+annotations:
+  queria:
+    themes: [housing_land]

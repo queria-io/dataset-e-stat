@@ -16,8 +16,6 @@ keywords:
 - 賞与
 - 給与階級
 - 業種
-published: true
-themes: [labour]
 sources:
 - path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004009620
 fields:
@@ -75,3 +73,6 @@ fields:
 - name: pay_avg
   title: 平均給与
   description: 給与の1人あたり平均（千円）。給料・手当と賞与の和。国税庁が「平均給与」として公表する値
+annotations:
+  queria:
+    themes: [labour]

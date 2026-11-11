@@ -9,7 +9,6 @@ description: 'e-Stat API getMetaInfo から取得したメタ情報。
 keywords:
   - e-stat
   - メタデータ
-published: false
 sources:
   - path: https://www.e-stat.go.jp/api/api-info/e-stat-manual3-0#api_2_5
 fields:
@@ -43,3 +42,6 @@ fields:
   - name: add_inf
     title: 追加情報
     description: e-Stat の追加情報欄。設定されていないことが多く、その場合は空
+annotations:
+  queria:
+    published: false

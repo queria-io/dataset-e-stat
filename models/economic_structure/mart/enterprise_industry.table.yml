@@ -18,9 +18,6 @@ keywords:
 - 費用
 - 給与総額
 - 産業小分類
-published: true
-themes:
-- economy
 sources:
 - path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003414933
 - path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003433753
@@ -59,3 +56,7 @@ fields:
 - name: value
   title: 値
   description: 値。原典の「-」（該当なし）と「x」（秘匿）はどちらも NULL
+annotations:
+  queria:
+    themes:
+    - economy

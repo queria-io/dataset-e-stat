@@ -14,8 +14,6 @@ keywords:
   - e-stat
   - 社会・人口統計体系
   - 都道府県
-published: true
-themes: [land_climate]
 sources:
   - path: https://www.e-stat.go.jp/statistics/00200502
 fields:
@@ -30,7 +28,7 @@ fields:
   - name: area
     title: 地域コード
     description: 都道府県の標準地域コード（5桁、末尾3桁は 000）。全国計 00000 の行を含むため、area を絞らずに合計すると二重計上になる。code.municipality の area_code と同体系
-    semantic: { role: entity, name: prefecture }
+    annotations: { queria: { semantic: { role: entity, name: prefecture } } }
   - name: area_name
     title: 地域名
     description: 地域名。都道府県名、または全国計の「全国」
@@ -46,3 +44,6 @@ fields:
   - name: value
     title: 統計値
     description: 統計値。単位は unit 列を参照。元データが「-」「X」などの非数値だった場合は NULL
+annotations:
+  queria:
+    themes: [land_climate]

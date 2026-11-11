@@ -17,8 +17,6 @@ keywords:
   - 市区町村
   - 都道府県
   - 昼間人口
-published: true
-themes: [population]
 temporal_coverage: { start: "2020", end: "2020" }
 sources:
   - path: https://www.e-stat.go.jp/statistics/00200521
@@ -26,7 +24,7 @@ fields:
   - name: area
     title: 常住地の標準地域コード（5桁）
     description: 常住地（住んでいる場所）の標準地域コード。全国は 00000、都道府県は 13000 のように市区町村部が 000。census_municipality の area と同じ体系で、そちらの部分集合（2000年市区町村の再掲を除いた1,965地域）
-    semantic: { role: entity, name: city }
+    annotations: { queria: { semantic: { role: entity, name: city } } }
   - name: area_name
     title: 常住地名
     description: 常住地の名称（全国／東京都／特別区部／千代田区／札幌市／札幌市中央区 など）
@@ -57,3 +55,6 @@ fields:
   - name: value
     title: 通勤者・通学者数
     description: 通勤者・通学者数（人）。2020年10月1日現在。自宅外で従業・通学する人が対象で、自宅で従業する人と従業も通学もしていない人は含まない。原典が「-」の組み合わせは NULL で、294,750行のうち175,672行。その常住地からその従業地・通学地へ通う人がいない（0人）ことを表す
+annotations:
+  queria:
+    themes: [population]

@@ -14,9 +14,6 @@ keywords:
 - BSI
 - 景況判断
 - 景気
-published: true
-themes:
-- economy
 sources:
 - path: https://www.e-stat.go.jp/dbview?sid=0003325983
 - path: https://www.e-stat.go.jp/dbview?sid=0003326004
@@ -61,3 +58,7 @@ fields:
 - name: value
   title: BSI
   description: BSI（%ポイント）。前期と比べて「上昇」と答えた企業の割合から「下降」の割合を引いた値。従業員数判断は期末の水準について「不足気味」-「過剰気味」、設備判断は「不足」-「過大」
+annotations:
+  queria:
+    themes:
+    - economy

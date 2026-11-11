@@ -11,8 +11,6 @@ keywords:
   - 境界
   - GIS
   - 小地域
-published: true
-themes: [land_climate]
 temporal_coverage: { start: "2020", end: "2020" }
 sources:
   - path: https://www.e-stat.go.jp/gis/statmap-search?page=1&type=2&aggregateUnitForBoundary=A&toukeiCode=00200521&toukeiYear=2020&serveyId=A002005212020&coordsys=1&format=gml&datum=2011
@@ -20,47 +18,47 @@ fields:
   - name: key_code
     title: KEY_CODE
     description: 図形と集計データのリンクコード（PREF + KEYCODE2）。町丁・字等が9桁、その内訳区画が11桁で、census スキーマ各表の area と同一体系。key_code = area で集計値と結合する（census 側にある5桁の市区町村行には対応する境界が無い）
-    semantic: { role: entity, name: small_area }
+    annotations: { queria: { semantic: { role: entity, name: small_area } } }
   - name: prefecture_code
     title: 都道府県番号
     description: 都道府県コード（2桁）。key_code の先頭2桁と同じ
-    semantic: { role: entity, name: prefecture }
+    annotations: { queria: { semantic: { role: entity, name: prefecture } } }
   - name: prefecture_name
     title: 都道府県名
     description: 都道府県名
-    semantic: { role: dimension }
+    annotations: { queria: { semantic: { role: dimension } } }
   - name: city_code
     title: 市区町村番号
     description: 市区町村番号（3桁）。単独では一意にならず、prefecture_code と連結した5桁が標準地域コードになる（01 + 101 = 01101 札幌市中央区）
-    semantic: { role: dimension }
+    annotations: { queria: { semantic: { role: dimension } } }
   - name: city_name
     title: 市区町村名
     description: 市区町村名。政令指定都市は行政区名まで含む
-    semantic: { role: dimension }
+    annotations: { queria: { semantic: { role: dimension } } }
   - name: area_name
     title: 町丁・字等名称
     description: 町丁・字等の名称。市区町村名は含まない
-    semantic: { role: dimension }
+    annotations: { queria: { semantic: { role: dimension } } }
   - name: kigo_e
     title: 特殊記号E
     description: 町丁・字等の重複フラグ。同一市区町村内に同一の町丁・字等番号を持つ境界が複数存在する場合、境界ごとの基本単位区（調査区）人口が多い順にE1から付与。人口が同じ場合は面積の広い順。島と陸地がある場合は陸地を優先。本モデルではE2以降を除外済み
-    semantic: { role: dimension }
+    annotations: { queria: { semantic: { role: dimension } } }
   - name: kigo_d
     title: 特殊記号D
     description: D=飛び地、D1=抜け地（飛び地）
-    semantic: { role: dimension }
+    annotations: { queria: { semantic: { role: dimension } } }
   - name: kigo_i
     title: 特殊記号I
     description: I=島
-    semantic: { role: dimension }
+    annotations: { queria: { semantic: { role: dimension } } }
   - name: jinko
     title: 人口
     description: 当該町丁・字等の人口。元データではKIGO_E=En(n≧2)の場合は0
-    semantic: { role: measure, agg: sum }
+    annotations: { queria: { semantic: { role: measure, agg: sum } } }
   - name: setai
     title: 世帯数
     description: 当該町丁・字等の世帯数。元データではKIGO_E=En(n≧2)の場合は0
-    semantic: { role: measure, agg: sum }
+    annotations: { queria: { semantic: { role: measure, agg: sum } } }
   - name: x_code
     title: 図形中心点X座標
     description: 10進経度
@@ -70,7 +68,10 @@ fields:
   - name: area_m2
     title: 面積（㎡）
     description: 図郭による算出値。公式面積とは一致しない
-    semantic: { role: measure, agg: sum }
+    annotations: { queria: { semantic: { role: measure, agg: sum } } }
   - name: geometry
     title: 境界ポリゴン
     description: 'CRS: EPSG:4612 (JGD2011)'
+annotations:
+  queria:
+    themes: [land_climate]

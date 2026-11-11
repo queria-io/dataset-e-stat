@@ -19,8 +19,6 @@ keywords:
   - 保険者
   - 広域連合
   - 市区町村
-published: true
-themes: [social_security_health]
 temporal_coverage: { start: "2001", end: "2024" }
 sources:
   - path: https://www.e-stat.go.jp/stat-search/files?toukei=00450351
@@ -31,7 +29,7 @@ fields:
   - name: prefecture_code
     title: 都道府県コード
     description: "都道府県コード（2桁）。全国の行は NULL"
-    semantic: { role: entity, name: prefecture }
+    annotations: { queria: { semantic: { role: entity, name: prefecture } } }
   - name: prefecture_name
     title: 都道府県名
     description: "都道府県名。全国の行は「全国」"
@@ -44,7 +42,7 @@ fields:
   - name: area_code
     title: 地域コード
     description: "市区町村が単独で保険者の行の、統計に用いる標準地域コード（5桁）。現行の code.municipality に名前で当てたもの。広域連合・全国の行と、合併で無くなった市町村は NULL"
-    semantic: { role: entity, name: city }
+    annotations: { queria: { semantic: { role: entity, name: city } } }
   - name: insured_category
     title: 被保険者の区分
     description: "総数・第1号被保険者（65歳以上）・第2号被保険者（40〜64歳）。総数 = 第1号 + 第2号"
@@ -57,3 +55,6 @@ fields:
   - name: value
     title: 人数
     description: "認定者数（人）。原典の「-」は0。2013年度の長野県平谷村に負の値がある"
+annotations:
+  queria:
+    themes: [social_security_health]

@@ -9,7 +9,6 @@ description: 'e-Stat API getStatsList から取得した統計表情報。
 keywords:
   - e-stat
   - メタデータ
-published: false
 sources:
   - path: https://www.e-stat.go.jp/stat-search/database
 fields:
@@ -88,3 +87,6 @@ fields:
   - name: overall_total_number
     title: 総件数
     description: 当該統計表の総データ件数。e-Stat API から1回で取り切れるかの目安になる
+annotations:
+  queria:
+    published: false

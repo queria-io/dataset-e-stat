@@ -15,8 +15,6 @@ keywords:
 - 非正規雇用
 - 雇用形態
 - 労働
-published: true
-themes: [labour]
 sources:
 - path: https://www.e-stat.go.jp/dbview?sid=0003222786
 - path: https://www.e-stat.go.jp/dbview?sid=0004008431
@@ -27,7 +25,7 @@ fields:
 - name: area
   title: 地域コード
   description: 地域コード（5桁）。00000=全国、XX000=都道府県、XX001=都道府県市部（2017年のみ。00001 は全国市部）、それ以外は市。市のコードは統計に用いる標準地域コードで、東京は 13100 特別区部の1行
-  semantic: { role: entity, name: city }
+  annotations: { queria: { semantic: { role: entity, name: city } } }
 - name: area_name
   title: 地域名
   description: area に対応する地域名（全国、北海道、北海道市部、札幌市 など）
@@ -37,7 +35,7 @@ fields:
 - name: prefecture_code
   title: 都道府県コード
   description: area の先頭2桁。全国と全国市部は NULL
-  semantic: { role: entity, name: prefecture }
+  annotations: { queria: { semantic: { role: entity, name: prefecture } } }
 - name: sex_code
   title: 男女コード
   description: 男女コード。0=総数、1=男、2=女。総数と内訳が同じ列にあるので、絞らずに集計すると二重に数える
@@ -80,3 +78,6 @@ fields:
 - name: value
   title: 人数
   description: 人数（人）。百人単位に丸めた推定値。原典で「-」（該当数値なし）のセルは NULL で、市・在学者・細かい区分に多い
+annotations:
+  queria:
+    themes: [labour]

@@ -1,4 +1,6 @@
-spec_version: "0.1"
+# この dataset.yml は fdl commit が読む（FDL の dataset.json を YAML で書いたもの）。
+# 表の説明は models/ の *.table.yml に書く。表と列の型・NULL・行数は fdl commit がカタログから埋める。
+# Queria だけの項目（テーマ・カバー・列の意味）は annotations.queria に書く。
 name: e_stat
 title: e-Stat 統計データ
 description: |-
@@ -147,8 +149,6 @@ keywords:
   - 商店街
 homepage: https://github.com/queria-io/dataset-e-stat
 language: ja
-themes: [population, economy, labour, social_security_health, education_culture, land_climate, government_finance, housing_land, transport_tourism, justice_safety_environment, agriculture, mining_manufacturing, energy_water]
-
 licenses:
   - JP-GOV-STD-2.0
 
@@ -245,8 +245,6 @@ contributors:
 temporal_coverage: { start: "1970", end: null }
 spatial_coverage: [JP]
 update_frequency: daily
-cover: 📊
-
 schemas:
   - name: main
     title: e-Stat 統計データ
@@ -326,3 +324,8 @@ schemas:
     title: 全国家計構造調査
   - name: vital_statistics
     title: 人口動態調査
+
+annotations:
+  queria:
+    themes: [population, economy, labour, social_security_health, education_culture, land_climate, government_finance, housing_land, transport_tourism, justice_safety_environment, agriculture, mining_manufacturing, energy_water]
+    cover: 📊

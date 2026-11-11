@@ -16,8 +16,6 @@ keywords:
   - 人口
   - 年齢
   - 高齢化
-published: true
-themes: [population]
 temporal_coverage: { start: "2025", end: "2025" }
 sources:
   - path: https://www.e-stat.go.jp/statistics/00200521
@@ -25,7 +23,7 @@ fields:
   - name: area
     title: 標準地域コード（5桁）
     description: 標準地域コード。census_municipality_2025 の area と同じ体系。全国地方公共団体コード（6桁）とは別体系
-    semantic: { role: entity, name: city }
+    annotations: { queria: { semantic: { role: entity, name: city } } }
   - name: area_name
     title: 地域名
     description: 地域の名称。2000年市区町村の行は「（旧：戸井町）」のように括弧付きで入る
@@ -65,3 +63,6 @@ fields:
   - name: population_japanese_female
     title: 日本人人口（女）
     description: うち日本人の女の人口（人）
+annotations:
+  queria:
+    themes: [population]

@@ -7,7 +7,7 @@ load_local_mesh.py と同じく取得と公開を分ける。取得をカタロ�
 sync の中はファイルのロードと対象の dbt だけで数分になり、CI の Sync と重なりにくい。
 
     uv run --env-file .env python load_local.py fetch census_2025   # 取得 (data/local/ に保存)
-    uv run queria sync -- uv run --env-file .env python load_local.py load census_2025
+    FDL_TOKEN=... scripts/build.sh --env-file .env python load_local.py load census_2025
 
 fetch は表ごとに Parquet を書き、書き終えた表は次から飛ばす。取得した表の e-Stat の
 更新日が local_tables.yml の updated_date と食い違うと止まる (見張りの基準がずれるため)。
