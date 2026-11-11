@@ -47,6 +47,7 @@
 | `business_outlook` | 法人企業景気予測調査 | [business-outlook.md](docs/business-outlook.md) |
 | `building_starts` | 建築着工統計調査 | [building-starts.md](docs/building-starts.md) |
 | `commerce` | 商業動態統計調査 | [commerce.md](docs/commerce.md) |
+| `job_placement` | 一般職業紹介状況（職業安定業務統計） | [job-placement.md](docs/job-placement.md) |
 | `construction` | 建設総合統計・建設工事受注動態統計調査 | [construction.md](docs/construction.md) |
 | `rail_transport` | 鉄道輸送統計調査 | [rail-transport.md](docs/rail-transport.md) |
 | `port` | 港湾調査 | [port.md](docs/port.md) |

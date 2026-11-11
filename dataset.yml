@@ -308,6 +308,8 @@ schemas:
     title: 建築着工統計調査
   - name: commerce
     title: 商業動態統計調査
+  - name: job_placement
+    title: 一般職業紹介状況（職業安定業務統計）
   - name: construction
     title: 建設総合統計・建設工事受注動態統計調査
   - name: rail_transport
