@@ -8,11 +8,15 @@
 -- 1) 相手の地域の階層が足し上がる。都道府県 + その他の県 = 総数、市区町村 + その他の
 --    市町村 = 都道府県、区 + その他の区 = 政令指定都市・東京都特別区部。年齢・男女の
 --    区分ごとに成り立つ (2024年の転出先別で1のずれも無い、実測)。
+--    年の途中で市区町村の廃置分合や政令指定都市への移行があると、内訳の和が上位より
+--    少なくなる。2012年の熊本市 (4月に区を設置。1〜3月の移動は区に入らない) と、
+--    2014年の栃木市 (4月に岩舟町を編入。編入前の岩舟町への移動は、自市への行が無いので
+--    県の内訳に入らない) がこれに当たる。そのため内訳の和が上位を超えるときだけ落とす。
 -- 2) 相手の地域の総数が municipality_migration の転出者数 (転出先別) または転入者数
 --    (転入元別) と一致する (2017・2018・2024年の5地域で実測)。向きを取り違えると、
 --    転出者数と転入者数が入れ替わってここで落ちる。
 -- 3) 表の主の地域が毎年そろう。都道府県47と、区のある政令指定都市・東京都特別区部の
---    区の和が市に一致する。
+--    区の和が市を超えない。1) と同じ理由で、区を設置した年は区の和が市より少ない。
 -- 4) 粒度がどの行にも付く。原典が名称や level を変えると NULL になる。
 
 -- 元表が揃っていないカタログ (手元で取り込む前) では検査しない。0 行の表を検査して落とすと
@@ -49,12 +53,12 @@ children AS (
 ),
 
 hierarchy AS (
-    SELECT '{{ model }}: 相手の地域の内訳が上位に足し上がらない' AS failure,
+    SELECT '{{ model }}: 相手の地域の内訳の和が上位を超える' AS failure,
         c.year, c.subj AS area, c.up AS detail, c.s AS got, p.movers AS expected
     FROM children c
     LEFT JOIN t p ON p.year = c.year AND p.subj = c.subj AND p.sex_code = c.sex_code
         AND p.age_code = c.age_code AND p.code = c.up
-    WHERE COALESCE(p.movers, -1) <> c.s
+    WHERE COALESCE(p.movers, -1) < c.s
 ),
 
 -- 2) 総数が municipality_migration と一致する
@@ -98,12 +102,12 @@ ward_sum AS (
 ),
 
 wards AS (
-    SELECT '{{ model }}: 表の主の区の和が市と違う' AS failure,
+    SELECT '{{ model }}: 表の主の区の和が市を超える' AS failure,
         w.year, w.city AS area, w.age_code AS detail, w.s AS got, c.movers AS expected
     FROM ward_sum w
     LEFT JOIN t c ON c.year = w.year AND c.subj = w.city AND c.code = '00005'
         AND c.sex_code = w.sex_code AND c.age_code = w.age_code
-    WHERE COALESCE(c.movers, -1) <> w.s
+    WHERE COALESCE(c.movers, -1) < w.s
 ),
 
 -- 4) 粒度
