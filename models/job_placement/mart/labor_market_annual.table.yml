@@ -1,0 +1,64 @@
+schema: job_placement
+name: labor_market_annual
+title: 都道府県別の求人数・求職者数・求人倍率（年・年度）
+description: |-
+  厚生労働省 一般職業紹介状況（職業安定業務統計）の、ハローワークの求人数・求職者数・求人倍率の年平均と年度平均を、都道府県ごとに持つテーブルです。受理地別は1963年から、就業地別は2006年から収録しています。
+
+  - 求人数・求職者数は月平均の値です。1年間の合計ではありません
+  - 新規学卒者を除き、パートタイムを含む一般の値です
+  - 年（1〜12月）と年度（4〜翌3月）、受理地別と就業地別が同じ列に並ぶので、period_type と basis で絞ってから使ってください
+keywords:
+- e-stat
+- 一般職業紹介状況
+- 職業安定業務統計
+- 厚生労働省
+- ハローワーク
+- 有効求人倍率
+- 新規求人倍率
+- 求人数
+- 求職者数
+- 都道府県
+sources:
+- path: https://www.e-stat.go.jp/stat-search/files?toukei=00450222
+fields:
+- name: period_type
+  title: 期間の種類
+  description: calendar_year=年（1〜12月）、fiscal_year=年度（4月〜翌年3月）
+- name: year
+  title: 年・年度
+  description: 年または年度（西暦4桁）。年度は始まる年（2025 = 2025年4月〜2026年3月）
+- name: basis
+  title: 集計地
+  description: 受理地 または 就業地。受理地は求人・求職を受け付けたハローワークの所在地、就業地は求人の働く場所。就業地別に全国の行は無く、求職者の数（new_applications・active_applicants）は NULL
+- name: area
+  title: 地域コード
+  description: 地域コード（5桁）。00000=全国、XX000=都道府県。1972年までの全国は沖縄県を含まない
+- name: area_name
+  title: 地域名
+  description: 地域名（全国、北海道、青森県 など）
+- name: prefecture_code
+  title: 都道府県コード
+  description: 都道府県コード（2桁）。01=北海道〜47=沖縄県。全国は NULL
+  annotations: { queria: { semantic: { role: entity, name: prefecture } } }
+- name: new_job_openings
+  title: 新規求人数
+  description: 新規求人数の月平均（人）
+- name: new_applications
+  title: 新規求職申込件数
+  description: 新規求職申込件数の月平均（件）。就業地別は NULL
+- name: active_job_openings
+  title: 有効求人数
+  description: 有効求人数の月平均（人）
+- name: active_applicants
+  title: 有効求職者数
+  description: 有効求職者数の月平均（人）。就業地別は NULL
+- name: new_openings_ratio
+  title: 新規求人倍率
+  description: 新規求人数 ÷ 新規求職申込件数（倍）。実数（原数値）
+- name: active_openings_ratio
+  title: 有効求人倍率
+  description: 有効求人数 ÷ 有効求職者数（倍）。実数（原数値）
+annotations:
+  queria:
+    themes:
+    - labour
