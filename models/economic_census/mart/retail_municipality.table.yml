@@ -17,8 +17,6 @@ keywords:
   - 従業者数
   - 市区町村
   - 都道府県
-published: true
-themes: [economy]
 temporal_coverage: { start: "2020", end: "2021" }
 sources:
   - path: https://www.e-stat.go.jp/statistics/00200553
@@ -26,7 +24,7 @@ fields:
   - name: area
     title: 標準地域コード（5桁）
     description: 標準地域コード。全国は 00000、都道府県は 13000 のように市区町村部が 000。establishment_industry・census_municipality の area・code.municipality の area_code と同じ体系
-    semantic: { role: entity, name: city }
+    annotations: { queria: { semantic: { role: entity, name: city } } }
   - name: area_name
     title: 地域名
     description: 地域の名称（全国／東京都／特別区部／千代田区／札幌市／札幌市中央区 など）
@@ -60,3 +58,6 @@ fields:
   - name: floor_area_m2
     title: 売場面積
     description: 売場面積（m2）。2021年6月1日現在。秘匿された区分は NULL、事業所が無い区分は 0。無店舗小売業（61）は常に NULL
+annotations:
+  queria:
+    themes: [economy]

@@ -17,9 +17,6 @@ keywords:
 - 設備投資
 - 財務
 - 付加価値
-published: true
-themes:
-- economy
 sources:
 - path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003060791
 - path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003061945
@@ -70,3 +67,7 @@ fields:
 - name: value
   title: 統計値
   description: 統計値。単位は unit。計算結果が値を持たない項目（「*」）は NULL
+annotations:
+  queria:
+    themes:
+    - economy

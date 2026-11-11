@@ -20,8 +20,6 @@ keywords:
   - 市区町村
   - 都道府県
   - 外国人住民
-published: true
-themes: [population]
 sources:
   - path: https://www.soumu.go.jp/main_sosiki/jichi_gyousei/daityo/jinkou_jinkoudoutai-setaisuu.html
 fields:
@@ -40,11 +38,11 @@ fields:
   - name: area_code
     title: 標準地域コード（5桁）
     description: 標準地域コード（5桁）。lg_code の先頭5桁で、census / boundary / code.municipality と同じ体系。政令市とその区、郡とその町村を数え分けるには、このコードで code.municipality を引いて area_kind / is_municipality を見る。全国計の行と、コードを持たない行では NULL
-    semantic: { role: entity, name: city }
+    annotations: { queria: { semantic: { role: entity, name: city } } }
   - name: lg_code
     title: 全国地方公共団体コード（6桁）
     description: 全国地方公共団体コード（6桁・チェックデジット付き）。元データの団体コードそのまま。全国計の行は NULL。東京都の島しょ集計行と2009年の北方領土6村もコードを持たず NULL になる
-    semantic: { role: entity, name: city }
+    annotations: { queria: { semantic: { role: entity, name: city } } }
   - name: pref_name
     title: 都道府県名
     description: 都道府県名。全国計の行では NULL
@@ -108,3 +106,6 @@ fields:
   - name: net_change
     title: 増減数（人）
     description: 増減数（人）。住民票記載数の計 - 住民票消除数の計
+annotations:
+  queria:
+    themes: [population]

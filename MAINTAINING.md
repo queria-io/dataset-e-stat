@@ -35,8 +35,8 @@ Check updates を実行し、`days` で探す日数を、`dry_run` で issue を
 # 1. e-Stat から取得して data/local/<グループ>/ に保存する
 uv run --env-file .env python load_local.py fetch census_2025
 # 2. CI の Sync が走っていないときに、ロードして対象のモデルだけビルドし、公開する
-uv lock --upgrade-package queria && uv sync
-QUERIA_TOKEN=... uv run --env-file .env queria sync -- uv run --env-file .env python load_local.py load census_2025
+uv lock --upgrade-package fdl-cli && uv sync
+FDL_TOKEN=... scripts/build.sh --env-file .env python load_local.py load census_2025
 ```
 
 `local_tables.yml` の `updated_date` は取り込んだときの e-Stat の更新日です。毎週

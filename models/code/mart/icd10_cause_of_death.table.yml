@@ -12,8 +12,6 @@ keywords:
   - 死因分類
   - 死因コード
   - 人口動態統計
-published: true
-themes: [social_security_health]
 primary_key: [revision, code]
 sources:
   - path: https://www.e-stat.go.jp/classifications/terms/60
@@ -33,3 +31,6 @@ fields:
   - name: icd10_codes
     title: 含む基本分類のコード
     description: この項目に含まれる基本分類（code.icd10）のコードの範囲の原文（A00-B99 など）。複数の範囲はカンマで区切って並び、「の残り」のような書き方もある
+annotations:
+  queria:
+    themes: [social_security_health]

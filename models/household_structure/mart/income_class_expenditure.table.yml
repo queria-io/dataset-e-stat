@@ -14,15 +14,13 @@ keywords:
   - 年収
   - 年間収入階級
   - 10大費目
-published: true
-themes: [economy]
 sources:
   - path: https://www.e-stat.go.jp/dbview?sid=0003424577
 fields:
   - name: area
     title: 地域コード（5桁）
     description: 標準地域コード。全国 00000 だけ
-    semantic: { role: entity, name: city }
+    annotations: { queria: { semantic: { role: entity, name: city } } }
   - name: area_name
     title: 地域名
   - name: year
@@ -74,3 +72,6 @@ fields:
   - name: head_age
     title: 世帯主の年齢（歳）
     description: 世帯主の平均年齢
+annotations:
+  queria:
+    themes: [economy]

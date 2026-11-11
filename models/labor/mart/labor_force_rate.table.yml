@@ -13,8 +13,6 @@ keywords:
 - 就業率
 - 労働
 - 雇用
-published: true
-themes: [labour]
 sources:
 - path: https://www.e-stat.go.jp/dbview?sid=0002060004
 - path: https://www.e-stat.go.jp/dbview?sid=0003009576
@@ -73,3 +71,6 @@ fields:
 - name: value
   title: 統計値
   description: 統計値（％）。元データが非数値だった場合は NULL
+annotations:
+  queria:
+    themes: [labour]

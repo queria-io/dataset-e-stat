@@ -19,8 +19,6 @@ keywords:
   - 高齢者
   - 定員
   - 市区町村
-published: true
-themes: [social_security_health]
 sources:
   - path: https://www.e-stat.go.jp/stat-search/files?toukei=00450042
 fields:
@@ -30,7 +28,7 @@ fields:
   - name: area_code
     title: 地域コード
     description: "統計に用いる標準地域コード（5桁）。調査時点のコードなので、その後の合併で消えたコードが混ざる（実測: 2001〜2024年調査に出る3,785コードのうち、現行の code.municipality に残るのは1,960）"
-    semantic: { role: entity, name: city }
+    annotations: { queria: { semantic: { role: entity, name: city } } }
   - name: area_name
     title: 地域名
     description: "地域の名称。原典の行見出しからコードを切り出した残り"
@@ -40,7 +38,7 @@ fields:
   - name: prefecture_code
     title: 都道府県コード
     description: "都道府県コード（2桁）。全国の行は NULL"
-    semantic: { role: entity, name: prefecture }
+    annotations: { queria: { semantic: { role: entity, name: prefecture } } }
   - name: prefecture_name
     title: 都道府県名
     description: "都道府県名。code.municipality の pref_name。全国の行は NULL"
@@ -56,3 +54,6 @@ fields:
   - name: value
     title: 値
     description: "指標の値。その年その市区町村にその種類の施設が無い行は NULL。常勤換算従事者数は原典が1の位で丸めた値なので、足し上げても上位の行と一致しない（実測: 全国との最大差は市区町村の合計で118人、都道府県の合計で7人）"
+annotations:
+  queria:
+    themes: [social_security_health]

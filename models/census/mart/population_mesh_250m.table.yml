@@ -15,8 +15,6 @@ keywords:
   - 年齢
   - 世帯
   - GIS
-published: true
-themes: [population]
 temporal_coverage: { start: "2020", end: "2020" }
 sources:
   - path: https://www.e-stat.go.jp/
@@ -24,15 +22,15 @@ fields:
   - name: mesh_code
     title: 250mメッシュコード（10桁）
     description: 4分の1地域メッシュのコード（10桁）。上8桁が3次メッシュ（1km）、9桁目が2分の1地域メッシュ（500m）、10桁目が4分の1地域メッシュ（250m）の位置
-    semantic: { role: entity, name: mesh }
+    annotations: { queria: { semantic: { role: entity, name: mesh } } }
   - name: mesh_1km_code
     title: 3次メッシュコード（8桁）
     description: mesh_code の上8桁。境界データ mesh_1km の mesh_code と結合できる
-    semantic: { role: entity, name: mesh }
+    annotations: { queria: { semantic: { role: entity, name: mesh } } }
   - name: mesh1_code
     title: 1次メッシュコード（4桁）
     description: mesh_code の上4桁。統計表の配布単位で、約80km四方
-    semantic: { role: dimension }
+    annotations: { queria: { semantic: { role: dimension } } }
   - name: cat01
     title: 区分コード
     description: 年齢別人口・世帯の種類別世帯数等の区分コード（4桁）。0010 人口総数、0040 0〜14歳、0100 15〜64歳、0130 18歳以上、0160 20歳以上、0190 65歳以上、0220 75歳以上、0310 外国人、0340 世帯総数など50区分。総数と内訳が同じ列に並ぶので、cat01 を絞らずに value を合計すると重複する
@@ -51,3 +49,6 @@ fields:
   - name: value
     title: 値
     description: 人口（人）または世帯数（世帯）。人口総数と世帯総数はすべての行を合計すると全国・地域の総数に一致する
+annotations:
+  queria:
+    themes: [population]

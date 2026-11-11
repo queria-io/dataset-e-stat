@@ -41,13 +41,13 @@ CI は前回ロードした分を参照するビューを作り直すだけで�
 # 1. e-Stat から取得して data/mesh/ に保存する。2〜3 時間かかる。止まっても続きから回せる
 uv run --env-file .env python load_local_mesh.py fetch
 # 2. 保存した分をロードし、250m のモデルだけビルドして公開する。数分で終わる
-#    queria は CI と同じく最新に上げてから回す (uv.lock の版のままだと公開前の検査で落ちる)
-uv lock --upgrade-package queria && uv sync
-QUERIA_TOKEN=... uv run --env-file .env queria sync -- uv run --env-file .env python load_local_mesh.py
+#    fdl は CI と同じく最新に上げてから回す
+uv lock --upgrade-package fdl-cli && uv sync
+FDL_TOKEN=... scripts/build.sh --env-file .env python load_local_mesh.py
 ```
 
-2 は CI の Sync が走っていないときに回します。sync は始めた時点の公開カタログを
-条件に公開するので、途中で CI が公開すると push が断られます。そのときは 2 だけ
+2 は CI の Sync が走っていないときに回します。scripts/build.sh は始めた時点の公開バージョンから
+作るので、途中で CI が公開すると fdl push が断られます。そのときは 2 だけ
 回し直せば済みます。
 
 出典: 総務省統計局 令和2年国勢調査に関する地域メッシュ統計。

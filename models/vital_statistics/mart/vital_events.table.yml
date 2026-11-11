@@ -17,8 +17,6 @@ keywords:
   - 死産
   - 婚姻
   - 離婚
-published: true
-themes: [population]
 temporal_coverage: { start: "2015", end: "2024" }
 sources:
   - path: https://www.e-stat.go.jp/statistics/00450011
@@ -29,7 +27,7 @@ fields:
   - name: area_code
     title: 標準地域コード（5桁）
     description: 標準地域コード。都道府県は 13000 のように市区町村部が 000。code.municipality の area_code と同じ体系で、各年のコードのまま入る。全国地方公共団体コード（6桁）とは別体系
-    semantic: { role: entity, name: city }
+    annotations: { queria: { semantic: { role: entity, name: city } } }
   - name: area_name
     title: 地域名
     description: 地域の名称（東京都／新宿区／札幌市／札幌市中央区 など）
@@ -39,7 +37,7 @@ fields:
   - name: prefecture_code
     title: 都道府県コード
     description: area_code の上2桁
-    semantic: { role: entity, name: prefecture }
+    annotations: { queria: { semantic: { role: entity, name: prefecture } } }
   - name: births
     title: 出生数
     description: 出生数（人）
@@ -76,3 +74,6 @@ fields:
   - name: divorces
     title: 離婚件数
     description: 離婚件数（組）。別居する前の住所で数える
+annotations:
+  queria:
+    themes: [population]

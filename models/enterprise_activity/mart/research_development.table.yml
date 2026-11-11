@@ -12,9 +12,6 @@ keywords:
 - 企業
 - 研究開発費
 - 能力開発費
-published: true
-themes:
-- economy
 sources:
 - path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003458228
 - path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003459146
@@ -47,3 +44,7 @@ fields:
 - name: value
   title: 値
   description: 値。原典の「-」（該当なし）と「x」（秘匿）はどちらも NULL
+annotations:
+  queria:
+    themes:
+    - economy

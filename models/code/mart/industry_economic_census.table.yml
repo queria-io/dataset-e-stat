@@ -14,8 +14,6 @@ keywords:
   - 大分類
   - 中分類
   - 小分類
-published: true
-themes: [economy]
 primary_key: [revision, code]
 sources:
   - path: https://www.e-stat.go.jp/classifications/terms/80
@@ -41,3 +39,6 @@ fields:
   - name: description
     title: 項目の説明
     description: 分類項目の説明の原文。大分類・中分類の行には総説が入る
+annotations:
+  queria:
+    themes: [economy]

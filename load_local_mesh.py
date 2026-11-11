@@ -5,11 +5,11 @@ CI の main.py では扱わない。量が多く GitHub ランナーのメモリ
 手元で一度回せばよい。手順は README の「手元でだけ取り込むテーブル」を参照。
 
 取得と公開を分ける。取得は 2〜3 時間かかり、その間に CI の Sync が公開すると、
-sync の push は公開済みのカタログが変わったとして断られる。取得をカタログの外で
-済ませておけば、sync の中はファイルのロードと 250m の dbt だけで数分になる。
+fdl push は公開済みのバージョンが変わったとして断られる。取得をカタログの外で
+済ませておけば、scripts/build.sh の中はファイルのロードと 250m の dbt だけで数分になる。
 
     uv run --env-file .env python load_local_mesh.py fetch     # 取得 (data/mesh/ に保存)
-    uv run queria sync -- uv run --env-file .env python load_local_mesh.py
+    FDL_TOKEN=... scripts/build.sh --env-file .env python load_local_mesh.py
 
 fetch は 1 次メッシュの表ごとに Parquet を書き、書き終えた表は次から飛ばすので、
 途中で止まっても続きから回せる。

@@ -14,9 +14,6 @@ keywords:
 - 資本金規模
 - 費用の内訳
 - 給与総額
-published: true
-themes:
-- economy
 sources:
 - path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003458220
 - path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003459138
@@ -61,3 +58,7 @@ fields:
 - name: value
   title: 値
   description: 値。原典の「-」（該当なし）と「x」（秘匿）はどちらも NULL
+annotations:
+  queria:
+    themes:
+    - economy

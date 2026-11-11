@@ -15,8 +15,6 @@ keywords:
   - 建築物
   - 用途
   - 市区町村
-published: true
-themes: [housing_land]
 sources:
   - path: https://www.e-stat.go.jp/dbview?sid=0004019181
   - path: https://www.e-stat.go.jp/dbview?sid=0003114492
@@ -24,7 +22,7 @@ fields:
   - name: area
     title: 地域コード
     description: "地域コード（5桁）。統計に用いる標準地域コードと同じ体系で、code.municipality の area_code と結合できる。東京の特別区は 13101〜13123 の区ごとに入り、特別区部（13100）の合計行は無い。政令指定都市は市の行（01100 など）と区の行の両方がある"
-    semantic: { role: entity, name: city }
+    annotations: { queria: { semantic: { role: entity, name: city } } }
   - name: area_name
     title: 地域名
     description: "area に対応する地域名。都道府県名は付かない。浜松市の区は「中区（～R5.12 行政区再編前）」「中央区（R6.1～ 行政区再編後）」のように再編の前後が名称に入る"
@@ -52,3 +50,6 @@ fields:
   - name: construction_cost
     title: 工事費予定額
     description: "工事費予定額（万円）。2019年まで。2020年以降は全行 NULL。2019年までも秘匿の値が NULL で、用途の内訳の23%、計の2%が NULL になる"
+annotations:
+  queria:
+    themes: [housing_land]

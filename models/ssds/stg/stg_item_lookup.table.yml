@@ -3,7 +3,6 @@ name: stg_item_lookup
 description: 'mart のビューが item_name / unit を引くための、item_code で一意な参照表。
 
   item_catalog は掲載統計表ごとに行を持つため、直接 JOIN すると観測値が複製される。'
-published: false
 primary_key: [item_code]
 fields:
   - name: item_code
@@ -17,3 +16,6 @@ fields:
     description: 当該項目の単位。同じ item_code で unit が食い違う例は無い
   - name: parent_code
     description: 上位項目の符号。5桁の項目は NULL。項目符号は5桁 + 副区分で、副区分は1階層だけなので、5桁を超えるコードの親は先頭5桁になる。item_catalog の parent_code 列（常に空）とは別物
+annotations:
+  queria:
+    published: false

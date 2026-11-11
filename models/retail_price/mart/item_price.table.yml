@@ -14,8 +14,6 @@ keywords:
   - 物価
   - 品目
   - 市区町村
-published: true
-themes: [economy]
 sources:
   - path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003420453
 fields:
@@ -31,7 +29,7 @@ fields:
   - name: area
     title: 地域コード
     description: "地域コード（5桁）。統計に用いる標準地域コードそのものなので code.municipality と直接つながる（実測: 95コード中88。残る7つは政令指定都市へ移行する前の市のコードで、現行の一覧には無い）。cpi.price_index（01A01 形式）や household.expenditure（01003 形式）とは体系が違い、そちらは area_name の先頭5桁がこのコードにあたる。東京は 13100 特別区部で、特別区をまとめた1行"
-    semantic: { role: entity, name: city }
+    annotations: { queria: { semantic: { role: entity, name: city } } }
   - name: area_name
     title: 市名
     description: area に対応する市の名称。cpi や household と違いコードは前置されない。末尾に【…】の注記が付くことがある
@@ -53,3 +51,6 @@ fields:
   - name: value
     title: 年平均価格
     description: 年平均価格。その年その市で調査していない品目は NULL（全体の22%）。公立高校授業料や保育料のように無償化で 0 の行、電気代の燃料費調整単価のように負の行もある
+annotations:
+  queria:
+    themes: [economy]

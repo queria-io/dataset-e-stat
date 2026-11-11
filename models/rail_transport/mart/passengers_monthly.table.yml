@@ -16,8 +16,6 @@ keywords:
   - 民鉄
   - 新幹線
   - 月次
-published: true
-themes: [transport_tourism]
 sources:
   - path: https://www.e-stat.go.jp/dbview?sid=0003423105
 fields:
@@ -54,4 +52,7 @@ fields:
   - name: passengers
     title: 旅客数量
     description: "その月の旅客数量（千人）。千人未満を丸めた値で、定期と定期外を足すと計と最大9千人ずれる"
-    semantic: { role: measure, agg: sum }
+    annotations: { queria: { semantic: { role: measure, agg: sum } } }
+annotations:
+  queria:
+    themes: [transport_tourism]

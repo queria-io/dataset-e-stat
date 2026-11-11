@@ -13,8 +13,6 @@ keywords:
   - 消費
   - 支出
   - 品目
-published: true
-themes: [economy]
 sources:
   - path: https://www.e-stat.go.jp/dbview?sid=0004023601
   - path: https://www.e-stat.go.jp/dbview?sid=0004023605
@@ -64,3 +62,6 @@ fields:
   - name: value
     title: 統計値
     description: 統計値。元データが非数値だった場合は NULL
+annotations:
+  queria:
+    themes: [economy]

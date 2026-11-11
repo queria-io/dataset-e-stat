@@ -14,8 +14,6 @@ keywords:
   - 持ち家
   - 借家
   - 市区町村
-published: true
-themes: [housing_land]
 temporal_coverage: { start: "2023", end: "2023" }
 sources:
   - path: https://www.e-stat.go.jp/
@@ -23,7 +21,7 @@ fields:
   - name: area
     title: 地域コード（5桁）
     description: 標準地域コード。全国は 00000、都道府県は 13000 のように末尾 000
-    semantic: { role: entity, name: city }
+    annotations: { queria: { semantic: { role: entity, name: city } } }
   - name: area_name
     title: 地域名
   - name: area_level
@@ -50,4 +48,7 @@ fields:
   - name: households
     title: 主世帯数
     description: 主世帯数（世帯）。標本調査の推定値で、10世帯単位に丸めてある。原典の「-」は NULL
-    semantic: { role: measure, agg: sum }
+    annotations: { queria: { semantic: { role: measure, agg: sum } } }
+annotations:
+  queria:
+    themes: [housing_land]

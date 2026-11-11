@@ -13,9 +13,6 @@ keywords:
 - 企業
 - 総括表
 - 付加価値額
-published: true
-themes:
-- economy
 sources:
 - path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003458218
 - path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003459118
@@ -48,3 +45,7 @@ fields:
 - name: value
   title: 値
   description: 値。原典の「-」（該当なし）と「x」（秘匿）はどちらも NULL
+annotations:
+  queria:
+    themes:
+    - economy

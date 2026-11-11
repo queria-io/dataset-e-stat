@@ -18,8 +18,6 @@ keywords:
   - 移出
   - 移入
   - フェリー
-published: true
-themes: [transport_tourism]
 sources:
   - path: https://www.e-stat.go.jp/dbview?sid=0003130803
 fields:
@@ -32,7 +30,7 @@ fields:
   - name: prefecture_code
     title: 都道府県コード
     description: "area_code の先頭2桁（JIS の都道府県コード）"
-    semantic: { role: entity, name: prefecture }
+    annotations: { queria: { semantic: { role: entity, name: prefecture } } }
   - name: prefecture_name
     title: 都道府県名
     description: "港が属する都道府県の名前"
@@ -54,19 +52,22 @@ fields:
   - name: cargo_tons
     title: 海上出入貨物トン数
     description: "その港・年・輸移出入の貨物の総トン数（トン）。原典に輸送形態の計の行があればその値、無ければ一般と自動車航送船の和。どちらも「-」（該当数字がない）なら NULL"
-    semantic: { role: measure, agg: sum }
+    annotations: { queria: { semantic: { role: measure, agg: sum } } }
   - name: cargo_tons_is_derived
     title: 合計を補ったか
     description: "true なら cargo_tons は原典の計ではなく、一般と自動車航送船の和で補った値"
   - name: general_tons
     title: 一般貨物トン数
     description: "自動車航送船以外の船で運んだ貨物のトン数（トン）。原典が「-」なら NULL"
-    semantic: { role: measure, agg: sum }
+    annotations: { queria: { semantic: { role: measure, agg: sum } } }
   - name: ferry_tons
     title: 自動車航送船貨物トン数
     description: "フェリーなど自動車航送船で運んだ貨物のトン数（トン）。原典が「-」なら NULL"
-    semantic: { role: measure, agg: sum }
+    annotations: { queria: { semantic: { role: measure, agg: sum } } }
   - name: transshipment_tons
     title: T/S貨物トン数
     description: "一般貨物のうち、積み替え（T/S、トランシップ）の貨物のトン数（トン）。general_tons の内数。原典が「-」なら NULL"
-    semantic: { role: measure, agg: sum }
+    annotations: { queria: { semantic: { role: measure, agg: sum } } }
+annotations:
+  queria:
+    themes: [transport_tourism]

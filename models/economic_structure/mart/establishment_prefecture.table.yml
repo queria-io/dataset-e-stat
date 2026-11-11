@@ -14,9 +14,6 @@ keywords:
 - 事業所数
 - 売上
 - 都道府県
-published: true
-themes:
-- economy
 sources:
 - path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004009880
 - path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004021920
@@ -50,3 +47,7 @@ fields:
 - name: sales_million_yen
   title: 売上（収入）金額
   description: 売上（収入）金額（百万円）。全産業・非農林漁業と、建設業（D）・電気・ガス・熱供給・水道業（F）・運輸業、郵便業（H）・金融業、保険業（J）の行は原典に値が無く NULL。大分類の売上を足しても全産業にはならない
+annotations:
+  queria:
+    themes:
+    - economy

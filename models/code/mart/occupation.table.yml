@@ -14,8 +14,6 @@ keywords:
   - 大分類
   - 中分類
   - 小分類
-published: true
-themes: [labour]
 primary_key: [revision, code]
 sources:
   - path: https://www.e-stat.go.jp/classifications/terms/20
@@ -47,3 +45,6 @@ fields:
   - name: non_examples
     title: 不適合事例
     description: この分類に含まれない職業の例の原文。移る先の分類コードが添えられている
+annotations:
+  queria:
+    themes: [labour]

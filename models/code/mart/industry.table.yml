@@ -15,8 +15,6 @@ keywords:
   - 中分類
   - 小分類
   - 細分類
-published: true
-themes: [economy]
 primary_key: [revision, code]
 sources:
   - path: https://www.e-stat.go.jp/classifications/terms/10
@@ -48,3 +46,6 @@ fields:
   - name: non_examples
     title: 不適合事例
     description: この分類に含まれない事業の例の原文。「；」で区切られ、移る先の分類コードが「［2423］」のように全角の角括弧で添えられている
+annotations:
+  queria:
+    themes: [economy]

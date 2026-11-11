@@ -13,8 +13,6 @@ keywords:
   - 商品分類
   - 商品コード
   - 品目
-published: true
-themes: [economy]
 primary_key: [revision, code]
 sources:
   - path: https://www.e-stat.go.jp/classifications/terms/30
@@ -34,3 +32,6 @@ fields:
   - name: parent_code
     title: 親の分類コード（大分類は NULL）
     description: 1つ上の分類コード。中分類は直前の大分類、3桁以上はコードの先頭が一致する直近の上位の項目。大分類は NULL
+annotations:
+  queria:
+    themes: [economy]

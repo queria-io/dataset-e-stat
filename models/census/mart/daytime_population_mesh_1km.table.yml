@@ -14,18 +14,16 @@ keywords:
   - 昼間人口
   - 夜間人口
   - GIS
-published: true
-themes: [population]
 temporal_coverage: { start: "2020", end: "2020" }
 sources:
   - path: https://www.e-stat.go.jp/
 fields:
   - name: mesh_code
     title: メッシュコード（境界データ mesh_1km と同一体系の8桁）
-    semantic: { role: entity, name: mesh }
+    annotations: { queria: { semantic: { role: entity, name: mesh } } }
   - name: city_code
     title: 按分に使った市区町村コード（メッシュ中心点が属する市区町村。5桁）
-    semantic: { role: entity, name: city }
+    annotations: { queria: { semantic: { role: entity, name: city } } }
   - name: nighttime_population
     title: 夜間人口（常住人口。令和2年国勢調査の人口総数）
   - name: daytime_population
@@ -38,3 +36,6 @@ fields:
     title: 従業者数（平成28年経済センサス‐活動調査、A～R全産業）
   - name: establishments
     title: 事業所数（平成28年経済センサス‐活動調査、A～R全産業）
+annotations:
+  queria:
+    themes: [population]
