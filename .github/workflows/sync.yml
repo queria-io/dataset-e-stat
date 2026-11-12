@@ -20,12 +20,11 @@ jobs:
     permissions:
       contents: read
       id-token: write
-    uses: queria-io/dataset-shared/.github/workflows/sync.yml@fe59be721647d5b1bbffe1ef3eb2d318c81be3f3
+    uses: queria-io/dataset-shared/.github/workflows/sync.yml@67443c88b6ec355559c91bf866239e10073ccf83
     with:
       dataset_name: e_stat
       # 共通の既定 90 分では足りない。成功ランの実測は最大 210 分
       timeout_minutes: 300
     secrets:
-      QUERIA_TOKEN: ${{ secrets.QUERIA_TOKEN }}
       DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
       ESTAT_API_KEY: ${{ secrets.ESTAT_API_KEY }}
