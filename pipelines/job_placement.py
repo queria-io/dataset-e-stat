@@ -51,6 +51,8 @@ logger = logging.getLogger("pipelines")
 CATALOG_URL = "https://api.e-stat.go.jp/rest/3.0/app/json/getDataCatalog"
 STATS_CODE = "00450222"
 SEARCH_WORD = "労働市場関係指標"
+PAGE_LIMIT = 100
+EXCEL_FORMATS = ("XLS", "XLSX", "XLS_REP")
 
 # 表 → (統計表ファイルの名前, 最初の月)
 TABLES = {
@@ -93,23 +95,42 @@ def _norm(s: str) -> str:
 
 def file_urls(app_id: str) -> dict[str, str]:
     """表ごとに、いちばん新しい調査年月の Excel の URL を返す。旧様式のファイルも同じ名前で残っている。"""
-    params = {"appId": app_id, "statsCode": STATS_CODE, "searchWord": SEARCH_WORD, "limit": 100}
-    root = json.loads(_fetch(f"{CATALOG_URL}?{urllib.parse.urlencode(params)}"))["GET_DATA_CATALOG"]
-    if root["RESULT"]["STATUS"] not in (EstatStatus.OK, EstatStatus.PARTIAL):
-        raise RuntimeError(f"getDataCatalog: API error: {root['RESULT'].get('ERROR_MSG', '')}")
-    items = root["DATA_CATALOG_LIST_INF"]["DATA_CATALOG_INF"]
     found: dict[str, list[tuple[str, str]]] = {key: [] for key in TABLES}
-    for item in [items] if isinstance(items, dict) else items:
-        survey_date = str(item["DATASET"]["TITLE"]["SURVEY_DATE"])
-        resources = item["RESOURCES"]["RESOURCE"]
-        for r in [resources] if isinstance(resources, dict) else resources:
-            name = _norm(r["TITLE"]["NAME"])
-            for key, (title, _) in TABLES.items():
-                if name == _norm(title) and r["FORMAT"] in ("XLS", "XLSX"):
-                    found[key].append((survey_date, r["URL"]))
+    seen: set[str] = set()
+    start_position = 1
+    while True:
+        params = {
+            "appId": app_id,
+            "statsCode": STATS_CODE,
+            "searchWord": SEARCH_WORD,
+            "limit": PAGE_LIMIT,
+            "startPosition": start_position,
+        }
+        root = json.loads(_fetch(f"{CATALOG_URL}?{urllib.parse.urlencode(params)}"))["GET_DATA_CATALOG"]
+        if root["RESULT"]["STATUS"] not in (EstatStatus.OK, EstatStatus.PARTIAL):
+            raise RuntimeError(f"getDataCatalog: API error: {root['RESULT'].get('ERROR_MSG', '')}")
+        listing = root["DATA_CATALOG_LIST_INF"]
+        items = listing.get("DATA_CATALOG_INF", [])
+        for item in [items] if isinstance(items, dict) else items:
+            survey_date = str(item["DATASET"]["TITLE"]["SURVEY_DATE"])
+            resources = item["RESOURCES"]["RESOURCE"]
+            for r in [resources] if isinstance(resources, dict) else resources:
+                title = r["TITLE"]
+                names = {_norm(str(title.get(k) or "")) for k in ("NAME", "TABLE_NAME")}
+                if any("都道府県" in n and SEARCH_WORD in n for n in names):
+                    seen.add(f"{title.get('NAME')} [{r['FORMAT']}]")
+                for key, (table_title, _) in TABLES.items():
+                    if _norm(table_title) in names and r["FORMAT"] in EXCEL_FORMATS:
+                        found[key].append((survey_date, r["URL"]))
+        next_key = listing.get("RESULT_INF", {}).get("NEXT_KEY")
+        if not next_key:
+            break
+        if int(next_key) <= start_position:
+            raise RuntimeError(f"getDataCatalog: NEXT_KEY {next_key} が startPosition {start_position} から進まない")
+        start_position = int(next_key)
     missing = [TABLES[key][0] for key, urls in found.items() if not urls]
     if missing:
-        raise RuntimeError(f"一般職業紹介状況の Excel が見つからない: {missing}")
+        raise RuntimeError(f"一般職業紹介状況の Excel が見つからない: {missing} (都道府県別の候補: {sorted(seen)})")
     return {key: max(urls)[1] for key, urls in found.items()}
 
 
