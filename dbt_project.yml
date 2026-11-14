@@ -23,157 +23,244 @@ models:
   e_stat:
     +database: e_stat
     +materialized: view
+    # mart は table にする。view だと fdl が profile (列の値の範囲) を作れない。
+    # 行数が多くて view にしている mart は、ファイルの config で view を指定する
     boundary:
       raw:
         +materialized: table
       stg:
+        +materialized: table
+      mart:
         +materialized: table
     business_outlook:
       raw:
         +materialized: table
       stg:
         +materialized: table
+      mart:
+        +materialized: table
     building_starts:
       raw:
         +materialized: table
       stg:
+        +materialized: table
+      mart:
         +materialized: table
     construction:
       raw:
         +materialized: table
       stg:
         +materialized: table
+      mart:
+        +materialized: table
     rail_transport:
       raw:
         +materialized: table
       stg:
+        +materialized: table
+      mart:
         +materialized: table
     port:
       raw:
         +materialized: table
       stg:
         +materialized: table
+      mart:
+        +materialized: table
     census:
       raw:
         +materialized: table
       stg:
+        +materialized: table
+      mart:
         +materialized: table
     code:
       raw:
         +materialized: table
       stg:
         +materialized: table
+      mart:
+        +materialized: table
     corporate_finance:
       stg:
+        +materialized: table
+      mart:
         +materialized: table
     cpi:
       stg:
         +materialized: table
+      mart:
+        +materialized: table
     crop:
       raw:
+        +materialized: table
+      mart:
         +materialized: table
     economic_census:
       raw:
         +materialized: table
       stg:
         +materialized: table
+      mart:
+        +materialized: table
     economic_structure:
       raw:
         +materialized: table
       stg:
+        +materialized: table
+      mart:
         +materialized: table
     enterprise_activity:
       raw:
         +materialized: table
       stg:
         +materialized: table
+      mart:
+        +materialized: table
     energy_consumption:
       raw:
         +materialized: table
       stg:
+        +materialized: table
+      mart:
         +materialized: table
     employment_structure:
       raw:
         +materialized: table
       stg:
         +materialized: table
+      mart:
+        +materialized: table
     household_structure:
       raw:
         +materialized: table
       stg:
+        +materialized: table
+      mart:
         +materialized: table
     housing_survey:
       raw:
         +materialized: table
       stg:
         +materialized: table
+      mart:
+        +materialized: table
     kaigo_insurance:
       raw:
         +materialized: table
       stg:
+        +materialized: table
+      mart:
         +materialized: table
     kaigo_service:
       raw:
         +materialized: table
       stg:
         +materialized: table
+      mart:
+        +materialized: table
     local_finance:
       raw:
         +materialized: table
       stg:
+        +materialized: table
+      mart:
         +materialized: table
     manufacture:
       raw:
         +materialized: table
       stg:
         +materialized: table
+      mart:
+        +materialized: table
     medical_facility:
       raw:
         +materialized: table
       stg:
+        +materialized: table
+      mart:
         +materialized: table
     migration:
       raw:
         +materialized: table
       stg:
         +materialized: table
+      mart:
+        +materialized: table
     resident_registry:
       raw:
         +materialized: table
       stg:
+        +materialized: table
+      mart:
         +materialized: table
     private_salary:
       raw:
         +materialized: table
       stg:
         +materialized: table
+      mart:
+        +materialized: table
     retail_price:
       raw:
         +materialized: table
       stg:
+        +materialized: table
+      mart:
         +materialized: table
     school:
       raw:
         +materialized: table
       stg:
         +materialized: table
+      mart:
+        +materialized: table
     school_health:
       raw:
         +materialized: table
       stg:
+        +materialized: table
+      mart:
         +materialized: table
     wage_structure:
       raw:
         +materialized: table
       stg:
         +materialized: table
+      mart:
+        +materialized: table
     vital_statistics:
       raw:
         +materialized: table
       stg:
         +materialized: table
+      mart:
+        +materialized: table
     welfare_facility:
       raw:
         +materialized: table
       stg:
+        +materialized: table
+      mart:
+        +materialized: table
+    commerce:
+      mart:
+        +materialized: table
+    household:
+      mart:
+        +materialized: table
+    job_placement:
+      mart:
+        +materialized: table
+    labor:
+      mart:
+        +materialized: table
+    production:
+      mart:
+        +materialized: table
+    ssds:
+      mart:
+        +materialized: table
+    trade:
+      mart:
         +materialized: table

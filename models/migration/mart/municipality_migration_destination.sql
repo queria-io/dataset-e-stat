@@ -1,4 +1,6 @@
 {# 参考表のうち転出先別の表 (前住地ごとに転出先を並べる)。キーは年・前住地・現住地・性別・年齢。 #}
+{# 約7,200万行あるので、mart の既定 (table) にせず view にする。毎日の CI で全行を複製しないため。 #}
+{{ config(materialized='view') }}
 SELECT
     year,
     origin_code,
