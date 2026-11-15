@@ -24,6 +24,8 @@ jobs:
       dataset_name: e_stat
       # 共通の既定 90 分では足りない。成功ランの実測は最大 210 分
       timeout_minutes: 300
+      # dbt のスピル (migration_od_is_consistent で約 10GB、profiles.yml) と手元に置く新しいデータファイルの分を空ける
+      free_disk: true
     secrets:
       DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
       ESTAT_API_KEY: ${{ secrets.ESTAT_API_KEY }}
