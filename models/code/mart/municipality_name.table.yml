@@ -15,9 +15,9 @@ description: |-
   ```
 
   - 有効期間の境目は廃置分合等の施行日です。valid_from が 1970-04-01 の行は、それより前から使われていた名前を含みます
-  - 同じ都道府県に同じ名前の町村が 2 つある期間があります（郡が違う）。そのときは qualified_name（郡名・政令指定都市名を付けた名前）で結合します
+  - 同じ都道府県に同じ名前の町村（郡が違う）や区（政令指定都市が違う。大阪府の大阪市北区と堺市北区など）が 2 つある期間があります。そのときは qualified_name（郡名・政令指定都市名を付けた名前）で結合します
   - 北海道の町村は振興局・支庁で括られ、郡名を持たないので、qualified_name は名前だけです
-  - 「ヶ」と「ケ」、旧字体などの書き分けは原典のままで、寄せていません
+  - 「ヶ」と「ケ」、旧字体などの書き分けは原典のままで、正規化していません
   - 政令指定都市は市の行（area_kind = designated_city）と区の行（ward）の両方があります
 keywords:
   - e-stat
@@ -46,7 +46,7 @@ fields:
     description: parent_name のよみがな。ひらがな
   - name: qualified_name
     title: 郡名・政令指定都市名を付けた市区町村名
-    description: parent_name と name をつないだ名前（「那珂郡大宮町」「札幌市中央区」）。parent_name が無い行は name と同じ。同じ都道府県に同じ名前の町村があるときの結合に使う
+    description: parent_name と name をつないだ名前（「那珂郡大宮町」「札幌市中央区」）。parent_name が無い行は name と同じ。同じ都道府県に同じ名前の町村や区があるときの結合に使う
   - name: pref_name
     title: 都道府県名
     description: 都道府県名

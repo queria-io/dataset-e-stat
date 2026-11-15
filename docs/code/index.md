@@ -11,6 +11,7 @@
 |---------|------|-----------|
 | municipality | 現行の標準地域コード一覧 | area_code / pref_name / area_kind / is_municipality / municipality_code / municipality_name |
 | municipality_change | コード変更（廃置分合）履歴 | effective_date / old_code / new_code / is_code_deleted / reason |
+| municipality_name | 市区町村名と標準地域コードの対応（1970年4月以降の履歴） | name / qualified_name / area_code / lg_code / valid_from / valid_to / current_area_code |
 
 ### 階層の判別
 

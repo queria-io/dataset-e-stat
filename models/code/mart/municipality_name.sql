@@ -34,7 +34,7 @@ islands AS (
     SELECT
         *,
         i - row_number() OVER (
-            PARTITION BY area_code, pref_name, parent_name, name, kana, area_kind ORDER BY i
+            PARTITION BY area_code, pref_name, parent_name, parent_kana, name, kana, area_kind ORDER BY i
         ) AS island
     FROM snapshot
 ),
@@ -64,36 +64,35 @@ current_codes AS (
 
 -- 一覧から消えたコードの、消えた日 (次の一覧の日)
 ended AS (
-    SELECT s.area_code, d.as_of AS ended_on
+    SELECT s.area_code, s.last_i, d.as_of AS ended_on
     FROM (SELECT area_code, max(i) AS last_i FROM snapshot GROUP BY area_code) s
     JOIN dates d ON d.i = s.last_i + 1
 ),
 
 -- 消えた日に施行された廃置分合等のうち、改正事由に消えたコードを含むものの、ほかのコード。
--- 区でないコードの引き継ぎ先に、政令指定都市の施行で新設された区は数えない。
 -- 優先順: その日に有効で同じ名前のコード (郡の区域変更) → その日に有効なコード →
--- 同じ日に消えたコード (同じ日に編入と市制施行が続いたとき。瓜連町 → 那珂町 → 那珂市)
+-- 同じ日に消えたコード (同じ日に編入と市制施行が続いたとき。瓜連町 → 那珂町 → 那珂市) →
+-- 区でないコードにとっての、その日に有効な区。政令指定都市の施行では市の行を区より先に取り、
+-- 区だけが挙がる既存の区への編入 (京北町 → 右京区) では区を取る
 candidates AS (
     SELECT
         e.area_code,
         c.area_code AS next_code,
         CASE
-            WHEN v.area_code IS NOT NULL AND v.name = x.name THEN 0
-            WHEN v.area_code IS NOT NULL THEN 1
-            ELSE 2
+            WHEN v.area_code IS NULL THEN 2
+            WHEN x.area_kind <> 'ward' AND v.area_kind = 'ward' THEN 3
+            WHEN v.name = x.name THEN 0
+            ELSE 1
         END AS priority
     FROM ended e
-    JOIN snapshot x ON x.area_code = e.area_code AND x.as_of = (
-        SELECT max(as_of) FROM snapshot WHERE area_code = e.area_code
-    )
+    JOIN snapshot x ON x.area_code = e.area_code AND x.i = e.last_i
     JOIN {{ ref('raw_municipality_history_event') }} c
         ON c.effective_date = e.ended_on
         AND contains(c.reason, '(' || e.area_code || ')')
         AND c.area_code <> e.area_code
     LEFT JOIN snapshot v ON v.as_of = e.ended_on AND v.area_code = c.area_code
     LEFT JOIN ended g ON g.area_code = c.area_code AND g.ended_on = e.ended_on
-    WHERE (v.area_code IS NOT NULL OR g.area_code IS NOT NULL)
-        AND (x.area_kind = 'ward' OR coalesce(v.area_kind, '') <> 'ward')
+    WHERE v.area_code IS NOT NULL OR g.area_code IS NOT NULL
 ),
 
 successor AS (

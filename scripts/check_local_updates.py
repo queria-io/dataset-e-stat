@@ -101,7 +101,7 @@ def latest_municipality_change() -> str:
         ("source", "setup"),
         ("border_kd", "0"),
         ("year_from", "1970"),
-        ("month_from", "1"),
+        ("month_from", "4"),
         ("day_from", "1"),
         # 画面で選べる日付しか受け付けない (先の年を渡すと CSV ではなく画面が返る)
         ("year_to", str(today.year)),
@@ -113,7 +113,10 @@ def latest_municipality_change() -> str:
         ("op", "download"),
     ]
     url = f"{MUNICIPALITY_CHANGES}?{urllib.parse.urlencode(params)}"
-    with urllib.request.urlopen(url, timeout=120) as res:
+    req = urllib.request.Request(
+        url, headers={"User-Agent": "dataset-e-stat (+https://github.com/queria-io/dataset-e-stat)"}
+    )
+    with urllib.request.urlopen(req, timeout=120) as res:
         rows = list(csv.DictReader(io.StringIO(res.read().decode("utf-8"))))
     if not rows or "廃置分合等施行年月日" not in rows[0]:
         raise RuntimeError("廃置分合等の一覧が CSV で返らなかった")

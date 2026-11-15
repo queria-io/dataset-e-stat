@@ -84,8 +84,9 @@ def _download(path: str, params: list[tuple[str, str]], fields) -> list[dict]:
     # 条件が受け付けられないと CSV ではなく画面の HTML が返る
     if not text.startswith('"'):
         raise RuntimeError(f"{path}: CSV ではない応答が返った (先頭: {text[:80]!r})")
-    rows = list(csv.DictReader(io.StringIO(text)))
-    if missing := {h for _, h, _ in fields} - set(rows[0] if rows else {}):
+    reader = csv.DictReader(io.StringIO(text))
+    rows = list(reader)
+    if missing := {h for _, h, _ in fields} - set(reader.fieldnames or ()):
         raise RuntimeError(f"{path}: 見出しが変わった。無い列: {sorted(missing)}")
     return [{c: (r[h] or None) for _, h, c in fields} for r in rows]
 
