@@ -69,3 +69,8 @@ Sync が毎日取り直します。境目は `catalog_filter.through_year` で�
 統計表データベース（API）に無く、ファイル（Excel）でだけ配られる統計は、グループに `fetcher` と
 `stats_code` を書きます。fetch は `pipelines/<fetcher>.py` の `fetch_local` に取得を任せ、
 Check updates は表の更新日の代わりに、その政府統計コードのファイルの最終更新日（`catalog_modified_date`）を比べます。
+
+市区町村コードと名前の履歴（municipality_history グループ、`code.municipality_name`）は、e-Stat の
+「市区町村を探す」の画面からダウンロードします。1970年4月1日と廃置分合等の施行日ごとに市区町村コードの一覧を
+取るので、取得に 30 分ほどかかります。`catalog_modified_date` には廃置分合等の一覧の最新の施行日を書き、
+Check updates はこれと比べます。

@@ -11,12 +11,15 @@ CI の Sync はこれらの表を e-Stat から取らないので、e-Stat 側�
 (dbt・dlt) を入れずに数十秒で回すため。
 """
 
+import csv
+import io
 import json
 import os
 import subprocess
 import sys
 import urllib.parse
 import urllib.request
+from datetime import date
 from pathlib import Path
 
 import yaml
@@ -24,6 +27,7 @@ import yaml
 ROOT = Path(__file__).resolve().parent.parent
 API = "https://api.e-stat.go.jp/rest/3.0/app/json/getStatsData"
 CATALOG_API = "https://api.e-stat.go.jp/rest/3.0/app/json/getDataCatalog"
+MUNICIPALITY_CHANGES = "https://www.e-stat.go.jp/municipalities/cities/absorption-separation-of-municipalities"
 
 
 def updated_date(app_id: str, stats_data_id: str) -> str:
@@ -80,6 +84,42 @@ def catalog_modified_date(app_id: str, stats_code: str, catalog_filter: dict | N
         start = int(next_key)
 
 
+def latest_municipality_change() -> str:
+    """e-Stat「市区町村を探す」の廃置分合等の一覧の、最新の施行日。
+
+    pipelines/municipality_history.py の events と同じ一覧を、施行日の列だけで取る。
+    """
+    today = date.today()
+    params = [
+        ("form_id", "city_merger_form"),
+        *((f"pf[{p}]", str(p)) for p in range(1, 48)),
+        *((f"city_kd[{k}]", str(k)) for k in (4, 5, 6, 7)),
+        *((f"reason_kd[{k}]", str(k)) for k in (1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16)),
+        ("item[]", "htCodeSDate"),
+        ("sort[]", "htCode-asc"),
+        ("keyword_kd", "code"),
+        ("source", "setup"),
+        ("border_kd", "0"),
+        ("year_from", "1970"),
+        ("month_from", "1"),
+        ("day_from", "1"),
+        # 画面で選べる日付しか受け付けない (先の年を渡すと CSV ではなく画面が返る)
+        ("year_to", str(today.year)),
+        ("month_to", str(today.month)),
+        ("day_to", str(today.day)),
+        ("file_format", "csv"),
+        ("charset", "UTF-8"),
+        ("bom", "0"),
+        ("op", "download"),
+    ]
+    url = f"{MUNICIPALITY_CHANGES}?{urllib.parse.urlencode(params)}"
+    with urllib.request.urlopen(url, timeout=120) as res:
+        rows = list(csv.DictReader(io.StringIO(res.read().decode("utf-8"))))
+    if not rows or "廃置分合等施行年月日" not in rows[0]:
+        raise RuntimeError("廃置分合等の一覧が CSV で返らなかった")
+    return max(r["廃置分合等施行年月日"] for r in rows)
+
+
 def _matches(title: dict, catalog_filter: dict) -> bool:
     return (
         title["TABULATION_CATEGORY"] == catalog_filter["category"]
@@ -89,6 +129,12 @@ def _matches(title: dict, catalog_filter: dict) -> bool:
 
 
 def changed_tables(app_id: str, group: dict) -> list[str]:
+    if group.get("fetcher") == "municipality_history":
+        # 統計表データベースに無い「市区町村を探す」の一覧。廃置分合等の最新の施行日で見る
+        now = latest_municipality_change()
+        if now == str(group["catalog_modified_date"]):
+            return []
+        return [f"- 廃置分合等の最新の施行日: {group['catalog_modified_date']} → {now}"]
     if "stats_code" in group:
         # 統計表ファイルで配られる統計 (fetcher のあるグループ)。表ごとの更新日が無いので
         # 統計全体の最終更新日で見る

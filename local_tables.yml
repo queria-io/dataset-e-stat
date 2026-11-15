@@ -225,6 +225,20 @@ groups:
         updated_date: "2026-09-02"
       - name: school_municipality_teachers
         updated_date: "2026-09-02"
+  municipality_history:
+    title: 市区町村コードと名前の履歴（1970年4月1日以降、e-Stat「市区町村を探す」）
+    # 統計表データベースに無く、e-Stat の「市区町村を探す」の画面からダウンロードする。
+    # 取得とパースは pipelines/municipality_history.py の fetch_local。施行日ごとの一覧を
+    # 数百回取るので CI の Sync では取らない。catalog_modified_date には廃置分合等の一覧の
+    # 最新の施行日を書き、Check updates はこれと比べる。表の updated_date は同じ日付にそろえる
+    fetcher: municipality_history
+    catalog_modified_date: "2024-01-01"
+    dbt_select: "raw_municipality_history_event raw_municipality_history_snapshot municipality_name"
+    tables:
+      - name: municipality_history_event
+        updated_date: "2024-01-01"
+      - name: municipality_history_snapshot
+        updated_date: "2024-01-01"
   vital_statistics:
     title: 人口動態調査 人口動態統計 確定数（全国・都道府県・市区町村、2015〜2024年）
     dbt_select: "path:models/vital_statistics"
