@@ -21,7 +21,7 @@
 -- 組合せが常に2割ほどあるので、NOT NULL は使えない）。
 --
 -- 地域コードは5桁の標準地域コードそのもので、95コード中88が現行の
--- code.municipality に載る（実測）。載らない7つは政令指定都市へ移行する前の
+-- stg_area に載る（実測）。載らない7つは政令指定都市へ移行する前の
 -- 市のコードで、名称の注記に有効期間が入っている。この対応が崩れると、
 -- 地域コードを鍵にした結合が黙って行を落とす。
 
@@ -78,7 +78,7 @@ unexpected_negative_items AS (
 unresolved_areas AS (
     SELECT DISTINCT p.area
     FROM {{ ref('item_price') }} p
-    LEFT JOIN {{ ref('municipality') }} m ON m.area_code = p.area
+    LEFT JOIN {{ ref('stg_area') }} m ON m.area_code = p.area
     WHERE m.area_code IS NULL
 ),
 

@@ -6,7 +6,7 @@ description: |-
 
   - 市区町村と政令指定都市の区の行があるので、area_level で絞らずに合計すると二重に数えます
   - 工事費予定額は2019年までで、秘匿の値は NULL です
-  - 地域コードは各年の時点のもので、合併で消えたコードは code.municipality にありません
+  - 地域コードは各年の時点のもので、合併で消えたコードは soumu.code.municipality にありません
 keywords:
   - e-stat
   - 建築着工統計調査
@@ -21,7 +21,7 @@ sources:
 fields:
   - name: area
     title: 地域コード
-    description: "地域コード（5桁）。統計に用いる標準地域コードと同じ体系で、code.municipality の area_code と結合できる。東京の特別区は 13101〜13123 の区ごとに入り、特別区部（13100）の合計行は無い。政令指定都市は市の行（01100 など）と区の行の両方がある"
+    description: "地域コード（5桁）。統計に用いる標準地域コードと同じ体系で、soumu.code.municipality の area_code と結合できる。東京の特別区は 13101〜13123 の区ごとに入り、特別区部（13100）の合計行は無い。政令指定都市は市の行（01100 など）と区の行の両方がある"
     annotations: { queria: { semantic: { role: entity, name: city } } }
   - name: area_name
     title: 地域名

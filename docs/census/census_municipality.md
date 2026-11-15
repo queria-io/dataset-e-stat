@@ -103,7 +103,7 @@ LIMIT 5
 
 ## 他のテーブルとつなぐ
 
-`area` は標準地域コード（5桁）です。`code.municipality` の `area_code`、`census_small_area_*` の市区町村行、`boundary.small_area` の `key_code` の上位5桁と同じ体系です。
+`area` は標準地域コード（5桁）です。`soumu.code.municipality` の `area_code`、`census_small_area_*` の市区町村行、`boundary.small_area` の `key_code` の上位5桁と同じ体系です。
 
 小地域集計と突き合わせるときは、`census_small_area_*` の9桁コードの上位5桁で結合します。
 

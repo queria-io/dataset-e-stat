@@ -20,9 +20,11 @@ import re
 from pathlib import Path
 from urllib.parse import urlencode
 
-from pipelines.municipality_code import _fetch
+from shared.fetch import fetch
 
 logger = logging.getLogger("pipelines")
+
+USER_AGENT = "dataset-e-stat (+https://github.com/queria-io/dataset-e-stat)"
 
 DOWNLOAD_URL = "https://www.e-stat.go.jp/term/download"
 
@@ -154,7 +156,7 @@ def build_industry_code(dest_dir: str) -> None:
     for kaitei_code, revision in REVISIONS.items():
         url = f"{DOWNLOAD_URL}?{urlencode(_download_params(kaitei_code))}"
         logger.info(f"  downloading {revision} revision")
-        raw = _fetch(url)
+        raw = fetch(url, user_agent=USER_AGENT)
         (dest / f"industry_{revision}.csv").write_bytes(raw)
         parsed = _parse(raw.decode("utf-8"), revision)
         logger.info(f"  {revision}: {len(parsed)} rows")

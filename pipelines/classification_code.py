@@ -25,9 +25,11 @@ from pathlib import Path
 from urllib.parse import urlencode
 
 from pipelines.industry_code import DOWNLOAD_URL, _download_params
-from pipelines.municipality_code import _fetch
+from shared.fetch import fetch
 
 logger = logging.getLogger("pipelines")
+
+USER_AGENT = "dataset-e-stat (+https://github.com/queria-io/dataset-e-stat)"
 
 # 商品分類の CSV は 1.6MB あり、e-Stat が返し始めるまで 1 分を超えることがある
 _TIMEOUT = 300
@@ -379,7 +381,7 @@ def _check(table: str, records: list[dict]) -> None:
 
 def _download(b_kbn: str, kaitei_code: str) -> str:
     params = _download_params(kaitei_code) | {"bKbn": b_kbn}
-    return _fetch(f"{DOWNLOAD_URL}?{urlencode(params)}", timeout=_TIMEOUT).decode(
+    return fetch(f"{DOWNLOAD_URL}?{urlencode(params)}", user_agent=USER_AGENT, timeout=_TIMEOUT).decode(
         "utf-8"
     )
 

@@ -28,7 +28,7 @@ fields:
     description: 金額の項目が対象とする実績年。2014年までは survey_year と同じ、2017年以降は survey_year - 1。2017年調査から調査期日が翌年6月1日に変わり、経理事項は前年1〜12月の実績になった。金額を年で並べるときはこの列を使う
   - name: area
     title: 標準地域コード（5桁）
-    description: 標準地域コード。都道府県は 13000 のように市区町村部が 000。census_municipality の area・code.municipality の area_code と同じ体系。全国の行は無い
+    description: 標準地域コード。都道府県は 13000 のように市区町村部が 000。census_municipality の area・soumu.code.municipality の area_code と同じ体系。全国の行は無い
     annotations: { queria: { semantic: { role: entity, name: city } } }
   - name: area_name
     title: 地域名

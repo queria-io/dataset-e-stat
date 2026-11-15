@@ -157,8 +157,8 @@ sources:
     path: https://www.e-stat.go.jp/
   - title: 統計GIS 境界データ・小地域集計
     path: https://www.e-stat.go.jp/gis
-  - title: 統計に用いる標準地域コード（総務省）
-    path: https://www.soumu.go.jp/toukei_toukatsu/index/seido/9-5.htm
+  - title: 市区町村を探す（e-Stat）
+    path: https://www.e-stat.go.jp/municipalities/cities
   - title: 住民基本台帳に基づく人口、人口動態及び世帯数（総務省）
     path: https://www.soumu.go.jp/main_sosiki/jichi_gyousei/daityo/jinkou_jinkoudoutai-setaisuu.html
   - title: 住民基本台帳人口移動報告（総務省統計局）
@@ -259,7 +259,7 @@ schemas:
   - name: census
     title: 国勢調査
   - name: code
-    title: 統計に用いる標準地域コード・日本標準産業分類
+    title: 市区町村名と標準地域コード・統計分類
   - name: resident_registry
     title: 住民基本台帳に基づく人口・世帯数
   - name: economic_census

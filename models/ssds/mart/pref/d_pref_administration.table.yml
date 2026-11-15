@@ -27,7 +27,7 @@ fields:
     description: 上位項目の符号。5桁の項目は NULL。cat01_parent IS NULL で項目だけ、cat01_parent = 'J1104' でその副区分だけを取れる。副区分が親を分割している保証は無く、A1101 のように男女で分割される系統もあれば、J1102 のように「うち」項目だけが並んで親に届かない系統もある。親自身がデータを持たないこともある（分類項目名だけが定義され、副区分のみ公開されている系統が621件）
   - name: area
     title: 地域コード
-    description: 都道府県の標準地域コード（5桁、末尾3桁は 000）。全国計 00000 の行を含むため、area を絞らずに合計すると二重計上になる。code.municipality の area_code と同体系
+    description: 都道府県の標準地域コード（5桁、末尾3桁は 000）。全国計 00000 の行を含むため、area を絞らずに合計すると二重計上になる。soumu.code.municipality の area_code と同体系
     annotations: { queria: { semantic: { role: entity, name: prefecture } } }
   - name: area_name
     title: 地域名

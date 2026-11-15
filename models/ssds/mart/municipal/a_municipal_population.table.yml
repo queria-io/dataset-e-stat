@@ -27,7 +27,7 @@ fields:
     description: 上位項目の符号。5桁の項目は NULL。cat01_parent IS NULL で項目だけ、cat01_parent = 'J1104' でその副区分だけを取れる。副区分が親を分割している保証は無く、A1101 のように男女で分割される系統もあれば、J1102 のように「うち」項目だけが並んで親に届かない系統もある。親自身がデータを持たないこともある（分類項目名だけが定義され、副区分のみ公開されている系統が621件）
   - name: area
     title: 地域コード
-    description: 市区町村の標準地域コード（5桁）。全国計・都道府県計の行は無いが、政令指定都市の合計行（01100 札幌市）と行政区（01101 中央区）、東京都の「特別区部」（13100）と特別区（13101 千代田区）が同居する。市区町村単位で数えるときは code.municipality の is_municipality で絞る
+    description: 市区町村の標準地域コード（5桁）。全国計・都道府県計の行は無いが、政令指定都市の合計行（01100 札幌市）と行政区（01101 中央区）、東京都の「特別区部」（13100）と特別区（13101 千代田区）が同居する。市区町村単位で数えるときは soumu.code.municipality の is_municipality で絞る
     annotations: { queria: { semantic: { role: entity, name: city } } }
   - name: area_name
     title: 地域名

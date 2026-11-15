@@ -7,8 +7,8 @@
 -- 労働者数は原典が十人単位なので人に直す。
 WITH prefecture AS (
     SELECT pref_code, pref_name
-    FROM {{ ref('stg_municipality') }}
-    WHERE is_prefecture
+    FROM {{ ref('stg_area') }}
+    WHERE area_kind = 'prefecture'
 )
 
 SELECT

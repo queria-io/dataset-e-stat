@@ -5,8 +5,8 @@
 -- 略称と正式名を突き合わせて確かめる。
 WITH prefecture AS (
     SELECT pref_code, pref_name
-    FROM {{ ref('stg_municipality') }}
-    WHERE is_prefecture
+    FROM {{ ref('stg_area') }}
+    WHERE area_kind = 'prefecture'
 )
 
 SELECT

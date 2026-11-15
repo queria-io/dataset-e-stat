@@ -71,13 +71,13 @@ ORDER BY survey_year, facility_type
 
 ## 地域コードは調査時点のもの
 
-`area_code` は調査した年の標準地域コードです。平成の大合併で消えたコードも入っているので、2001年〜2024年調査に出る3,785コードのうち、現行の `code.municipality` に残るのは1,960です。
+`area_code` は調査した年の標準地域コードです。平成の大合併で消えたコードも入っているので、2001年〜2024年調査に出る3,785コードのうち、現行の `soumu.code.municipality` に残るのは1,960です。
 
 ```sql
 -- 現行の市区町村だけに絞る
 SELECT f.area_name, f.value
 FROM e_stat.kaigo_service.insurance_facility f
-JOIN e_stat.code.municipality m ON m.area_code = f.area_code
+JOIN soumu.code.municipality m ON m.area_code = f.area_code
 WHERE f.survey_year = 2024
   AND f.facility_type = '介護老人保健施設'
   AND f.measure = 'capacity'
@@ -133,7 +133,7 @@ LIMIT 10
 
 行は全国・47都道府県と、その再掲の指定都市・中核市までで、市区町村の粒度はありません。足し合わせて全国になるのは `area_kind = 'prefecture'` の行だけです。指定都市と中核市は都道府県の内数なので、混ぜると二重に数えます。中核市は年とともに増えます（2013年調査42市 → 2024年調査62市）。
 
-原典の行見出しは地域名だけなので、`area_code` は `code.municipality` の現行の名前から当てています。
+原典の行見出しは地域名だけなので、`area_code` は `soumu.code.municipality` の現行の名前から当てています。
 
 ### 通所介護は2016年に半分が地域密着型へ移る
 

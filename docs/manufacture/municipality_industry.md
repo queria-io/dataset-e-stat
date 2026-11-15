@@ -74,7 +74,7 @@ LIMIT 10;
 
 地域の名称は年で書き方が変わります。2012年までは政令指定都市の区が市名を含まず（`中央区`）、2013年以降は含みます（`札幌市中央区`）。年をまたぐ集計は名称ではなく `area` で束ねます。
 
-`area` は[市区町村別 基本集計](../census/census_municipality.md)や `code.municipality` と同じ標準地域コード（5桁）です。全国地方公共団体コード（6桁）とは別体系なので、`lg_code` や `address_br` と結合するときは桁と体系を揃えます。
+`area` は[市区町村別 基本集計](../census/census_municipality.md)や `soumu.code.municipality` と同じ標準地域コード（5桁）です。全国地方公共団体コード（6桁）とは別体系なので、`lg_code` や `address_br` と結合するときは桁と体系を揃えます。
 
 ## 足せる項目と足せない項目
 

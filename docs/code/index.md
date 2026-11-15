@@ -1,64 +1,27 @@
 # 標準地域コードと統計分類
 
-## 統計に用いる標準地域コード
+## 市区町村名と標準地域コードの対応
 
-都道府県・市区町村を 5 桁で表す「統計に用いる標準地域コード」の現行一覧と、
-その変更（廃置分合）履歴です。area は census / boundary / SSDS の各テーブルが
-用いる地域コードと同一体系で、コードから名称を引くマスタとして使えます。
-全国地方公共団体コード（6 桁・チェックデジット付き）とは別体系です。
+`municipality_name` は、市区町村の名前から、その名前が使われていた期間の標準地域コード（5 桁）と
+全国地方公共団体コード（6 桁）を引くテーブルです。1 行が 1 つのコードの 1 つの名前の有効期間で、
+e-Stat の「市区町村を探す」の一覧を 1970 年 4 月 1 日と廃置分合等の施行日ごとに取得して作っています。
 
 | テーブル | 内容 | 主なカラム |
 |---------|------|-----------|
-| municipality | 現行の標準地域コード一覧 | area_code / pref_name / area_kind / is_municipality / municipality_code / municipality_name |
-| municipality_change | コード変更（廃置分合）履歴 | effective_date / old_code / new_code / is_code_deleted / reason |
 | municipality_name | 市区町村名と標準地域コードの対応（1970年4月以降の履歴） | name / qualified_name / area_code / lg_code / valid_from / valid_to / current_area_code |
 
-### 階層の判別
-
-municipality は都道府県・政令指定都市・行政区・郡/振興局/支庁・市区町村を同一テーブルに
-収録しています。どの階層の行かは `area_kind` で判別できます。
-
-| area_kind | 件数 | 内容 |
-|-----------|-----:|------|
-| prefecture | 47 | 都道府県の合計行 |
-| designated_city | 20 | 政令指定都市（行政区の親にあたる行） |
-| ward | 171 | 政令指定都市の行政区 |
-| district | 326 | 郡・振興局・支庁・特別区部（集計用の親行） |
-| municipality | 1,727 | 市区町村 |
-
-市区町村として数える行は `is_municipality` が真の行（1,747件）です。政令指定都市を
-1団体として数え、行政区は数えません。
+今の市区町村は `valid_to` が NULL の行です。合併前の名前でも、その時点のコードと、合併後の今のコード
+（`current_area_code`）が引けます。
 
 ```sql
-SELECT * FROM municipality WHERE is_municipality;
+SELECT pref_name, name, area_code, valid_from, valid_to, current_area_code
+FROM e_stat.code.municipality_name
+WHERE pref_name = '静岡県' AND name LIKE '浜松市%';
 ```
 
-東京の特別区23は市区町村として数え、その親にあたる集計行「特別区部」（13100）は
-数えません。同じ「区」でも行政区と特別区で扱いが逆になります。
-
-`municipality_code` は所属する市区町村のコードです。行政区は所属市を、市区町村と
-政令指定都市は自分自身を指します。行政区の粒度で来るデータを市区町村に寄せるときに、
-どのコードでも同じキーで束ねられます。
-
-```sql
--- 行政区のコードでも市区町村のコードでも、同じ市区町村に寄る
-SELECT area_code, municipality_name, area_kind, municipality_code
-FROM municipality
-WHERE municipality_code = '22130';   -- 浜松市とその3行政区
-```
-
-`district_name` に同居していた郡名・振興局名・政令市名は `county_name` /
-`subprefecture_name` / `designated_city_name` に分けています。北海道の町村は
-振興局・支庁で括られていて郡名を持たないため、`county_name` は NULL になります。
-
-municipality_change は旧コードから新コードへの対応を 1 件 1 行で収録します。編入・
-合併で消滅したコードは new_name が「削除」表記になり is_code_deleted が真になります。
-市区町村コード付きの時系列を合併をまたいで接続する横断キーとして使えます。
-収録範囲は総務省が機械可読形式で提供する平成19年（2007年）4月2日以降の変更のみで、
-平成の大合併のピーク（1999〜2006年）は含みません。
-
-出典: 総務省統計局 統計に用いる標準地域コード。
-https://www.soumu.go.jp/toukei_toukatsu/index/seido/9-5.htm
+総務省の「統計に用いる標準地域コード」の現行の一覧（郡・振興局の集計行、`is_municipality` を含む）と
+2007 年 4 月以降のコードの変更の履歴は、soumu データセットの `soumu.code.municipality`・
+`soumu.code.municipality_change` にあります。
 
 ## 日本標準産業分類
 
@@ -157,14 +120,3 @@ https://www.e-stat.go.jp/classifications/terms
 統計や店舗データが持つ産業分類コードから名称を引いたり、細分類を中分類・大分類にまとめたりするときに結合する。
 令和5年改定で新しくできた細分類（5621〜5661の総合スーパー・コンビニエンスストア・ドラッグストアなど）もあれば、無くなった細分類もある。
 名称の区切りも平成25年改定までは全角カンマ「，」、令和5年改定は読点「、」で、名称で突き合わせると外れる。
-
-## 補足: code.municipality
-
-都道府県・郡・市区町村を 5 桁の標準地域コード (area_code) で収録する。
-国勢調査小地域・境界データ・社会人口統計体系 (SSDS) など本データセットの各テーブルが用いる地域コードと同体系で、コードから名称・よみがなを引くマスタとして使える。
-
-## 補足: code.municipality_change
-
-平成19年（2007年）4月2日以降に生じた市区町村の合併・編入・区の再編等を、旧コードから新コードへの対応として1件1行で収録する。
-改正事由 (reason) が合併・編入の内容を、施行年月日 (effective_date) が発効日を示す。
-市区町村コードを持つ既存の時系列（国勢調査小地域・SSDS 等）を合併をまたいで接続する横断キーとして使える。

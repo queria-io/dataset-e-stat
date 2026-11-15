@@ -106,13 +106,13 @@ LIMIT 20
 
 ## 市区町村コードで他のデータとつなぐ
 
-`area` の先頭5桁が標準地域コードです。`code.municipality` や SSDS の市区町村テーブルと突き合わせられます。
+`area` の先頭5桁が標準地域コードです。`soumu.code.municipality` や SSDS の市区町村テーブルと突き合わせられます。
 
 ```sql
 -- 小地域の人口を市区町村名付きで
 SELECT m.pref_name, m.municipality_name, SUM(c.value) AS population
 FROM e_stat.census.census_small_area_age c
-JOIN e_stat.code.municipality m ON SUBSTR(c.area, 1, 5) = m.area_code
+JOIN soumu.code.municipality m ON SUBSTR(c.area, 1, 5) = m.area_code
 WHERE c.cat01 = '0010' AND c.area_level = 'small_area'
 GROUP BY m.pref_name, m.municipality_name
 ORDER BY population DESC

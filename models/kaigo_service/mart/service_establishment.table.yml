@@ -30,7 +30,7 @@ fields:
     description: "調査年。毎年10月1日現在の調査で、2013〜2024で欠けは無い"
   - name: area_code
     title: 地域コード
-    description: "統計に用いる標準地域コード（5桁）。原典の行見出しは地域名だけなので、code.municipality の現行の名前から当てている。全国は 00000"
+    description: "統計に用いる標準地域コード（5桁）。原典の行見出しは地域名だけなので、soumu.code.municipality の現行の名前から当てている。全国は 00000"
     annotations: { queria: { semantic: { role: entity, name: city } } }
   - name: area_name
     title: 地域名
@@ -44,7 +44,7 @@ fields:
     annotations: { queria: { semantic: { role: entity, name: prefecture } } }
   - name: prefecture_name
     title: 都道府県名
-    description: "都道府県名。code.municipality の pref_name。全国の行は NULL"
+    description: "都道府県名。soumu.code.municipality の pref_name。全国の行は NULL"
   - name: service_category
     title: サービスの区分
     description: "サービスの区分。居宅サービス・介護予防サービス・地域密着型サービス・地域密着型介護予防サービスの4つで、原典の表に対応する"

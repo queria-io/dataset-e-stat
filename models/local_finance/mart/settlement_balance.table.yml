@@ -35,7 +35,7 @@ fields:
     description: 原典の団体区分コード。1=政令指定都市、2=特別区、8=中核市、9=施行時特例市、3・4=その他の市、5=町村、6・7=一部事務組合・広域連合。都道府県分と、1990〜2000年度調査の組合の一部では空欄。空欄の年でも団体コードの3桁目が8・9なら組合にあたる
   - name: area_code
     title: 標準地域コード（5桁）
-    description: 標準地域コード（5桁）。lg_code の先頭5桁で、census / boundary / code.municipality と同じ体系。合計(全国)の行では NULL。一部事務組合は市区町村ではないのでこのコードで code.municipality を引いても当たらない
+    description: 標準地域コード（5桁）。lg_code の先頭5桁で、census / boundary / soumu.code.municipality と同じ体系。合計(全国)の行では NULL。一部事務組合は市区町村ではないのでこのコードで soumu.code.municipality を引いても当たらない
     annotations: { queria: { semantic: { role: entity, name: city } } }
   - name: lg_code
     title: 全国地方公共団体コード（6桁）

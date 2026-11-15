@@ -41,7 +41,7 @@ fields:
     description: "nationwide=全国の行、municipality=市区町村（東京23区・政令指定都市は1保険者）、union=広域連合・一部事務組合。足し合わせて全国になるのは municipality と union"
   - name: area_code
     title: 地域コード
-    description: "市区町村が単独で保険者の行の、統計に用いる標準地域コード（5桁）。現行の code.municipality に名前で当てたもの。広域連合・全国の行と、合併で無くなった市町村は NULL"
+    description: "市区町村が単独で保険者の行の、統計に用いる標準地域コード（5桁）。現行の soumu.code.municipality に名前で当てたもの。広域連合・全国の行と、合併で無くなった市町村は NULL"
     annotations: { queria: { semantic: { role: entity, name: city } } }
   - name: insured_category
     title: 被保険者の区分

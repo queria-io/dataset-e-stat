@@ -7,6 +7,6 @@ SELECT
     m.pref_code AS prefecture_code,
     m.pref_name AS prefecture_name,
     u.area_code,
-    coalesce(m.municipality_name, m.designated_city_name) AS municipality_name
+    m.name AS municipality_name
 FROM {{ ref('kaigo_insurance_union_member') }} u
-LEFT JOIN {{ ref('municipality') }} m ON m.area_code = u.area_code
+LEFT JOIN {{ ref('stg_area') }} m ON m.area_code = u.area_code
