@@ -148,14 +148,18 @@ def fetch_local(app_id: str, spec: dict, cache_path) -> None:
     if out.exists():
         logger.info("  municipality_history_snapshot: 取得済み")
         return
+    # 日付ごとの一覧を files/<catalog_modified_date>/ に残し、途中で止まっても次の回は続きから取る
+    files = out.parent / "files" / str(spec["catalog_modified_date"])
     dates = sorted({FIRST_DATE, *(date.fromisoformat(r["effective_date"]) for r in change_rows)})
-    parts = []
     for i, as_of in enumerate(dates, 1):
-        parts.append(pa.Table.from_pylist(snapshot(as_of), schema=SNAPSHOT_SCHEMA))
-        logger.info(f"  {as_of} ({i}/{len(dates)}): {parts[-1].num_rows} 行")
+        path = files / f"snapshot_{as_of}.parquet"
+        if path.exists():
+            continue
+        _write(path, pa.Table.from_pylist(snapshot(as_of), schema=SNAPSHOT_SCHEMA))
+        logger.info(f"  ({i}/{len(dates)})")
         # 1 回に 1 つずつ、間を空けて取る
         time.sleep(1)
-    _write(out, pa.concat_tables(parts))
+    _write(out, pa.concat_tables([pq.read_table(files / f"snapshot_{d}.parquet") for d in dates]))
 
 
 def _write(out, table: pa.Table) -> None:
