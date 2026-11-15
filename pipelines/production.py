@@ -40,7 +40,7 @@ import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
 
-from pipelines import EstatStatus
+from pipelines import EstatStatus, source_file
 
 logger = logging.getLogger("pipelines")
 
@@ -71,6 +71,8 @@ SCHEMA = pa.schema(
         ("item_name", pa.string()),
         ("unit", pa.string()),
         ("value", pa.float64()),
+        ("source_sheet", pa.string()),
+        ("source_row", pa.int32()),
     ]
 )
 
@@ -90,9 +92,9 @@ def _fetch(url: str) -> bytes:
     raise RuntimeError("unreachable")
 
 
-def latest_files(app_id: str) -> dict[int, tuple[int, str]]:
-    """年ごとに、最新の月の月報（統計表・確報）の Excel を (月, URL) で返す。"""
-    files: dict[int, tuple[int, str]] = {}
+def latest_files(app_id: str) -> dict[int, tuple[int, str, str | None]]:
+    """年ごとに、最新の月の月報（統計表・確報）の Excel を (月, URL, 掲載ページの URL) で返す。"""
+    files: dict[int, tuple[int, str, str | None]] = {}
     start = 1
     while True:
         params = {
@@ -118,7 +120,7 @@ def latest_files(app_id: str) -> dict[int, tuple[int, str]]:
             for r in [resources] if isinstance(resources, dict) else resources:
                 if RESOURCE_RE.search(r["TITLE"]["NAME"]) and r["FORMAT"] == "XLS":
                     if year not in files or month > files[year][0]:
-                        files[year] = (month, r["URL"])
+                        files[year] = (month, r["URL"], item["DATASET"].get("LANDING_PAGE"))
         next_key = listing.get("RESULT_INF", {}).get("NEXT_KEY")
         if not next_key:
             break
@@ -154,7 +156,7 @@ def parse(body: bytes, year: int) -> pa.Table:
     body_rows = df.iloc[2:]
     body_rows = body_rows[body_rows.iloc[:, 0].astype(str).str.fullmatch(r"\d{4}")]
     records = []
-    for _, row in body_rows.iterrows():
+    for index, row in body_rows.iterrows():
         meta = [str(v).strip() if pd.notna(v) else None for v in row.iloc[: len(HEADER)]]
         for col, code in months:
             records.append(
@@ -171,6 +173,9 @@ def parse(body: bytes, year: int) -> pa.Table:
                     "item_name": meta[6],
                     "unit": meta[7],
                     "value": _number(row.iloc[col]),
+                    "source_sheet": SHEET,
+                    # header=None で読んだので、行の番号は 0 から。Excel の行番号は 1 から
+                    "source_row": int(index) + 1,
                 }
             )
     return pa.Table.from_pylist(records, schema=SCHEMA)
@@ -180,9 +185,15 @@ def build_production(dest_dir: str, app_id: str) -> None:
     """2022年からの年ごとの最新の月報を取り、縦持ちの Parquet に書く。"""
     dest = Path(dest_dir)
     dest.mkdir(parents=True, exist_ok=True)
-    parts = []
-    for year, (month, url) in sorted(latest_files(app_id).items()):
-        table = parse(_fetch(url), year)
+    (dest / "files").mkdir(exist_ok=True)
+    previous = source_file.previous_rows("production")
+    parts, fetched = [], []
+    for year, (month, url, page_url) in sorted(latest_files(app_id).items()):
+        path = dest / "files" / f"monthly_{year}"
+        row = source_file.fetch(url, path, previous, page_url)
+        fetched.append(row)
+        table = parse(path.read_bytes(), year)
+        table = table.append_column("source_sha256", pa.array([row["sha256"]] * table.num_rows, pa.string()))
         logger.info(f"  production {year} (1-{month}月): {table.num_rows} 行")
         parts.append(table)
     table = pa.concat_tables(parts)
@@ -192,4 +203,5 @@ def build_production(dest_dir: str, app_id: str) -> None:
     if lag > MAX_LAG_MONTHS:
         raise RuntimeError(f"生産動態統計の最新の月が {latest} で {lag} か月遅れている")
     pq.write_table(table, dest / "monthly.parquet")
+    source_file.write(dest / "source_file.parquet", fetched, previous)
     logger.info(f"  production: {table.num_rows} 行")

@@ -42,7 +42,7 @@ import openpyxl
 import pyarrow as pa
 import pyarrow.parquet as pq
 
-from pipelines import EstatStatus
+from pipelines import EstatStatus, source_file
 from pipelines.commerce import _fetch
 from pipelines.energy_consumption import PREFECTURES
 
@@ -93,9 +93,9 @@ def _norm(s: str) -> str:
     return re.sub(r"\s+", "", unicodedata.normalize("NFKC", s))
 
 
-def file_urls(app_id: str) -> dict[str, str]:
-    """表ごとに、いちばん新しい調査年月の Excel の URL を返す。旧様式のファイルも同じ名前で残っている。"""
-    found: dict[str, list[tuple[str, str]]] = {key: [] for key in TABLES}
+def file_urls(app_id: str) -> dict[str, tuple[str, str | None]]:
+    """表ごとに、いちばん新しい調査年月の Excel の URL と掲載ページの URL を返す。旧様式のファイルも同じ名前で残っている。"""
+    found: dict[str, list[tuple[str, str, str | None]]] = {key: [] for key in TABLES}
     seen: set[str] = set()
     start_position = 1
     while True:
@@ -121,7 +121,7 @@ def file_urls(app_id: str) -> dict[str, str]:
                     seen.add(f"{title.get('NAME')} [{r['FORMAT']}]")
                 for key, (table_title, _) in TABLES.items():
                     if _norm(table_title) in names and r["FORMAT"] in EXCEL_FORMATS:
-                        found[key].append((survey_date, r["URL"]))
+                        found[key].append((survey_date, r["URL"], item["DATASET"].get("LANDING_PAGE")))
         next_key = listing.get("RESULT_INF", {}).get("NEXT_KEY")
         if not next_key:
             break
@@ -131,7 +131,7 @@ def file_urls(app_id: str) -> dict[str, str]:
     missing = [TABLES[key][0] for key, urls in found.items() if not urls]
     if missing:
         raise RuntimeError(f"一般職業紹介状況の Excel が見つからない: {missing} (都道府県別の候補: {sorted(seen)})")
-    return {key: max(urls)[1] for key, urls in found.items()}
+    return {key: max(urls, key=lambda u: (u[0], u[1]))[1:] for key, urls in found.items()}
 
 
 def _number(cell) -> float | None:
@@ -224,8 +224,16 @@ def build_job_placement(dest_dir: str, app_id: str) -> None:
     """受理地別と就業地別の Excel を取り、縦持ちの Parquet に書く。"""
     dest = Path(dest_dir)
     dest.mkdir(parents=True, exist_ok=True)
-    for basis, url in file_urls(app_id).items():
-        table = parse(_fetch(url), basis)
+    (dest / "files").mkdir(exist_ok=True)
+    previous = source_file.previous_rows("job_placement")
+    fetched = []
+    for basis, (url, page_url) in file_urls(app_id).items():
+        path = dest / "files" / f"prefecture_{basis}"
+        row = source_file.fetch(url, path, previous, page_url)
+        fetched.append(row)
+        table = parse(path.read_bytes(), basis)
+        table = table.append_column("source_sha256", pa.array([row["sha256"]] * table.num_rows, pa.string()))
         _check(table, basis)
         pq.write_table(table, dest / f"prefecture_{basis}.parquet")
         logger.info(f"  job_placement prefecture_{basis}: {table.num_rows} 行")
+    source_file.write(dest / "source_file.parquet", fetched, previous)

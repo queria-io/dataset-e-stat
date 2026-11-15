@@ -3,6 +3,7 @@
 | テーブル | 内容 | 主なカラム |
 |---------|------|-----------|
 | sales_by_business_monthly | 業種別の商業販売額（10億円）と前年同月比（前年同月=100）。1980年1月〜 | time / year / month / business / business_level / sector / sales_billion_yen / yoy_index |
+| source_file | 取得したファイルの一覧。1 行が 1 つのファイル | url / page_url / sha256 / bytes / retrieved_at |
 
 経済産業省の商業動態統計調査のうち、業種別商業販売額の時系列です。毎月の公表で過去の月も直るので、
 毎日の更新で全期間を取り直して置き換えます。

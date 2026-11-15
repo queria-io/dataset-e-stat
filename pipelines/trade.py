@@ -50,7 +50,7 @@ import pyarrow.compute as pc
 import pyarrow.csv as pacsv
 import pyarrow.parquet as pq
 
-from pipelines import EstatStatus
+from pipelines import EstatStatus, source_file
 
 logger = logging.getLogger("pipelines")
 
@@ -141,6 +141,7 @@ def catalog_datasets(app_id: str, first_year: int | None = None, last_year: int 
                     "year": survey // 100,
                     "month": survey % 100,
                     "flow": flow,
+                    "page_url": item["DATASET"].get("LANDING_PAGE"),
                     "files": [
                         {
                             "name": r["TITLE"]["NAME"],
@@ -341,13 +342,23 @@ def build_trade_recent(dest_dir: str, app_id: str, through_year: int) -> None:
     years = sorted({y for y, _ in latest if y > through_year})
     if not years:
         raise RuntimeError(f"{through_year} 年より後の品別国別表が無い")
-    parts = []
+    files = dest / "files"
+    files.mkdir(exist_ok=True)
+    previous = source_file.previous_rows("trade")
+    parts, fetched = [], []
     for year in years:
         for flow in ("export", "import"):
             d = latest.get((year, flow))
             if d is None:
                 raise RuntimeError(f"{year} {flow} のデータセットが無い")
-            parts.append(fetch_dataset(d))
+            for i, f in enumerate(d["files"]):
+                path = files / f"{year}_{flow}_{i:02d}.csv"
+                row = source_file.fetch(f["url"], path, previous, d["page_url"])
+                fetched.append(row)
+                part = parse_csv(path.read_bytes(), flow, year, f["release"])
+                parts.append(part.append_column("source_sha256", pa.array([row["sha256"]] * part.num_rows, pa.string())))
+            logger.info(f"  {year} {flow} (1-{d['month']}月): {len(d['files'])} ファイル")
     table = pa.concat_tables(parts).sort_by(SORT_KEYS)
     pq.write_table(table, dest / "recent.parquet")
+    source_file.write(dest / "source_file.parquet", fetched, previous)
     logger.info(f"  trade recent: {table.num_rows} 行 ({years[0]}-{years[-1]}年)")

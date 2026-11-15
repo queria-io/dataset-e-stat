@@ -58,6 +58,9 @@ fields:
 - name: active_openings_ratio
   title: 有効求人倍率
   description: 有効求人数 ÷ 有効求職者数（倍）。実数（原数値）
+- name: source_sha256
+  title: 元のファイル
+  description: この行を作った Excel ファイルの sha256。source_file の sha256 と結合すると、取得した URL と日時を確認できる
 annotations:
   queria:
     themes:

@@ -26,6 +26,7 @@ SELECT
     u.quantity1,
     u.quantity2,
     u.value_thousand_yen,
-    u.release
+    u.release,
+    u.source_sha256
 FROM unioned u
 LEFT JOIN {{ ref('stg_trade_country') }} c USING (country_code)

@@ -16,6 +16,7 @@ SELECT
     quantity1,
     quantity2,
     value AS value_thousand_yen,
-    release
+    release,
+    source_sha256
 FROM {{ ref(raw_model) }}
 {% endmacro %}

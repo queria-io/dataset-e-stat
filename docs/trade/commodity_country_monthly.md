@@ -3,6 +3,7 @@
 | テーブル | 内容 | 主なカラム |
 |---------|------|-----------|
 | commodity_country_monthly | 輸出入・年・月・統計品目番号（9桁）・国ごとの数量と金額（1988年〜） | flow / year / month / hs_code / hs2 / hs4 / hs6 / country_code / country_name / unit1 / unit2 / quantity1 / quantity2 / value_thousand_yen / release |
+| source_file | 取得したファイルの一覧。1 行が 1 つのファイル | url / page_url / sha256 / bytes / retrieved_at |
 
 財務省の普通貿易統計のうち、品別国別表（全国分）です。輸出と輸入それぞれについて、統計品目番号
 （9桁）と国の組ごとに、月の数量と金額を持ちます。1988年から最新の公表月まで、約5,000万行あります。

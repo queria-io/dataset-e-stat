@@ -11,7 +11,8 @@ SELECT
     active_job_openings,
     active_applicants,
     new_openings_ratio,
-    active_openings_ratio
+    active_openings_ratio,
+    source_sha256
 FROM {{ ref('stg_job_placement_prefecture') }}
 WHERE period_type = 'month'
 ORDER BY basis, seasonally_adjusted, area, year, month

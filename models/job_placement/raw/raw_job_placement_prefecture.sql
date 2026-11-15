@@ -3,5 +3,5 @@
 {{ config(materialized='table') }}
 SELECT period_type, year, month, basis, seasonally_adjusted, area, area_name,
     new_job_openings, new_applications, active_job_openings, active_applicants,
-    new_openings_ratio, active_openings_ratio
+    new_openings_ratio, active_openings_ratio, source_sha256
 FROM read_parquet('data/job_placement/prefecture_*.parquet')

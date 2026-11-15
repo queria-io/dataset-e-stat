@@ -4,6 +4,7 @@
 |---------|------|-----------|
 | labor_market_monthly | 都道府県別のハローワークの求人数・求職者数・求人倍率（月次）。受理地別は1963年1月〜、就業地別は2005年2月〜 | year / month / basis / seasonally_adjusted / prefecture_code / active_openings_ratio |
 | labor_market_annual | 同じ指標の年平均と年度平均。受理地別は1963年〜、就業地別は2006年〜 | period_type / year / basis / prefecture_code / active_openings_ratio |
+| source_file | 取得したファイルの一覧。1 行が 1 つのファイル | url / page_url / sha256 / bytes / retrieved_at |
 
 厚生労働省の一般職業紹介状況（職業安定業務統計）の長期時系列表のうち、都道府県別の表（受理地別の第11表、
 就業地別の第18表）です。新規学卒者を除き、パートタイムを含む一般の値です。毎月の公表で差し替わり、
