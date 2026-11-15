@@ -127,7 +127,7 @@ ORDER BY l.unemployment_rate DESC
 LIMIT 10
 ```
 
-産業別の就業者数は市区町村の粒度でも[小地域集計](README.md)の `census_small_area_industry` にあります（`area_level = 'municipality'`）。ただしそちらは政令指定都市を区の単位で持つので、市全体の行はありません。
+産業別の就業者数は市区町村の粒度でも[小地域集計](index.md)の `census_small_area_industry` にあります（`area_level = 'municipality'`）。ただしそちらは政令指定都市を区の単位で持つので、市全体の行はありません。
 
 `lg_code` や `address_br` が使う全国地方公共団体コードは6桁で、末尾にチェックデジットが付く別の体系です。結合するときは桁と体系を揃えてください。
 
