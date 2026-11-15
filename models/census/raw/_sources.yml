@@ -34,6 +34,9 @@ sources:
       - name: school_municipality_schools
       - name: school_municipality_students
       - name: school_municipality_teachers
+      # 市区町村コードと名前の履歴。手元でだけ取り込む (load_local.py municipality_history)。CI の main.py はロードしない
+      - name: municipality_history_event
+      - name: municipality_history_snapshot
       - name: mesh_population
       - name: mesh_establishment
       # 手元でだけ取り込む (load_local_mesh.py)。CI の main.py はロードしない
