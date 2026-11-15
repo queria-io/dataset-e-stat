@@ -8,7 +8,7 @@
    不詳 (52000) を持つ。
 
    下3桁が 0 で始まる地域 (XX0X0) は集計行か政令指定都市の合計行で、名前で分ける。
-   政令指定都市は code.municipality の合計行に名前で当てて標準地域コードに直す。
+   政令指定都市は今の政令指定都市の名前に当てて標準地域コードに直す。
    市部・郡部などの集計行は落とす (コードが標準地域コードと紛らわしく、
    市区町村から足し上げられる)。 #}
 WITH areas AS (
@@ -41,8 +41,8 @@ classified AS (
 ),
 
 designated_city AS (
-    SELECT pref_code, designated_city_name, area_code
-    FROM {{ ref('municipality') }}
+    SELECT pref_code, name AS designated_city_name, area_code
+    FROM {{ ref('stg_area') }}
     WHERE area_kind = 'designated_city'
 )
 

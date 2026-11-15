@@ -1,5 +1,5 @@
 -- 原典の行見出し (「全国計」と都道府県名) を標準地域コードに当てる。
--- 都道府県名は原典も code.municipality も正式名 (北海道・東京都・大阪府 など) なので、名前で当てる。
+-- 都道府県名は原典も stg_area も正式名 (北海道・東京都・大阪府 など) なので、名前で当てる。
 WITH labels AS (
     SELECT DISTINCT prefecture_name FROM {{ ref('raw_energy_consumption_industry') }}
     UNION
@@ -8,8 +8,8 @@ WITH labels AS (
 
 prefecture AS (
     SELECT pref_code, pref_name
-    FROM {{ ref('stg_municipality') }}
-    WHERE is_prefecture
+    FROM {{ ref('stg_area') }}
+    WHERE area_kind = 'prefecture'
 )
 
 SELECT

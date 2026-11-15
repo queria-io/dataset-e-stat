@@ -99,7 +99,7 @@ LIMIT 10
 
 ## 人口と並べる
 
-area は `code.municipality` の `area_code` や census 系の `area` と同じ標準地域コード（5桁）です。`census.census_municipality` と結合すると人口あたりの転入超過を出せます。全国地方公共団体コード（6桁）とは別体系なので、`lg_code` と結合するときは桁を揃えます。
+area は `soumu.code.municipality` の `area_code` や census 系の `area` と同じ標準地域コード（5桁）です。`census.census_municipality` と結合すると人口あたりの転入超過を出せます。全国地方公共団体コード（6桁）とは別体系なので、`lg_code` と結合するときは桁を揃えます。
 
 ```sql
 SELECT m.area_name, c.population, m.net_inflow,

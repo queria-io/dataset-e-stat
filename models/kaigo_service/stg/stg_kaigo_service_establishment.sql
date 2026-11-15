@@ -1,11 +1,10 @@
 -- 行見出しの地域名に標準地域コードを当てる。
 --
 -- 都道府県は 2023 年調査まで「青森」、2024 年調査から「青森県」で入る。接尾辞を
--- 補って code.municipality の pref_name にそろえる。東京・大阪・京都は「都」
+-- 補って code.municipality_name の pref_name にそろえる。東京・大阪・京都は「都」
 -- 「府」で終わるので、末尾 1 文字で判定する前に名指しで拾う。
 --
--- 市の行は指定都市と中核市。指定都市は code.municipality で municipality_name が
--- NULL・district_name が市名の行なので、両方を COALESCE で一本にして突き合わせる
+-- 市の行は指定都市と中核市。今の市区町村と政令指定都市の名前に当てる
 -- (welfare_facility と同じ当て方)。
 WITH named AS (
     SELECT
@@ -22,8 +21,8 @@ WITH named AS (
 
 prefecture AS (
     SELECT area_code, pref_code, pref_name
-    FROM {{ ref('stg_municipality') }}
-    WHERE is_prefecture
+    FROM {{ ref('stg_area') }}
+    WHERE area_kind = 'prefecture'
 ),
 
 city AS (
@@ -31,10 +30,9 @@ city AS (
         area_code,
         pref_code,
         pref_name,
-        COALESCE(municipality_name, district_name) AS city_name
-    FROM {{ ref('stg_municipality') }}
-    WHERE NOT is_prefecture
-        AND (municipality_name IS NOT NULL OR district_name LIKE '%市')
+        name AS city_name
+    FROM {{ ref('stg_area') }}
+    WHERE area_kind <> 'prefecture'
 )
 
 SELECT

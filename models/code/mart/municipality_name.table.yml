@@ -56,7 +56,7 @@ fields:
     annotations: { queria: { semantic: { role: entity, name: prefecture } } }
   - name: area_code
     title: 標準地域コード（5桁）
-    description: その期間の標準地域コード（5桁）。合併で使われなくなったコードも含む。code.municipality の area_code と同じ体系
+    description: その期間の標準地域コード（5桁）。合併で使われなくなったコードも含む。soumu.code.municipality の area_code と同じ体系
   - name: lg_code
     title: 全国地方公共団体コード（6桁）
     description: area_code に検査数字を付けた全国地方公共団体コード（6桁）

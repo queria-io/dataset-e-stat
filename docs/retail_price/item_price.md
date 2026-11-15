@@ -39,12 +39,12 @@ ORDER BY year
 
 ## 都道府県を付けて見る
 
-`area` は5桁の標準地域コードそのものなので、`code.municipality` と直接つなげます。
+`area` は5桁の標準地域コードそのものなので、`soumu.code.municipality` と直接つなげます。
 
 ```sql
 SELECT m.pref_name, p.area_name, p.value
 FROM e_stat.retail_price.item_price p
-JOIN e_stat.code.municipality m ON m.area_code = p.area
+JOIN soumu.code.municipality m ON m.area_code = p.area
 WHERE p.cat02 = '01021' AND p.year = 2024 AND p.value IS NOT NULL
 ORDER BY p.value DESC
 ```
@@ -63,7 +63,7 @@ ORDER BY p.value DESC
 
 ## 市のコードは政令指定都市への移行で変わる
 
-`code.municipality` とつながるのは95コード中88件です。つながらない7件は政令指定都市になる前のコードで、`area_note` に有効期間が入ります。
+`soumu.code.municipality` とつながるのは95コード中88件です。つながらない7件は政令指定都市になる前のコードで、`area_note` に有効期間が入ります。
 
 ```
 浦和市 11204（〜2001年4月） → さいたま市 11244（2001年5月〜2003年3月） → さいたま市 11100

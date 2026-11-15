@@ -23,7 +23,7 @@ sources:
 fields:
   - name: area
     title: 標準地域コード（5桁）
-    description: 標準地域コード。全国は 00000、都道府県は 13000 のように市区町村部が 000。establishment_industry・census_municipality の area・code.municipality の area_code と同じ体系
+    description: 標準地域コード。全国は 00000、都道府県は 13000 のように市区町村部が 000。establishment_industry・census_municipality の area・soumu.code.municipality の area_code と同じ体系
     annotations: { queria: { semantic: { role: entity, name: city } } }
   - name: area_name
     title: 地域名

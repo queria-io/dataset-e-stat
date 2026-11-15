@@ -1,7 +1,7 @@
 -- 年度ごとの保険者の一覧に、都道府県コードと市区町村コードを当てる。
 --
 -- 原典には保険者番号が無く、都道府県名と保険者名だけが並ぶ。市区町村が単独で
--- 保険者のときは、現行の code.municipality に名前で当てる。「関ヶ原町」と「関ケ原町」
+-- 保険者のときは、今の市区町村の名前に当てる。「関ヶ原町」と「関ケ原町」
 -- のように原典と標準地域コードで小さいヶとケが揺れるので、ケに寄せて比べる。
 -- 合併で無くなった市町村は当たらず area_code が NULL になる。
 --
@@ -19,8 +19,8 @@ municipality AS (
     SELECT
         area_code,
         pref_code,
-        replace(coalesce(municipality_name, designated_city_name), 'ヶ', 'ケ') AS name_key
-    FROM {{ ref('municipality') }}
+        replace(name, 'ヶ', 'ケ') AS name_key
+    FROM {{ ref('stg_area') }}
     WHERE is_municipality
         -- 北方領土の 6 村は保険者にならない。北海道に泊村が 2 つ (01403・01696) あり、
         -- 外さないと 2008年度まで単独の保険者だった後志の泊村の行が 2 倍になる
@@ -29,8 +29,8 @@ municipality AS (
 
 prefecture AS (
     SELECT pref_code, pref_name
-    FROM {{ ref('municipality') }}
-    WHERE is_prefecture
+    FROM {{ ref('stg_area') }}
+    WHERE area_kind = 'prefecture'
 ),
 
 classified AS (

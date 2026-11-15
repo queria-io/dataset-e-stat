@@ -104,7 +104,7 @@ ORDER BY e.area_name, e.sex
 
 ## 他のテーブルとつなぐ
 
-`area` は標準地域コード（5桁）です。`census_municipality` の `area`、`code.municipality` の `area_code`、`census_small_area_*` の市区町村行、`boundary.small_area` の `key_code` の上位5桁と同じ体系です。
+`area` は標準地域コード（5桁）です。`census_municipality` の `area`、`soumu.code.municipality` の `area_code`、`census_small_area_*` の市区町村行、`boundary.small_area` の `key_code` の上位5桁と同じ体系です。
 
 ```sql
 -- 人口10万人以上の市区町村で、完全失業率の高い順

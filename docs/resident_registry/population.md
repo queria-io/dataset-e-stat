@@ -39,7 +39,7 @@ ORDER BY year;
 `area_level` は national（全国計）・prefecture（都道府県）・municipality（市区町村）です。
 municipality の行には郡・政令指定都市の合計・その行政区も含まれるので、絞らずに合計すると
 政令市とその区、郡とその町村を二重に数えます。日本全域をちょうど1回覆う集計には
-`area_code` で code.municipality を引き、`is_municipality` で絞ります。
+`area_code` で soumu.code.municipality を引き、`is_municipality` で絞ります。
 
 ```sql
 -- 2026年1月1日時点で人口の多い市区町村（政令市は1団体、行政区は数えない）
@@ -53,10 +53,10 @@ LIMIT 10;
 ```
 
 `area_code` は `lg_code`（全国地方公共団体コード・6桁）の先頭5桁で、census / boundary /
-code.municipality と同じ標準地域コードです。東京都の島しょ集計行と2009年の北方領土6村は
+soumu.code.municipality と同じ標準地域コードです。東京都の島しょ集計行と2009年の北方領土6村は
 元データが団体コードを持たないため、`lg_code` と `area_code` が NULL になります。
 
-合併で消滅したコードは現行の code.municipality に無いため、古い年ほど結合できない行が
+合併で消滅したコードは現行の soumu.code.municipality に無いため、古い年ほど結合できない行が
 増えます（2026年は2,226行すべてが結合でき、1995年は3,881行のうち1,857行）。この結合で
 絞った合計が全国計とちょうど一致するのは2019年以降で、それより前は消滅したコードの分だけ
 少なくなります。合併をまたいで接続するには code.municipality_change を使いますが、機械可読な

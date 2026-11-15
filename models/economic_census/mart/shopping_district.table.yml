@@ -33,7 +33,7 @@ fields:
     description: 'national=全国の計（1）、prefecture=都道府県の計（47）、municipality=市・町村・特別区部の計（1,334）、ward=政令指定都市の区・特別区の計（197）、district=商業集積地区（12,535）。district だけ、または municipality だけを足すと全国の計に一致する'
   - name: area
     title: 標準地域コード（5桁）
-    description: 地区を含む市区町村（政令指定都市と特別区部では区）の標準地域コード。計の行はその地域自身のコード（全国 00000、都道府県 13000 など）。retail_municipality・establishment_industry の area・code.municipality の area_code と同じ体系
+    description: 地区を含む市区町村（政令指定都市と特別区部では区）の標準地域コード。計の行はその地域自身のコード（全国 00000、都道府県 13000 など）。retail_municipality・establishment_industry の area・soumu.code.municipality の area_code と同じ体系
     annotations: { queria: { semantic: { role: entity, name: city } } }
   - name: parent_district_code
     title: 上位の district_code

@@ -27,7 +27,7 @@
 --    足し算も変えずに落ちるので、ここで名指しで押さえる。
 --
 -- 4) area_kind が現行の標準地域コード一覧と食い違わない。段はコードの桁から
---    決めているので、code.municipality に残っているコードについては答え合わせが
+--    決めているので、stg_area に残っているコードについては答え合わせが
 --    できる (東京23区は municipality、政令指定都市の行政区は ward)。合併で消えた
 --    コードは一覧に無いので比べない。
 --
@@ -148,14 +148,14 @@ area_column_failures AS (
     WHERE null_rows > 0
 ),
 
--- 4) 段が現行の標準地域コード一覧と食い違わない
+-- 4) 段が今の市区町村の一覧と食い違わない
 kind_failures AS (
     SELECT DISTINCT
         'area_kind_mismatch' AS check_name,
         s.area_code || ' ' || s.area_name
             || ' ' || s.area_kind || ' <> ' || m.area_kind AS detail
     FROM stats s
-    JOIN {{ ref('municipality') }} m ON m.area_code = s.area_code
+    JOIN {{ ref('stg_area') }} m ON m.area_code = s.area_code
     WHERE s.area_kind <> m.area_kind
 ),
 

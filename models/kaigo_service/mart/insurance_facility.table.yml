@@ -27,7 +27,7 @@ fields:
     description: "調査年。毎年10月1日現在の調査で、2001〜2024で欠けは無い"
   - name: area_code
     title: 地域コード
-    description: "統計に用いる標準地域コード（5桁）。調査時点のコードなので、その後の合併で消えたコードが混ざる（実測: 2001〜2024年調査に出る3,785コードのうち、現行の code.municipality に残るのは1,960）"
+    description: "統計に用いる標準地域コード（5桁）。調査時点のコードなので、その後の合併で消えたコードが混ざる（実測: 2001〜2024年調査に出る3,785コードのうち、現行の soumu.code.municipality に残るのは1,960）"
     annotations: { queria: { semantic: { role: entity, name: city } } }
   - name: area_name
     title: 地域名
@@ -41,7 +41,7 @@ fields:
     annotations: { queria: { semantic: { role: entity, name: prefecture } } }
   - name: prefecture_name
     title: 都道府県名
-    description: "都道府県名。code.municipality の pref_name。全国の行は NULL"
+    description: "都道府県名。soumu.code.municipality の pref_name。全国の行は NULL"
   - name: facility_type
     title: 施設の種類
     description: "施設の種類。介護老人福祉施設（特別養護老人ホーム）・介護老人保健施設・介護医療院・介護療養型医療施設。介護医療院は2018年調査から、介護療養型医療施設は2023年調査まで"

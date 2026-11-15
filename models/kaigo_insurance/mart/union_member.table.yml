@@ -32,7 +32,7 @@ fields:
     annotations: { queria: { semantic: { role: entity, name: city } } }
   - name: municipality_name
     title: 市町村名
-    description: "構成市町村の名前。code.municipality の名前"
+    description: "構成市町村の名前。soumu.code.municipality の名前"
 annotations:
   queria:
     themes: [social_security_health]

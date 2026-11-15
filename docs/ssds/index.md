@@ -37,13 +37,13 @@ GROUP BY year
 ORDER BY year
 ```
 
-市区町村テーブルは政令指定都市の合計行（`01100` 札幌市）と行政区（`01101` 中央区）が同居します。市区町村単位で数えるときは `code.municipality` の `is_municipality` で絞ります。
+市区町村テーブルは政令指定都市の合計行（`01100` 札幌市）と行政区（`01101` 中央区）が同居します。市区町村単位で数えるときは `soumu.code.municipality` の `is_municipality` で絞ります。
 
 ```sql
 -- 政令市を1団体として数え、行政区は数えない
 SELECT m.pref_name, COUNT(*) AS municipalities
 FROM e_stat.ssds.a_municipal_population p
-JOIN e_stat.code.municipality m ON p.area = m.area_code
+JOIN soumu.code.municipality m ON p.area = m.area_code
 WHERE p.cat01 = 'A1101' AND p.year = 2020 AND m.is_municipality
 GROUP BY m.pref_name
 ORDER BY municipalities DESC
@@ -173,7 +173,7 @@ J1102 のように「うち」項目だけが並んでいて親に届かない�
 
 地域も同様に、都道府県版は全国計（area = 00000）を、市区町村版は政令指定都市の
 合計行と行政区をどちらも含みます。市区町村単位で数えるときは
-`code.municipality` の `is_municipality` で絞ります。
+`soumu.code.municipality` の `is_municipality` で絞ります。
 
 ## 補足: 指標別の収録年（ssds.series_coverage）
 

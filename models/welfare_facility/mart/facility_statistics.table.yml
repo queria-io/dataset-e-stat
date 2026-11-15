@@ -33,7 +33,7 @@ fields:
     description: "地域の種別。nationwide=全国、state=国（国が設置する施設）、prefecture=都道府県、designated_city=指定都市、core_city=中核市。指定都市と中核市の行があるのは2011年〜2017年調査だけ"
   - name: area_code
     title: 地域コード
-    description: "統計に用いる標準地域コード（5桁）。code.municipality の area_code と直接つながる。全国と国の行は NULL"
+    description: "統計に用いる標準地域コード（5桁）。soumu.code.municipality の area_code と直接つながる。全国と国の行は NULL"
     annotations: { queria: { semantic: { role: entity, name: city } } }
   - name: area_name
     title: 地域名

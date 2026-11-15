@@ -37,7 +37,7 @@ fields:
     description: 西暦の年。1月から12月までの移動を積んだ年次の値で、年度ではない
   - name: origin_code
     title: 前住地の標準地域コード（5桁）
-    description: 移動前の住所地（前住地）の地域コード（5桁）。標準地域コード（6桁）とは桁が違う。code.municipality の area_code・municipality_migration の area と同じ体系。00005=総数、99000=その他の県、末尾999=その他の市町村、政令指定都市コード+99（01199 など）=その他の区。この表では前住地が相手の地域で、総数とその他の行を持つ
+    description: 移動前の住所地（前住地）の地域コード（5桁）。標準地域コード（6桁）とは桁が違う。soumu.code.municipality の area_code・municipality_migration の area と同じ体系。00005=総数、99000=その他の県、末尾999=その他の市町村、政令指定都市コード+99（01199 など）=その他の区。この表では前住地が相手の地域で、総数とその他の行を持つ
     annotations: { queria: { semantic: { role: entity, name: city } } }
   - name: origin_name
     title: 前住地の地域名
