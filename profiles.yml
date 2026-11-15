@@ -7,6 +7,13 @@ e_stat:
       database: e_stat
       schema: main
       threads: 1
+      # DuckDB の既定はマシンのメモリの 80% まで使う。ubuntu-26.04 のランナーでは
+      # migration_od_is_consistent (約 7,000 万行のビュー 2 つを自己結合する) の途中で
+      # ランナーごと止まった。上限を置き、超えた分をディスクへスピルさせる
+      # (:memory: の接続は temp_directory を指定しないとスピルできない。pipelines/__init__.py と同じ)
+      settings:
+        memory_limit: "{{ env_var('DUCKDB_MEMORY_LIMIT', '8GB') }}"
+        temp_directory: "{{ env_var('TMPDIR', '/tmp') }}/duckdb-estat-dbt"
       # ビルドが公開ストレージを読むときの名乗り。shared/scripts/build-fdl.sh が
       # queria-build として渡す。無いと data.queria.io の利用統計に
       # 自分のビルドが利用者として混ざる。
