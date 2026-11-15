@@ -35,7 +35,7 @@ import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
 
-from pipelines import EstatStatus
+from pipelines import EstatStatus, source_file
 
 logger = logging.getLogger("pipelines")
 
@@ -82,8 +82,8 @@ def _fetch(url: str) -> bytes:
     raise RuntimeError("unreachable")
 
 
-def sales_file_url(app_id: str) -> str:
-    """時系列データのデータセットから、業種別商業販売額の Excel の URL を探す。"""
+def sales_file_url(app_id: str) -> tuple[str, str | None]:
+    """時系列データのデータセットから、業種別商業販売額の Excel の URL と掲載ページの URL を探す。"""
     params = {"appId": app_id, "statsCode": STATS_CODE, "searchWord": SUB_CATEGORY, "limit": 100}
     root = json.loads(_fetch(f"{CATALOG_URL}?{urllib.parse.urlencode(params)}"))["GET_DATA_CATALOG"]
     if root["RESULT"]["STATUS"] not in (EstatStatus.OK, EstatStatus.PARTIAL):
@@ -98,10 +98,11 @@ def sales_file_url(app_id: str) -> str:
         resources = item["RESOURCES"]["RESOURCE"]
         for r in [resources] if isinstance(resources, dict) else resources:
             if r["TITLE"]["NAME"].startswith(RESOURCE_PREFIX) and r["FORMAT"] == "XLS":
-                found.append((str(title["SURVEY_DATE"]), r["URL"]))
+                found.append((str(title["SURVEY_DATE"]), r["URL"], item["DATASET"].get("LANDING_PAGE")))
     if not found:
         raise RuntimeError(f"{SUB_CATEGORY} のデータセットに「{RESOURCE_PREFIX}…」の Excel が無い")
-    return max(found)[1]
+    _, url, page_url = max(found, key=lambda f: (f[0], f[1]))
+    return url, page_url
 
 
 def _parse_sheet(book: pd.ExcelFile, sheet: str) -> tuple[list[tuple[int, str, str]], pd.DataFrame]:
@@ -163,7 +164,13 @@ def build_commerce_sales(dest_dir: str, app_id: str) -> None:
     """業種別商業販売額の Excel を取り、縦持ちの Parquet に書く。"""
     dest = Path(dest_dir)
     dest.mkdir(parents=True, exist_ok=True)
-    table = parse(_fetch(sales_file_url(app_id)))
+    previous = source_file.previous_rows("commerce")
+    url, page_url = sales_file_url(app_id)
+    path = dest / "files" / "sales_by_business"
+    path.parent.mkdir(exist_ok=True)
+    row = source_file.fetch(url, path, previous, page_url)
+    table = parse(path.read_bytes())
+    table = table.append_column("source_sha256", pa.array([row["sha256"]] * table.num_rows, pa.string()))
     # Excel の差し替えが止まっても取り込みは成功するので、最新の月の遅れで気付く
     latest = max(table.column("time").to_pylist())
     today = date.today()
@@ -171,5 +178,6 @@ def build_commerce_sales(dest_dir: str, app_id: str) -> None:
     if lag > MAX_LAG_MONTHS:
         raise RuntimeError(f"業種別商業販売額の最新の月が {latest} で {lag} か月遅れている")
     pq.write_table(table, dest / "sales_by_business.parquet")
+    source_file.write(dest / "source_file.parquet", [row], previous)
     months = len(set(table.column("time").to_pylist()))
     logger.info(f"  commerce sales_by_business: {table.num_rows} 行 ({months} か月)")

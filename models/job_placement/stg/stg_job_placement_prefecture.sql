@@ -17,5 +17,6 @@ SELECT
     active_job_openings,
     active_applicants,
     new_openings_ratio,
-    active_openings_ratio
+    active_openings_ratio,
+    source_sha256
 FROM {{ ref('raw_job_placement_prefecture') }}

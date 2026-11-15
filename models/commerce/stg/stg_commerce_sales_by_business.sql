@@ -21,5 +21,6 @@ SELECT
         WHEN business_order BETWEEN 19 AND 30 THEN '小売業'
     END AS sector,
     sales_billion_yen,
-    yoy_index
+    yoy_index,
+    source_sha256
 FROM {{ ref('raw_commerce_sales_by_business') }}

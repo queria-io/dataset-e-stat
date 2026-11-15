@@ -56,6 +56,15 @@ fields:
 - name: value
   title: 値
   description: 値。原典の「X」（秘匿）は NULL。品種振替・投入（石油製品）は負の値がある
+- name: source_sha256
+  title: 元のファイル
+  description: この行を作った Excel ファイルの sha256。source_file の sha256 と結合すると、取得した URL と日時を確認できる
+- name: source_sheet
+  title: 元のシート
+  description: この行を読んだシートの名前（実数表）
+- name: source_row
+  title: 元の行番号
+  description: この行を読んだシートの行番号（1 から）
 annotations:
   queria:
     themes:

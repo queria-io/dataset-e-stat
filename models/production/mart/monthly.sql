@@ -10,5 +10,8 @@ SELECT
     item_symbol,
     item_name,
     unit,
-    value
+    value,
+    source_sha256,
+    source_sheet,
+    source_row
 FROM {{ ref('stg_production_monthly') }}
