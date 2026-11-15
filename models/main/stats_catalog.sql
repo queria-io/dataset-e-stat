@@ -2,7 +2,7 @@
 
 WITH class_deduped AS (
     SELECT stats_data_id, class_name, MIN(class_id) AS class_id
-    FROM {{ ref('raw_meta_info') }}
+    FROM {{ ref('stg_meta_info') }}
     WHERE class_id NOT IN ('area', 'time')
     GROUP BY stats_data_id, class_name
 ),

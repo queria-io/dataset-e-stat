@@ -19,6 +19,6 @@ SELECT
     m.unit,
     m.parent_code,
     m.add_inf
-FROM {{ ref('raw_meta_info') }} m
+FROM {{ ref('stg_meta_info') }} m
 JOIN ssds_tables s ON m.stats_data_id = s.id
 WHERE m.class_id NOT IN ('tab', 'area', 'time')

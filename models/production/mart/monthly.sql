@@ -11,4 +11,4 @@ SELECT
     item_name,
     unit,
     value
-FROM {{ ref('raw_production_monthly') }}
+FROM {{ ref('stg_production_monthly') }}
