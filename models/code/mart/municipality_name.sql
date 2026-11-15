@@ -1,31 +1,16 @@
 -- 市区町村の名前から標準地域コードを引くための表。1 行 = 1 つのコードの、1 つの名前の有効期間。
 --
 -- e-Stat「市区町村を探す」の一覧を 1970-04-01 と廃置分合等の施行日ごとに取ったもの
--- (raw_municipality_history_snapshot) を、同じコード・同じ名前が続く区間ごとにまとめる。
+-- (stg_municipality_history_snapshot) を、同じコード・同じ名前が続く区間ごとにまとめる。
 -- 一覧は施行日ごとにしか取っていないので、区間の境目は必ずどれかの施行日になる。
--- 北海道の振興局・支庁は名前に付けて書かないので、親の名前は郡と政令指定都市だけを持つ。
 WITH RECURSIVE dates AS (
     SELECT as_of, row_number() OVER (ORDER BY as_of) AS i
-    FROM (SELECT DISTINCT as_of FROM {{ ref('raw_municipality_history_snapshot') }})
+    FROM (SELECT DISTINCT as_of FROM {{ ref('stg_municipality_history_snapshot') }})
 ),
 
 snapshot AS (
-    SELECT
-        s.as_of,
-        d.i,
-        s.area_code,
-        s.pref_name,
-        CASE WHEN s.name IS NOT NULL AND regexp_matches(s.parent_name, '(郡|市)$') THEN s.parent_name END AS parent_name,
-        CASE WHEN s.name IS NOT NULL AND regexp_matches(s.parent_name, '(郡|市)$') THEN s.parent_kana END AS parent_kana,
-        -- 政令指定都市の市の行は、市の名前が親の列に入り、市区町村の列は空
-        coalesce(s.name, s.parent_name) AS name,
-        coalesce(s.kana, s.parent_kana) AS kana,
-        CASE
-            WHEN s.name IS NULL THEN 'designated_city'
-            WHEN s.parent_name LIKE '%市' THEN 'ward'
-            ELSE 'municipality'
-        END AS area_kind
-    FROM {{ ref('raw_municipality_history_snapshot') }} s
+    SELECT s.*, d.i
+    FROM {{ ref('stg_municipality_history_snapshot') }} s
     JOIN dates d USING (as_of)
 ),
 
@@ -86,7 +71,7 @@ candidates AS (
         END AS priority
     FROM ended e
     JOIN snapshot x ON x.area_code = e.area_code AND x.i = e.last_i
-    JOIN {{ ref('raw_municipality_history_event') }} c
+    JOIN {{ ref('stg_municipality_history_event') }} c
         ON c.effective_date = e.ended_on
         AND contains(c.reason, '(' || e.area_code || ')')
         AND c.area_code <> e.area_code

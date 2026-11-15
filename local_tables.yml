@@ -233,7 +233,7 @@ groups:
     # 最新の施行日を書き、Check updates はこれと比べる。表の updated_date は同じ日付にそろえる
     fetcher: municipality_history
     catalog_modified_date: "2024-01-01"
-    dbt_select: "raw_municipality_history_event raw_municipality_history_snapshot municipality_name"
+    dbt_select: "+municipality_name"
     tables:
       - name: municipality_history_event
         updated_date: "2024-01-01"

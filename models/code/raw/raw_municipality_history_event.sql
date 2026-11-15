@@ -7,12 +7,12 @@ SELECT
     pref_name,
     parent_name,
     name,
-    CAST(effective_date AS DATE) AS effective_date,
+    effective_date,
     reason
 FROM {{ source('estat_source', 'municipality_history_event') }}
 {% else %}
 SELECT
     NULL::VARCHAR AS pattern, NULL::VARCHAR AS area_code, NULL::VARCHAR AS pref_name,
-    NULL::VARCHAR AS parent_name, NULL::VARCHAR AS name, NULL::DATE AS effective_date, NULL::VARCHAR AS reason
+    NULL::VARCHAR AS parent_name, NULL::VARCHAR AS name, NULL::VARCHAR AS effective_date, NULL::VARCHAR AS reason
 WHERE FALSE
 {% endif %}

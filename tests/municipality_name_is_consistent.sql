@@ -36,8 +36,8 @@ ambiguous AS (
 
 latest AS (
     SELECT count(*) AS n
-    FROM {{ ref('raw_municipality_history_snapshot') }}
-    WHERE as_of = (SELECT max(as_of) FROM {{ ref('raw_municipality_history_snapshot') }})
+    FROM {{ ref('stg_municipality_history_snapshot') }}
+    WHERE as_of = (SELECT max(as_of) FROM {{ ref('stg_municipality_history_snapshot') }})
 ),
 
 current_count AS (
