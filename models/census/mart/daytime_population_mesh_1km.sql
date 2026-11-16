@@ -11,4 +11,4 @@ SELECT
     - CAST(nighttime_population AS BIGINT) AS daytime_night_diff,
     CAST(employees AS BIGINT) AS employees,
     CAST(establishments AS BIGINT) AS establishments
-FROM {{ ref('stg_mesh_daytime_population') }}
+FROM {{ ref('mesh_daytime_population') }}

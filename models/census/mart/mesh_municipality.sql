@@ -17,11 +17,12 @@
 
    small_area は 9桁(字)と11桁(丁目)が排他タイルなので両方を対象にする。
    同じ点が複数タイルに載っても市区町村は同じなので MIN で1つに畳む。 #}
+{{ config(materialized='ephemeral') }}
 
 WITH target AS (
-    SELECT DISTINCT area AS mesh_code FROM {{ ref('raw_mesh_population') }}
+    SELECT DISTINCT mesh_code FROM {{ ref('stg_mesh_population') }}
     UNION
-    SELECT DISTINCT area AS mesh_code FROM {{ ref('raw_mesh_establishment') }}
+    SELECT DISTINCT mesh_code FROM {{ ref('stg_mesh_establishment') }}
 ),
 
 centroid AS (

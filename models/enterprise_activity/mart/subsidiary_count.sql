@@ -12,6 +12,6 @@ SELECT
 FROM (
     SELECT * FROM {{ ref('stg_enterprise_activity') }}
     UNION ALL
-    SELECT * FROM {{ ref('stg_enterprise_activity_legacy') }}
+    SELECT * FROM {{ ref('enterprise_activity_legacy') }}
 )
 WHERE kind = 'subsidiary' AND fiscal_year = survey_year - 1

@@ -1,3 +1,5 @@
+{{ config(materialized='ephemeral') }}
+
 -- 年度ごとの保険者の一覧に、都道府県コードと市区町村コードを当てる。
 --
 -- 原典には保険者番号が無く、都道府県名と保険者名だけが並ぶ。市区町村が単独で
@@ -9,10 +11,10 @@
 -- 構成する市町村は kaigo_insurance.union_member (最新年度の時点) にある。
 WITH insurers AS (
     SELECT DISTINCT fiscal_year, prefecture_name, insurer_name
-    FROM {{ ref('raw_kaigo_insurance_insured') }}
+    FROM {{ ref('stg_kaigo_insurance_insured') }}
     UNION
     SELECT DISTINCT fiscal_year, prefecture_name, insurer_name
-    FROM {{ ref('raw_kaigo_insurance_certified') }}
+    FROM {{ ref('stg_kaigo_insurance_certified') }}
 ),
 
 municipality AS (
@@ -20,7 +22,7 @@ municipality AS (
         area_code,
         pref_code,
         replace(name, 'ヶ', 'ケ') AS name_key
-    FROM {{ ref('stg_area') }}
+    FROM {{ ref('current_area') }}
     WHERE is_municipality
         -- 北方領土の 6 村は保険者にならない。北海道に泊村が 2 つ (01403・01696) あり、
         -- 外さないと 2008年度まで単独の保険者だった後志の泊村の行が 2 倍になる
@@ -29,7 +31,7 @@ municipality AS (
 
 prefecture AS (
     SELECT pref_code, pref_name
-    FROM {{ ref('stg_area') }}
+    FROM {{ ref('current_area') }}
     WHERE area_kind = 'prefecture'
 ),
 

@@ -6,5 +6,5 @@ SELECT
     r.energy_type,
     r.parent_energy_type,
     r.value AS energy_tj
-FROM {{ ref('raw_energy_consumption_energy_type') }} r
-JOIN {{ ref('stg_energy_consumption_prefecture') }} a ON a.label = r.prefecture_name
+FROM {{ ref('stg_energy_consumption_energy_type') }} r
+JOIN {{ ref('energy_consumption_area') }} a ON a.label = r.prefecture_name

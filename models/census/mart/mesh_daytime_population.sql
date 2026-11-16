@@ -52,24 +52,25 @@
      事業所従業者数のウェイトで代用される
    - 市区町村が引けないメッシュ(中心点がどの町丁・字等にも入らない離島・海上など)は
      昼間人口 = 夜間人口 とする #}
+{{ config(materialized='ephemeral') }}
 
 WITH mesh_night AS (
     SELECT
-        area AS mesh_code,
-        SUM(TRY_CAST(value AS DOUBLE)) AS nighttime_population
-    FROM {{ ref('raw_mesh_population') }}
+        mesh_code,
+        SUM(value) AS nighttime_population
+    FROM {{ ref('stg_mesh_population') }}
     WHERE cat01 = '0010'  -- 人口(総数)
-    GROUP BY area
+    GROUP BY mesh_code
 ),
 
 mesh_work AS (
     SELECT
-        area AS mesh_code,
-        SUM(CASE WHEN cat01 = '0200' THEN TRY_CAST(value AS DOUBLE) END) AS employees,
-        SUM(CASE WHEN cat01 = '0010' THEN TRY_CAST(value AS DOUBLE) END) AS establishments
-    FROM {{ ref('raw_mesh_establishment') }}
+        mesh_code,
+        SUM(CASE WHEN cat01 = '0200' THEN value END) AS employees,
+        SUM(CASE WHEN cat01 = '0010' THEN value END) AS establishments
+    FROM {{ ref('stg_mesh_establishment') }}
     WHERE cat01 IN ('0010', '0200')  -- 事業所数 / 従業者数 (A～R全産業)
-    GROUP BY area
+    GROUP BY mesh_code
 ),
 
 -- 事業所だけがあって人口0のメッシュ(工業地帯など)を落とさないよう FULL JOIN
@@ -91,7 +92,7 @@ assigned AS (
         m.establishments,
         c.city_code
     FROM mesh AS m
-    LEFT JOIN {{ ref('stg_mesh_municipality') }} AS c ON m.mesh_code = c.mesh_code
+    LEFT JOIN {{ ref('mesh_municipality') }} AS c ON m.mesh_code = c.mesh_code
 ),
 
 municipal AS (

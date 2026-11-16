@@ -8,7 +8,7 @@
 --    ちょうど 1 つに入る
 -- 2. union_member の広域連合が最新年度の保険者にあり、最新年度の広域連合がすべて
 --    union_member にある
--- 3. union_member の市区町村コードが stg_area にある
+-- 3. union_member の市区町村コードが current_area にある
 --
 -- 元表をまだ取り込んでいないカタログ (raw が 0 行) では突き合わせる相手が無いので見ない。
 
@@ -35,7 +35,7 @@ coverage AS (
 
 municipalities AS (
     SELECT area_code, pref_name, name
-    FROM {{ ref('stg_area') }}
+    FROM {{ ref('current_area') }}
     WHERE is_municipality
         -- 北方領土の 6 村 (色丹村・泊村・留夜別村・留別村・紗那村・蘂取村)
         AND area_code NOT BETWEEN '01695' AND '01700'
@@ -65,7 +65,7 @@ failures AS (
             WHERE m.insurer_name = i.insurer_name AND m.prefecture_code = i.prefecture_code
         )
     UNION ALL
-    SELECT 'member area_code not in stg_area', insurer_name, area_code
+    SELECT 'member area_code not in current_area', insurer_name, area_code
     FROM members WHERE prefecture_code IS NULL
 )
 

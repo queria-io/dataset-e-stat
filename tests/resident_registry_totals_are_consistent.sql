@@ -44,7 +44,7 @@ HAVING MAX(population_total) FILTER (WHERE resident_kind = 'total')
 UNION ALL
 
 -- 最新年で、市区町村として数える行の合算が全国計と合わない。
--- area_code から stg_area を引く経路が生きていることの担保でもある。
+-- area_code から current_area を引く経路が生きていることの担保でもある。
 -- 過去年は合併で消滅したコードが現行一覧に無く引けないので、最新年だけ見る。
 SELECT
     'municipality_sum',
@@ -61,7 +61,7 @@ FROM (
 JOIN (
     SELECT p.year, p.resident_kind, SUM(p.population_total) AS population_total
     FROM {{ ref('population') }} p
-    JOIN {{ ref('stg_area') }} c ON c.area_code = p.area_code
+    JOIN {{ ref('current_area') }} c ON c.area_code = p.area_code
     WHERE p.area_level = 'municipality'
         AND c.is_municipality
         AND p.year = (SELECT MAX(year) FROM {{ ref('population') }})

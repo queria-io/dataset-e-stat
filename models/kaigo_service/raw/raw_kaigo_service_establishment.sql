@@ -1,5 +1,5 @@
 -- 介護サービス施設・事業所調査 基本票の事業所数の 4 表 (kaigo_service パイプライン生成の NDJSON)。
--- 行見出しは地域名だけで、標準地域コードは stg で当てる。値は原典が整数で出すが、
+-- 行見出しは地域名だけで、標準地域コードは mart で当てる。値は原典が整数で出すが、
 -- insurance_facility にそろえて DOUBLE で受ける。
 SELECT
     survey_year,

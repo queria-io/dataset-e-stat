@@ -1,4 +1,4 @@
-{{ config(materialized='table') }}
+{{ config(materialized='table', alias='stg_item_lookup') }}
 
 {#
   mart のビューが item_name / unit / 上位項目を引くための、item_code で一意な参照表。

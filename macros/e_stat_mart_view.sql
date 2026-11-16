@@ -1,4 +1,4 @@
-{# item_name / unit / 上位項目は item_code で一意化した stg_item_lookup から引く。
+{# item_name / unit / 上位項目は item_code で一意化した item_lookup (公開名 stg_item_lookup) から引く。
    item_catalog を直接 JOIN すると、同じ item_code が掲載統計表の数だけ存在するため
    観測値1行が最大3行に複製される。
 
@@ -17,5 +17,5 @@ SELECT
     COALESCE(c.unit, s.unit) AS unit,
     s.value
 FROM {{ ref(source_ref) }} s
-LEFT JOIN {{ ref('stg_item_lookup') }} c ON s.cat01 = c.item_code
+LEFT JOIN {{ ref('item_lookup') }} c ON s.cat01 = c.item_code
 {% endmacro %}

@@ -17,8 +17,9 @@ WITH g AS (
 ),
 
 labels AS (
-    SELECT DISTINCT area, area_name, area_label
-    FROM {{ ref('stg_school_health_growth_by_prefecture') }}
+    SELECT DISTINCT s.area, m.area_name, s.area_label
+    FROM {{ ref('stg_school_health_growth_by_prefecture') }} s
+    JOIN (SELECT DISTINCT area, area_name FROM {{ ref('growth_by_prefecture') }}) m USING (area)
 ),
 
 prefecture_range AS (

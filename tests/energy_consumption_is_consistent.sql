@@ -84,7 +84,7 @@ WHERE i.industry_code = 'A~S' AND (e.energy_tj IS NULL OR abs(i.energy_tj - e.en
 UNION ALL
 
 SELECT 'unmatched prefecture name', 'both', NULL, label
-FROM {{ ref('stg_energy_consumption_prefecture') }}
+FROM {{ ref('energy_consumption_area') }}
 WHERE area IS NULL OR area_name IS NULL
 
 UNION ALL

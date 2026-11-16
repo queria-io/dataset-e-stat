@@ -1,19 +1,13 @@
--- 都道府県名を標準地域コードの一覧から当て、コードに名称を付ける。
+-- コードに名称を付け、原典の誤記を直す。
 --
 -- 原典の行見出しは「青森」「青森県」と年によって揺れる略称で、コードはパイプラインが
--- 名前から振っている。名前の当て違いが無いことは tests/school_is_consistent.sql で
+-- 名前から振っている。都道府県名は mart で標準地域コードの一覧から当てる。名前の当て違いが無いことは tests/school_is_consistent.sql で
 -- 略称と正式名を突き合わせて確かめる。
 --
 -- 2003年の小学校 公立 福岡県 男 の計は、原典の統計表ファイルで 146656 が 14656 と
 -- 1桁欠けている。男+女=計（286870 − 140214）、学年の合計、47都道府県の合計=全国、
 -- 国立+公立+私立=計 の4つがどれも 146656 を指すので、ここで直す。原典が直されて
 -- 14656 でなくなったら、この行は何もしない。
-WITH prefecture AS (
-    SELECT pref_code, pref_name
-    FROM {{ ref('stg_area') }}
-    WHERE area_kind = 'prefecture'
-)
-
 SELECT
     s.survey_year AS year,
     s.school_type,
@@ -29,7 +23,6 @@ SELECT
         WHEN '3' THEN '私立'
     END AS founder,
     s.area,
-    COALESCE(p.pref_name, s.area_label) AS area_name,
     s.area_label,
     s.prefecture_code,
     s.grade,
@@ -51,4 +44,3 @@ SELECT
         ELSE s.students
     END AS students
 FROM {{ ref('raw_school_enrollment_by_grade') }} s
-LEFT JOIN prefecture p ON p.pref_code = s.prefecture_code

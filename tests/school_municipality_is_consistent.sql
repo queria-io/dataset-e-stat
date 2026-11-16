@@ -9,7 +9,7 @@
 --    - 児童生徒数: 学年の合計 = 学年の計、男 + 女 = 計
 --    - 本務教員数: 男 + 女 = 計、職名の内訳 (市町村費負担の者(再掲) を除く) の合計 = 計
 -- 3. 都道府県の計の児童生徒数が school.enrollment_by_grade (都道府県別、CI で取る別の表) と一致する
--- 4. 都道府県外の行と浜松市の旧区を除き、市区町村の行がすべて今の市区町村の一覧 (stg_area) に当たる
+-- 4. 都道府県外の行と浜松市の旧区を除き、市区町村の行がすべて今の市区町村の一覧 (current_area) に当たる
 -- 5. 2021年から最新年まで年が連続し、各年に2つの学校種と47都道府県がそろう
 
 WITH s AS (SELECT * FROM {{ ref('municipality_schools') }}),
@@ -128,8 +128,8 @@ WHERE st.area_level = 'prefecture' AND st.grade = 0 AND st.sex = '計'
     AND e.students IS DISTINCT FROM st.students
 
 UNION ALL
-SELECT 'municipality not in stg_area', NULL, a.prefecture_name || ' ' || a.municipality_code || ' ' || a.municipality_name
-FROM {{ ref('stg_school_municipality_area') }} a
+SELECT 'municipality not in current_area', NULL, a.prefecture_name || ' ' || a.municipality_code || ' ' || a.municipality_name
+FROM {{ ref('school_municipality_area') }} a
 WHERE a.prefecture_code IS NULL
     OR (a.area_level IN ('municipality', 'ward') AND a.city_code IS NULL)
 

@@ -3,10 +3,7 @@
    (2026-03-17 更新分の全 246,936 セルで確認)。 #}
 SELECT
     CAST(SUBSTR(r.time, 1, 4) AS INTEGER) AS year,
-    a.area_code,
-    a.area_name,
-    a.area_kind,
-    a.prefecture_code,
+    r.area,
     {% for code, col in [
         ('100', 'births'),
         ('110', 'low_birth_weight_births'),
@@ -25,5 +22,4 @@ SELECT
     {% endfor %}
     COUNT(*) AS cells
 FROM {{ ref('raw_vital_statistics_summary') }} AS r
-INNER JOIN {{ ref('stg_vital_statistics_area') }} AS a ON a.area = r.area
 GROUP BY ALL

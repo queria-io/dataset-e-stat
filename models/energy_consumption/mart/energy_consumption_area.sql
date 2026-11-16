@@ -1,14 +1,16 @@
+{{ config(materialized='ephemeral') }}
+
 -- 原典の行見出し (「全国計」と都道府県名) を標準地域コードに当てる。
--- 都道府県名は原典も stg_area も正式名 (北海道・東京都・大阪府 など) なので、名前で当てる。
+-- 都道府県名は原典も current_area も正式名 (北海道・東京都・大阪府 など) なので、名前で当てる。
 WITH labels AS (
-    SELECT DISTINCT prefecture_name FROM {{ ref('raw_energy_consumption_industry') }}
+    SELECT DISTINCT prefecture_name FROM {{ ref('stg_energy_consumption_industry') }}
     UNION
-    SELECT DISTINCT prefecture_name FROM {{ ref('raw_energy_consumption_energy_type') }}
+    SELECT DISTINCT prefecture_name FROM {{ ref('stg_energy_consumption_energy_type') }}
 ),
 
 prefecture AS (
     SELECT pref_code, pref_name
-    FROM {{ ref('stg_area') }}
+    FROM {{ ref('current_area') }}
     WHERE area_kind = 'prefecture'
 )
 
