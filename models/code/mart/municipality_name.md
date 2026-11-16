@@ -62,8 +62,8 @@ fields:
     title: 全国地方公共団体コード（6桁）
     description: area_code に検査数字を付けた全国地方公共団体コード（6桁）
   - name: area_kind
-    title: 区分（municipality / designated_city / ward）
-    description: municipality=市町村と東京の特別区、designated_city=政令指定都市の市の行、ward=政令指定都市の区
+    title: 区分（municipality / designated_city / ward / district）
+    description: municipality=市町村と東京の特別区、designated_city=政令指定都市の市の行、ward=政令指定都市の区、district=東京都の特別区部（13100。23 区をまとめた集計の行）
   - name: valid_from
     title: 有効期間の開始日
     description: この名前とコードの組が使われ始めた日。1970-04-01 は収録の始まりで、それより前から使われていた組を含む
