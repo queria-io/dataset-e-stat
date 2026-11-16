@@ -40,7 +40,7 @@ from pathlib import Path
 import yaml
 from dbt.cli.main import dbtRunner
 
-from pipelines import create_pipeline
+from pipelines import create_pipeline, prune_pipeline_state
 from pipelines.census_boundary import download_boundary
 from pipelines.census_commuting import (
     COMMUTING_TABLES,
@@ -133,6 +133,7 @@ def main():
     build_classification_code("data/classification_code")
 
     pipeline = create_pipeline()
+    prune_pipeline_state(pipeline)
     app_id = os.environ["ESTAT_API_KEY"]
 
     # 4. 統計表カタログ (全件取得)
