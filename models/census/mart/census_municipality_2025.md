@@ -1,0 +1,93 @@
+---
+$schema: https://queria.io/schemas/table/v1.json
+table: census.census_municipality_2025
+title: 市区町村別 人口・世帯・人口増減（令和7年国勢調査）
+description: |-
+  令和7年国勢調査の、全国・都道府県・市区町村ごとの人口・世帯数・5年前（2020年）との増減・面積・人口密度を1行に持つテーブルです。列は census_municipality と同じです。
+
+  - 全国・都道府県・市区町村などの行が同じ列に並ぶので、area_level で1つの粒度に絞ってから合計してください
+  - area は標準地域コード（5桁）で、6桁の全国地方公共団体コードとは別体系です
+  - 2020年から変わった地域コードは浜松市の区だけです
+keywords:
+  - e-stat
+  - 国勢調査
+  - 令和7年
+  - 市区町村
+  - 都道府県
+  - 人口
+  - 世帯
+  - 人口密度
+  - 人口増減
+temporal_coverage: {start: "2025", end: "2025"}
+sources:
+  - path: https://www.e-stat.go.jp/statistics/00200521
+fields:
+  - name: area
+    title: 標準地域コード（5桁）
+    description: 標準地域コード。全国は 00000、都道府県は 13000 のように市区町村部が 000。census_municipality（令和2年）・soumu.code.municipality の area_code と同じ体系。全国地方公共団体コード（6桁）とは別体系
+    semantic: {role: entity, name: city}
+  - name: area_name
+    title: 地域名
+    description: 地域の名称（全国／東京都／特別区部／千代田区／札幌市／札幌市中央区 など）。2000年市区町村の行は「（旧：戸井町）」のように括弧付きで入る
+  - name: area_level
+    title: 地域の粒度
+    description: 'area の粒度。national=全国（1）、prefecture=都道府県（47）、city=市・特別区部（793）、ward=政令指定都市の区と特別区（194）、town_village=町村（926）、former_municipality=2000年（平成12年）の市区町村（2,121）。日本全域をちょうど1回覆うのは prefecture だけ、または city と town_village の組だけ。ward は city の内訳、former_municipality は現行市区町村を2000年の区域で組み替えた再掲で、いずれも足すと二重に数える'
+  - name: parent_area
+    title: 上位地域の標準地域コード
+    description: 1つ上の階層の area。都道府県の親は全国、市・町村の親は都道府県、政令指定都市の区の親はその市、特別区の親は特別区部（13100）。全国は NULL。2000年市区町村の親は都道府県で、現行の市区町村ではない
+  - name: population
+    title: 人口
+    description: 人口（人）。2025年10月1日現在
+  - name: population_male
+    title: 人口（男）
+    description: 男の人口（人）
+  - name: population_female
+    title: 人口（女）
+    description: 女の人口（人）
+  - name: households
+    title: 世帯数
+    description: 世帯数（世帯）。一般世帯と施設等の世帯の合計
+  - name: households_general
+    title: 一般世帯数
+    description: 一般世帯数（世帯）
+  - name: households_institutional
+    title: 施設等の世帯数
+    description: 施設等の世帯数（世帯）。寮・病院・施設・自衛隊営舎などに住む世帯
+  - name: household_members
+    title: 世帯人員
+    description: 世帯人員（人）。国勢調査は世帯を単位に人を数えるため population と一致する
+  - name: household_members_general
+    title: 一般世帯人員
+    description: 一般世帯の世帯人員（人）。household_members_general ÷ households_general が1世帯当たり人員
+  - name: household_members_institutional
+    title: 施設等の世帯人員
+    description: 施設等の世帯の世帯人員（人）
+  - name: population_2020
+    title: 2020年（令和2年）の人口（組替）
+    description: 令和2年国勢調査の人口を2025年の市区町村の区域に組み替えた値（人）。区域が変わっていない地域では census_municipality の population と同じ値
+  - name: households_2020
+    title: 2020年（令和2年）の世帯数（組替）
+    description: 令和2年国勢調査の世帯数を2025年の市区町村の区域に組み替えた値（世帯）
+  - name: population_change_5y
+    title: 5年間の人口増減数
+    description: 2020年からの人口増減数（人）。population - population_2020 に等しい
+  - name: population_change_rate_5y
+    title: 5年間の人口増減率
+    description: 2020年からの人口増減率（％）
+  - name: household_change_5y
+    title: 5年間の世帯増減数
+    description: 2020年からの世帯増減数（世帯）
+  - name: household_change_rate_5y
+    title: 5年間の世帯増減率
+    description: 2020年からの世帯増減率（％）
+  - name: sex_ratio
+    title: 人口性比
+    description: 女100人に対する男の数。population_male ÷ population_female × 100
+  - name: area_km2
+    title: 面積（参考）
+    description: 面積（km2）。北方領土と竹島を含む。population_density の分母はこれらを除いた面積なので、population ÷ area_km2 は population_density と一致しない
+  - name: population_density
+    title: 人口密度
+    description: 1km2当たりの人口。原典の公表値で、分母は北方領土と竹島を除いた面積
+themes: [population]
+---

@@ -31,8 +31,11 @@ def _build_table(app_id: str, t: dict):
         app_id=app_id,
         # initial_time は初回に取る最初の期。全期間を取ると初回の Sync が上限を超える表で、
         # 取り始めの期を後ろにずらす
+        # primary_key=() で境界の行のハッシュを状態に持たない。持つと最後の期の全行
+        # (2026-11 時点で 1 表 100 万件) が毎回の状態に入り、状態の JSON が 1 行 68MB になった。
+        # 境界の期を取り直しても、merge が merge_keys で重複を除く
         incremental=dlt.sources.incremental(
-            "time", initial_value=t.get("initial_time", "0000000000")
+            "time", initial_value=t.get("initial_time", "0000000000"), primary_key=()
         )
         if t.get("incremental")
         else None,

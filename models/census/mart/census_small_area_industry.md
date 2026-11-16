@@ -1,0 +1,49 @@
+---
+$schema: https://queria.io/schemas/table/v1.json
+table: census.census_small_area_industry
+title: 小地域別 産業大分類別就業者数（令和2年国勢調査）
+description: |-
+  令和2年国勢調査の小地域（町丁・字等）別の産業（大分類）別就業者数を持つテーブルです。
+
+  - area は boundary.small_area の key_code と同じ体系で、市区町村（5桁）と小地域（9桁・11桁）の行があります
+  - cat02 は秘匿・合算区分です。秘匿の地域の値は合算先の地域に含まれます
+keywords:
+  - e-stat
+  - 国勢調査
+  - 小地域
+  - 町丁字
+  - 就業者
+  - 産業
+temporal_coverage: {start: "2020", end: "2020"}
+sources:
+  - path: https://www.e-stat.go.jp/gis
+fields:
+  - name: area
+    title: 地域コード（境界データ small_area の key_code と同一体系）
+    description: 地域コード。境界データ boundary.small_area の key_code と同一体系で、key_code = area で結合できる（9桁/11桁のみ）。市区町村（5桁）・町丁・字等（9桁）・その内訳区画（11桁）の3階層が同じ列に混在し、5桁は9桁の合計、9桁は11桁の合計にあたる。桁数を揃えずに合計すると二重・三重の計上になる
+    semantic: {role: entity, name: small_area}
+  - name: area_name
+    title: 町丁・字等名称
+    description: 地域の名称。5桁の行は市区町村名（札幌市中央区）、9桁/11桁の行は市区町村名に町丁・字等名を続けた表記（札幌市中央区円山）
+  - name: area_level
+    description: area の粒度。municipality=市区町村（5桁）、small_area=町丁・字等（9桁）、small_area_detail=丁目など町丁・字等の内訳（11桁）。municipality と small_area はどちらも全域を覆い、総人口の合計はどちらも 126,146,099 で一致する。small_area_detail は丁目に分かれている地域にしか無く全域を覆わない（総人口で 80,726,789、64%）ので、この粒度だけで合計すると足りない
+  - name: cat01
+    title: 産業大分類コード
+    description: 産業大分類のコード（4桁）。0010=総数、0020 以降が日本標準産業分類の大分類（Ａ農業、林業／Ｂ漁業…）。総数と「うち農業」のような内訳が同じ列に混在するため、cat01 を絞らずに value を合計すると二重計上になる
+  - name: industry
+    title: 産業大分類名
+    description: cat01 に対応する産業大分類名（総数、Ａ農業、林業 など）。「うち農業」で始まる行は直前の大分類の内訳
+  - name: cat02
+    title: 秘匿・合算区分コード
+    description: 秘匿・合算区分のコード。1=無し、2=合算、3=秘匿
+  - name: secrecy
+    title: 秘匿・合算区分名（無し/合算/秘匿）
+    description: cat02 に対応する区分名（無し／合算／秘匿）
+  - name: unit
+    title: 単位
+    description: 単位。この表では常に「人」
+  - name: value
+    title: 就業者数
+    description: 就業者数（人）。cat02=3（秘匿）の行は 0 が入るが「0人」ではなく非公表で、実数は cat02=2（合算）の地域に含まれている。秘匿を 0 として合計すると実態より小さくなる
+themes: [population]
+---

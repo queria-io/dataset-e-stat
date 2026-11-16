@@ -1,0 +1,61 @@
+---
+$schema: https://queria.io/schemas/table/v1.json
+table: vital_statistics.births_by_mother_age
+title: 市区町村別 母の年齢（5歳階級）別の出生数（人口動態統計）
+description: |-
+  人口動態統計の出生数を、都道府県・市区町村ごとに母の年齢別・子の性別で2015年から持つテーブルです。
+
+  - 全国の行は無いので、都道府県を足してください
+  - 地域の粒度が同じ列に並ぶので、area_kind で絞ってから合計してください
+keywords:
+  - e-stat
+  - 人口動態調査
+  - 人口動態統計
+  - 市区町村
+  - 出生数
+  - 母の年齢
+  - 出産年齢
+temporal_coverage: {start: "2015", end: "2024"}
+sources:
+  - path: https://www.e-stat.go.jp/statistics/00450011
+fields:
+  - name: year
+    title: 年
+    description: 事象の起きた年（1月〜12月）。2015〜2024年
+  - name: area_code
+    title: 標準地域コード（5桁）
+    description: 標準地域コード。都道府県は 13000 のように市区町村部が 000。soumu.code.municipality の area_code と同じ体系で、各年のコードのまま入る。全国地方公共団体コード（6桁）とは別体系
+    semantic: {role: entity, name: city}
+  - name: area_name
+    title: 地域名
+    description: 地域の名称（東京都／新宿区／札幌市中央区 など）
+  - name: area_kind
+    title: 地域の粒度
+    description: 'prefecture=都道府県、municipality=政令指定都市以外の市町村と東京都の特別区、ward=政令指定都市の区。政令指定都市そのものの行は無い。日本全域をちょうど1回覆うのは prefecture だけ、または municipality と ward の組だけ'
+  - name: prefecture_code
+    title: 都道府県コード
+    description: area_code の上2桁
+    semantic: {role: entity, name: prefecture}
+  - name: mother_age_code
+    title: 母の年齢区分のコード
+    description: 原典の母の年齢区分のコード。00190=14歳以下 … 00310=50歳以上、00450=不詳
+  - name: mother_age_class
+    title: 母の年齢区分
+    description: mother_age_code に対応する区分名（14歳以下／15～19歳／50歳以上／不詳）
+  - name: mother_age_from
+    title: 母の年齢の下限
+    description: 区分の下限の年齢（歳）。14歳以下と不詳は NULL
+  - name: mother_age_to
+    title: 母の年齢の上限
+    description: 区分の上限の年齢（歳）。50歳以上と不詳は NULL
+  - name: births
+    title: 出生数
+    description: 出生数（人）。births_male と births_female の和
+  - name: births_male
+    title: 出生数（男）
+    description: 男の子の出生数（人）
+  - name: births_female
+    title: 出生数（女）
+    description: 女の子の出生数（人）
+themes: [population]
+---

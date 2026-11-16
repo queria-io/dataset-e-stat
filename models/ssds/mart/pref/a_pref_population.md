@@ -1,0 +1,103 @@
+---
+$schema: https://queria.io/schemas/table/v1.json
+table: ssds.a_pref_population
+title: A 人口・世帯（都道府県）
+description: '社会・人口統計体系 A 人口・世帯（都道府県）。
+
+  総人口、年齢別人口、世帯数、婚姻、出生・死亡、転入・転出等の指標を収録。
+
+  主な出典: 国勢調査、人口推計、人口動態統計、住民基本台帳。
+
+  https://www.e-stat.go.jp/stat-search/database?statdisp_id=0000010101
+
+  項目定義: https://www.e-stat.go.jp/koumoku/koumoku_teigi/A'
+keywords:
+  - e-stat
+  - 社会・人口統計体系
+  - 都道府県
+sources:
+  - path: https://www.e-stat.go.jp/statistics/00200502
+fields:
+  - name: cat01
+    title: 分類事項コード
+    description: 統計指標の項目符号。分野1文字（A〜K）+ 大分類1桁 + 小分類1桁 + 項目2桁 の5桁で、その下に副区分が付いたものが7桁以上（A1101 総人口 / A110101 総人口（男））。副区分は1階層だけで、5桁を超えるコードの親は先頭5桁。項目と副区分が同じ列に混在するため、cat01 を絞らずに value を合計すると二重計上になる。符号の定義は https://www.stat.go.jp/data/ssds/2.html
+  - name: item_name
+    title: 分類事項名
+    description: cat01 に対応する指標名。「J110203_現に保護を受けた生活保護被保護実世帯数（高齢者世帯）」のようにコードが前置される。統計表によって表記ゆれがあるため、絞り込みは item_name ではなく cat01 で行う
+  - name: cat01_parent
+    description: 上位項目の符号。5桁の項目は NULL。cat01_parent IS NULL で項目だけ、cat01_parent = 'J1104' でその副区分だけを取れる。副区分が親を分割している保証は無く、A1101 のように男女で分割される系統もあれば、J1102 のように「うち」項目だけが並んで親に届かない系統もある。親自身がデータを持たないこともある（分類項目名だけが定義され、副区分のみ公開されている系統が621件）
+  - name: area
+    title: 地域コード
+    description: 都道府県の標準地域コード（5桁、末尾3桁は 000）。全国計 00000 の行を含むため、area を絞らずに合計すると二重計上になる。soumu.code.municipality の area_code と同体系
+    semantic: {role: entity, name: prefecture}
+  - name: area_name
+    title: 地域名
+    description: 地域名。都道府県名、または全国計の「全国」
+  - name: time_name
+    title: 時間軸名
+    description: 時間軸の名称。「2020年度」のような西暦の年度／年表記で、和暦は含まない。最も古い行は1975年度だが、収録の開始年も終了年も表・指標によって違う
+  - name: year
+    title: 年
+    description: time_name から抽出した西暦4桁。年度表記の場合は年度の開始年（2020年度 → 2020）
+  - name: unit
+    title: 単位
+    description: 統計値の単位（人、世帯、千円、％ など）。指標ごとに違うため、cat01 を絞らずに value を合計・比較しても意味を持たない。単位を持たない指標は「－」または空
+  - name: value
+    title: 統計値
+    description: 統計値。単位は unit 列を参照。元データが「-」「X」などの非数値だった場合は NULL
+themes: [population]
+---
+
+# A 人口・世帯
+
+総人口、年齢別人口、世帯数、婚姻、出生・死亡、転入・転出などの指標を収録します。主な出典は国勢調査、人口推計、人口動態統計、住民基本台帳です。
+
+- 都道府県: `e_stat.ssds.a_pref_population`（1975年〜、47都道府県 + 全国）
+- 市区町村: `e_stat.ssds.a_municipal_population`（1980年〜、廃置分合処理済）
+
+項目定義: [社会・人口統計体系 A](https://www.e-stat.go.jp/koumoku/koumoku_teigi/A)
+
+## 代表的な指標
+
+| cat01 | 指標 |
+|-------|------|
+| A1101 | 総人口 |
+| A110101 / A110102 | 総人口（男）/（女） |
+| A192001 | 全国総人口に占める人口割合 |
+
+その他の指標は `item_catalog`（`table_title = 'Ａ　人口・世帯'`）で探せます。
+
+## 全国総人口の推移
+
+```sql
+SELECT year, MAX(value) AS population
+FROM e_stat.ssds.a_pref_population
+WHERE cat01 = 'A1101' AND area_name = '全国'
+GROUP BY year
+ORDER BY year
+```
+
+## 都道府県別の総人口ランキング（最新年）
+
+```sql
+SELECT area_name, MAX(value) AS population
+FROM e_stat.ssds.a_pref_population
+WHERE cat01 = 'A1101'
+  AND area_name <> '全国'
+  AND year = (SELECT MAX(year) FROM e_stat.ssds.a_pref_population WHERE cat01 = 'A1101')
+GROUP BY area_name
+ORDER BY population DESC
+LIMIT 10
+```
+
+## 市区町村別の人口（最新年）
+
+```sql
+SELECT area_name, MAX(value) AS population
+FROM e_stat.ssds.a_municipal_population
+WHERE cat01 = 'A1101'
+  AND year = (SELECT MAX(year) FROM e_stat.ssds.a_municipal_population WHERE cat01 = 'A1101')
+GROUP BY area_name
+ORDER BY population DESC
+LIMIT 10
+```

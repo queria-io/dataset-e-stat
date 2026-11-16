@@ -547,7 +547,7 @@ groups:
     # e-Stat のデータベースではなく、統計表ファイル (CSV) から取る。取得とパースは
     # pipelines/trade.py の fetch_local。年ごとに 12 月分のデータセットを取り、全年を
     # 1 つの表 (trade_history) にする。through_year より後の年は CI の Sync が毎日取り直す
-    # (main.py)。境目を進める手順は MAINTAINING.md。
+    # (main.py)。境目を進める手順は CONTRIBUTING.md。
     # catalog_modified_date は through_year までの年の CSV の最終更新日の最大で、Check updates も
     # catalog_filter に合うファイルだけを見張る。毎月差し替わる新しい年の分で issue を立てないため
     fetcher: trade
