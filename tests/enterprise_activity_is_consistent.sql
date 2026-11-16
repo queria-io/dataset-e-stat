@@ -2,7 +2,7 @@
 -- 結果が0行ならテスト成功。
 --
 -- 1. 表の種類ごとに 2020〜2025年の調査がそろい、どの行も年度と（内訳のある表は）内訳コードが読める。
---    2010〜2019年調査（stg_enterprise_activity_legacy）を取り込んだ後は、そちらの行も産業コード・
+--    2010〜2019年調査（enterprise_activity_legacy）を取り込んだ後は、そちらの行も産業コード・
 --    内訳コード・測定項目が読める
 -- 2. mart のキーが一意
 -- 3. 企業数で次の恒等式がちょうど成り立つ（実測で全年度・差0）
@@ -40,7 +40,7 @@ coverage AS (
     {% if legacy %}
     UNION ALL
     SELECT 'unparsed legacy ' || kind || ' ' || survey_year, count(*)::VARCHAR, '0'
-    FROM {{ ref('stg_enterprise_activity_legacy') }}
+    FROM {{ ref('enterprise_activity_legacy') }}
     WHERE fiscal_year IS NULL OR industry_code IS NULL OR measure IS NULL
         OR (kind IN ('prefecture', 'capital_balance', 'capital_business', 'subsidiary') AND breakdown_code IS NULL)
     GROUP BY kind, survey_year

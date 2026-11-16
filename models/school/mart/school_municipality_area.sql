@@ -1,3 +1,5 @@
+{{ config(materialized='ephemeral') }}
+
 -- 市町村別の表の行見出し (都道府県のシート名と、その中の 3 桁のコード・名前) を
 -- 標準地域コードに当てる。
 --
@@ -13,7 +15,7 @@
 WITH labels AS (
     {% for t in ['schools', 'students', 'teachers'] %}
     SELECT DISTINCT prefecture_name, municipality_code, municipality_name
-    FROM {{ ref('raw_school_municipality_' ~ t) }}
+    FROM {{ ref('stg_school_municipality_' ~ t) }}
     {{ 'UNION' if not loop.last }}
     {% endfor %}
 ),
@@ -27,7 +29,7 @@ coded AS (
         p.pref_code || coalesce(l.municipality_code, '000') AS code5,
         l.municipality_name IN ('東京都外', '大阪市外') AS is_outside
     FROM labels l
-    LEFT JOIN {{ ref('stg_area') }} p
+    LEFT JOIN {{ ref('current_area') }} p
         ON p.area_kind = 'prefecture' AND p.pref_name = l.prefecture_name
 )
 
@@ -49,4 +51,4 @@ SELECT
         WHEN c.municipality_code IS NOT NULL AND NOT c.is_outside THEN m.municipality_code
     END AS city_code
 FROM coded c
-LEFT JOIN {{ ref('stg_area') }} m ON m.area_code = c.code5
+LEFT JOIN {{ ref('current_area') }} m ON m.area_code = c.code5

@@ -56,7 +56,7 @@ CP932 の CSV で、先頭に表題と注が入り、その下に見出しが 3�
 足し合わせれば通しで見られるようにする。
 
 都道府県名は 2022 年調査まで「青森」、2023 年調査から「青森県」と表記が変わる。
-接尾辞は stg で補って stg_area の pref_name に合わせる。
+接尾辞は stg で補って current_area の pref_name に合わせる。
 
 データソース: 厚生労働省 社会福祉施設等調査
 https://www.e-stat.go.jp/stat-search/files?toukei=00450041

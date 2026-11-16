@@ -21,12 +21,12 @@
 -- 教育，学習支援業用）だけで、増えたら値を見てから足す。
 --
 -- 地域コードは各年の時点のもので、合併で消えた市町村や浜松市の再編前の区は
--- 今の市区町村の一覧 (stg_area) に無い。最新年のコードはすべて載るはずで、載らないと
+-- 今の市区町村の一覧 (current_area) に無い。最新年のコードはすべて載るはずで、載らないと
 -- 地域コードを鍵にした結合が黙って行を落とす。
 --
 -- 集計行の判定は e-Stat のメタ情報（level と親コード）で行っていて、コードの形
 -- だけでは郡と町村を見分けられない（後志総合振興局 01390 の下に倶知安町 01400 が
--- ある）。stg_area に載るコードは、そちらの area_kind と粒度を突き合わせる。
+-- ある）。current_area に載るコードは、そちらの area_kind と粒度を突き合わせる。
 
 {% set known_null_floor_area = [('15101', 2018, '59')] %}
 
@@ -91,7 +91,7 @@ unexpected_null_floor_area AS (
 level_mismatch AS (
     SELECT DISTINCT p.area, p.area_level, m.area_kind
     FROM mart p
-    JOIN {{ ref('stg_area') }} m ON m.area_code = p.area
+    JOIN {{ ref('current_area') }} m ON m.area_code = p.area
     WHERE (p.area_level = 'municipality' AND NOT m.is_municipality)
         OR (p.area_level = 'ward' AND m.area_kind <> 'ward')
 ),
@@ -99,7 +99,7 @@ level_mismatch AS (
 latest_unresolved_areas AS (
     SELECT DISTINCT p.area
     FROM mart p
-    LEFT JOIN {{ ref('stg_area') }} m ON m.area_code = p.area
+    LEFT JOIN {{ ref('current_area') }} m ON m.area_code = p.area
     WHERE p.year = (SELECT MAX(year) FROM mart) AND m.area_code IS NULL
 )
 

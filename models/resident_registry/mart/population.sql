@@ -1,6 +1,6 @@
 -- 集計行と明細行が同じ表に縦に並ぶ。全国計 (area_level='national')、都道府県、
 -- 市区町村のほか、市区町村の行には郡・政令指定都市とその行政区・東京都の
--- 島しょ集計が同居する。どの粒度かは area_code で stg_area を引く。
+-- 島しょ集計が同居する。どの粒度かは area_code で current_area を引く。
 SELECT
     reference_date,
     year,

@@ -1,11 +1,9 @@
--- 行見出しの地域名に標準地域コードを当て、印字されていない大分類を補う。
+-- 行見出しの都道府県名を正式名にそろえ、印字されていない大分類を補う。
 --
 -- 都道府県は 2022 年調査まで「青森」、2023 年調査から「青森県」で入る。接尾辞を
 -- 補って code.municipality_name の pref_name にそろえる。東京・大阪・京都は「都」
 -- 「府」で終わるので、末尾 1 文字で判定する前に名指しで拾う。
---
--- 市の行は指定都市と中核市。今の市区町村と政令指定都市の名前に当てる
--- (実測: 2011〜2017 年調査に出る 68 市がすべて 1 件で解決する)。
+-- 標準地域コードは mart で当てる。
 WITH named AS (
     SELECT
         *,
@@ -17,21 +15,6 @@ WITH named AS (
             ELSE area_label || '県'
         END AS area_name
     FROM {{ ref('raw_welfare_facility') }}
-),
-
-prefecture AS (
-    SELECT area_code, pref_code, pref_name
-    FROM {{ ref('stg_area') }}
-    WHERE area_kind = 'prefecture'
-),
-
-city AS (
-    SELECT
-        area_code,
-        pref_code,
-        name AS city_name
-    FROM {{ ref('stg_area') }}
-    WHERE area_kind <> 'prefecture'
 ),
 
 -- 定員・在所者数の表は 2014 年調査まで見出しが 1 段しかなく、施設の種類は並ぶが
@@ -48,9 +31,7 @@ facility_group AS (
 SELECT
     n.survey_year,
     n.area_kind,
-    COALESCE(p.area_code, c.area_code) AS area_code,
     n.area_name,
-    COALESCE(p.pref_code, c.pref_code) AS prefecture_code,
     n.facility_code,
     n.facility_type,
     -- 符号を持つ行は原典でも大分類の直下にいる (実測: facility_level='type' の行は
@@ -63,10 +44,6 @@ SELECT
     n.measure,
     n.value
 FROM named n
-LEFT JOIN prefecture p ON n.area_kind = 'prefecture' AND p.pref_name = n.area_name
-LEFT JOIN city c
-    ON n.area_kind IN ('designated_city', 'core_city')
-    AND c.city_name = n.area_name
 LEFT JOIN facility_group g
     ON n.facility_code IS NOT NULL
     AND g.survey_year = n.survey_year

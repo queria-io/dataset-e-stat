@@ -7,5 +7,5 @@ SELECT
     r.industry_name,
     r.parent_industry_code,
     r.value AS energy_tj
-FROM {{ ref('raw_energy_consumption_industry') }} r
-JOIN {{ ref('stg_energy_consumption_prefecture') }} a ON a.label = r.prefecture_name
+FROM {{ ref('stg_energy_consumption_industry') }} r
+JOIN {{ ref('energy_consumption_area') }} a ON a.label = r.prefecture_name

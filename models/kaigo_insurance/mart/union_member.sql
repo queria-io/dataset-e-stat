@@ -9,4 +9,4 @@ SELECT
     u.area_code,
     m.name AS municipality_name
 FROM {{ ref('kaigo_insurance_union_member') }} u
-LEFT JOIN {{ ref('stg_area') }} m ON m.area_code = u.area_code
+LEFT JOIN {{ ref('current_area') }} m ON m.area_code = u.area_code

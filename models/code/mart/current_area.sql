@@ -1,4 +1,7 @@
+{{ config(materialized='ephemeral') }}
+
 -- 今の都道府県と市区町村の一覧。ビルドの中で、統計表の地域名に標準地域コードを当てるときに使う。
+-- 公開せず、読む側の mart に展開する。
 --
 -- code.municipality_name の今も有効な行 (valid_to が NULL) に、都道府県の行 (XX000) を加える。
 -- 行政区の municipality_code は所属する政令指定都市のコード、市区町村と政令指定都市は自分自身。

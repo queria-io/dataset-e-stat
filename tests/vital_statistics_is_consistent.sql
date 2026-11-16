@@ -1,14 +1,14 @@
 -- 人口動態統計 (vital_statistics) の4表の整合を検証する。結果が0行ならテスト成功。
 --
 -- 1. 地域の段が全部に付き、政令指定都市の合計行が標準地域コードに当たっている
---    (原典は独自のコード 01010 などで持つので、stg_area に名前で当てている)
+--    (原典は独自のコード 01010 などで持つので、current_area に名前で当てている)
 -- 2. 年 × 地域ごとにセルが欠けずにそろっている。「-」を 0 に読み替えているので、
 --    セルが欠けた行も 0 になって紛れる。欠けを先に見る
 -- 3. 都道府県の値が、市区町村 (政令指定都市は合計行か区のどちらか) の合計に一致する
 -- 4. 母の年齢別の出生数の合計が vital_events の出生数に、年齢別・死因別の死亡数の
 --    合計 (死因は総数 Se00) が vital_events の死亡数に一致する
 -- 5. 2015年から最新年まで年が連続し、最新年が 2024 年より前に下がっていない
--- 6. 地域が stg_vital_statistics_area に1回だけ出る。4表の地域を名前・階層ごと UNION して
+-- 6. 地域が vital_statistics_area に1回だけ出る。4表の地域を名前・階層ごと UNION して
 --    いるので、表によって名前か階層が違うと同じ area が2行になり、結合で行が倍になる
 --    (vital_events の区は 3・4 の検査に入らないので、倍になっても気付けない)
 -- 7. 男女の和が総数に一致する (births_by_mother_age・deaths_by_age の説明に書いてある)、
@@ -19,7 +19,7 @@
 
 {% if local_source_loaded('vital_statistics_summary') %}
 WITH area AS (
-    SELECT * FROM {{ ref('stg_vital_statistics_area') }}
+    SELECT * FROM {{ ref('vital_statistics_area') }}
 ),
 
 ev AS (
@@ -99,17 +99,17 @@ UNION ALL
 SELECT 'area appears more than once', area
 FROM area GROUP BY area HAVING COUNT(*) > 1
 UNION ALL
-SELECT 'summary cells missing', year || ' ' || area_code
-FROM {{ ref('stg_vital_statistics_summary') }} WHERE cells <> 12
+SELECT 'summary cells missing', year || ' ' || area
+FROM {{ ref('stg_vital_statistics_summary') }} WHERE cells <> 12 AND area IN (SELECT area FROM area)
 UNION ALL
-SELECT 'births_mother_age cells missing', year || ' ' || area_code || ' ' || mother_age_code
-FROM {{ ref('stg_vital_statistics_births_mother_age') }} WHERE cells <> 3
+SELECT 'births_mother_age cells missing', year || ' ' || area || ' ' || mother_age_code
+FROM {{ ref('stg_vital_statistics_births_mother_age') }} WHERE cells <> 3 AND area IN (SELECT area FROM area)
 UNION ALL
-SELECT 'deaths_age cells missing', year || ' ' || area_code || ' ' || age_code
-FROM {{ ref('stg_vital_statistics_deaths_age') }} WHERE cells <> 3
+SELECT 'deaths_age cells missing', year || ' ' || area || ' ' || age_code
+FROM {{ ref('stg_vital_statistics_deaths_age') }} WHERE cells <> 3 AND area IN (SELECT area FROM area)
 UNION ALL
-SELECT 'deaths_cause cells missing', year || ' ' || area_code || ' ' || cause_code
-FROM {{ ref('stg_vital_statistics_deaths_cause') }} WHERE cells <> 3
+SELECT 'deaths_cause cells missing', year || ' ' || area || ' ' || cause_code
+FROM {{ ref('stg_vital_statistics_deaths_cause') }} WHERE cells <> 3 AND area IN (SELECT area FROM area)
 UNION ALL
 SELECT 'prefecture != sum of parts: ' || t, year || ' ' || prefecture_code || ' ' || pref || ' / ' || parts
 FROM pref_check WHERE pref IS DISTINCT FROM parts

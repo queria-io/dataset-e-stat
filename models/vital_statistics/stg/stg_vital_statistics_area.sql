@@ -8,7 +8,7 @@
    不詳 (52000) を持つ。
 
    下3桁が 0 で始まる地域 (XX0X0) は集計行か政令指定都市の合計行で、名前で分ける。
-   政令指定都市は今の政令指定都市の名前に当てて標準地域コードに直す。
+   政令指定都市の標準地域コードは mart (vital_statistics_area) で当てる。
    市部・郡部などの集計行は落とす (コードが標準地域コードと紛らわしく、
    市区町村から足し上げられる)。 #}
 WITH areas AS (
@@ -38,28 +38,14 @@ classified AS (
             ELSE 'municipality'
         END AS area_kind
     FROM areas
-),
-
-designated_city AS (
-    SELECT pref_code, name AS designated_city_name, area_code
-    FROM {{ ref('stg_area') }}
-    WHERE area_kind = 'designated_city'
 )
 
 SELECT
-    c.area,
+    area,
+    area_name,
+    area_kind,
     CASE
-        WHEN c.area_kind = 'designated_city' THEN d.area_code
-        ELSE c.area
-    END AS area_code,
-    c.area_name,
-    c.area_kind,
-    CASE
-        WHEN c.area_kind NOT IN ('nationwide', 'foreign', 'unknown') THEN SUBSTR(c.area, 1, 2)
+        WHEN area_kind NOT IN ('nationwide', 'foreign', 'unknown') THEN SUBSTR(area, 1, 2)
     END AS prefecture_code
-FROM classified AS c
-LEFT JOIN designated_city AS d
-    ON c.area_kind = 'designated_city'
-    AND d.pref_code = SUBSTR(c.area, 1, 2)
-    AND d.designated_city_name = c.area_name
-WHERE c.area_kind <> 'urban_rural_part'
+FROM classified
+WHERE area_kind <> 'urban_rural_part'

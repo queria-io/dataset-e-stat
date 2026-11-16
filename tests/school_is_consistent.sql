@@ -20,8 +20,9 @@ WITH e AS (
 ),
 
 labels AS (
-    SELECT DISTINCT area, area_name, area_label
-    FROM {{ ref('stg_school_enrollment_by_grade') }}
+    SELECT DISTINCT s.area, m.area_name, s.area_label
+    FROM {{ ref('stg_school_enrollment_by_grade') }} s
+    JOIN (SELECT DISTINCT area, area_name FROM {{ ref('enrollment_by_grade') }}) m USING (area)
 ),
 
 by_area AS (
