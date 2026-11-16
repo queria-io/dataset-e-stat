@@ -1,0 +1,62 @@
+---
+$schema: https://queria.io/schemas/table/v1.json
+table: vital_statistics.deaths_by_cause
+title: 市区町村別 死因（選択死因分類）別の死亡数（人口動態統計）
+description: |-
+  人口動態統計の死亡数を、全国・都道府県・市区町村ごとに選択死因分類別・男女別で2015年から持つテーブルです。
+
+  - 死因の総数・死因・内訳・再掲が同じ列に並びます。死因を足しても総数にはなりません
+  - 悪性新生物と高血圧性疾患は2017年から別のコードになります
+  - 地域の粒度が同じ列に並ぶので、area_kind で絞ってから合計してください
+keywords:
+  - e-stat
+  - 人口動態調査
+  - 人口動態統計
+  - 市区町村
+  - 死亡数
+  - 死因
+  - 悪性新生物
+  - がん
+  - 心疾患
+  - 自殺
+temporal_coverage: {start: "2015", end: "2024"}
+sources:
+  - path: https://www.e-stat.go.jp/statistics/00450011
+fields:
+  - name: year
+    title: 年
+    description: 事象の起きた年（1月〜12月）。2015〜2024年
+  - name: area_code
+    title: 標準地域コード（5桁）
+    description: 標準地域コード。全国は 00000、住所が外国は 51000、不詳は 52000、都道府県は 13000 のように市区町村部が 000。soumu.code.municipality の area_code と同じ体系で、各年のコードのまま入る。全国地方公共団体コード（6桁）とは別体系
+    semantic: {role: entity, name: city}
+  - name: area_name
+    title: 地域名
+    description: 地域の名称（全国／外国／不詳／東京都／新宿区／札幌市中央区 など）
+  - name: area_kind
+    title: 地域の粒度
+    description: 'nationwide=全国、foreign=住所が外国、unknown=住所が不詳、prefecture=都道府県、municipality=政令指定都市以外の市町村と東京都の特別区、ward=政令指定都市の区。政令指定都市そのものの行は無い。日本全域をちょうど1回覆うのは prefecture だけ、または municipality と ward の組だけ。nationwide は prefecture・foreign・unknown の和'
+  - name: prefecture_code
+    title: 都道府県コード
+    description: area_code の上2桁。全国・外国・不詳は NULL
+    semantic: {role: entity, name: prefecture}
+  - name: cause_code
+    title: 死因のコード
+    description: 選択死因分類のコード（Se00=総数、Se01=結核 … Se34=自殺）。悪性新生物と高血圧性疾患は2016年までが Se02・Se15、2017年からが Se022017・Se152017
+  - name: cause_name
+    title: 死因
+    description: 死因の名称（悪性新生物＜腫瘍＞／心疾患（高血圧性を除く）／老衰 など）。2016年までの悪性新生物・高血圧性疾患は「(2016年以前)」が頭に付く
+  - name: cause_level
+    title: 死因の段
+    description: 'total=総数（Se00）、cause=死因、subcause=死因の内訳（悪性新生物の部位など）、restatement=再掲（大腸の悪性新生物 Se05Se06・路上交通事故 Se32_1）。subcause と restatement は足すと二重に数える'
+  - name: deaths
+    title: 死亡数
+    description: 死亡数（人）
+  - name: deaths_male
+    title: 死亡数（男）
+    description: 男の死亡数（人）。子宮の悪性新生物（Se12）は NULL
+  - name: deaths_female
+    title: 死亡数（女）
+    description: 女の死亡数（人）
+themes: [social_security_health]
+---

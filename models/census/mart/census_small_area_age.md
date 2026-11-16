@@ -1,0 +1,50 @@
+---
+$schema: https://queria.io/schemas/table/v1.json
+table: census.census_small_area_age
+title: 小地域別 男女・年齢別人口（令和2年国勢調査）
+description: |-
+  令和2年国勢調査の小地域（町丁・字等）別の男女・年齢（5歳階級）別人口を持つテーブルです。
+
+  - area は boundary.small_area の key_code と同じ体系で、市区町村（5桁）と小地域（9桁・11桁）の行があります
+  - cat02 は秘匿・合算区分です。秘匿の地域の値は合算先の地域に含まれます
+  - 男女は cat01 の側に入っています
+keywords:
+  - e-stat
+  - 国勢調査
+  - 小地域
+  - 町丁字
+  - 人口
+  - 年齢
+temporal_coverage: {start: "2020", end: "2020"}
+sources:
+  - path: https://www.e-stat.go.jp/gis
+fields:
+  - name: area
+    title: 地域コード（境界データ small_area の key_code と同一体系）
+    description: 地域コード。境界データ boundary.small_area の key_code と同一体系で、key_code = area で結合できる（9桁/11桁のみ）。市区町村（5桁）・町丁・字等（9桁）・その内訳区画（11桁）の3階層が同じ列に混在し、5桁は9桁の合計、9桁は11桁の合計にあたる。桁数を揃えずに合計すると二重・三重の計上になる
+    semantic: {role: entity, name: small_area}
+  - name: area_name
+    title: 町丁・字等名称
+    description: 地域の名称。5桁の行は市区町村名（札幌市中央区）、9桁/11桁の行は市区町村名に町丁・字等名を続けた表記（札幌市中央区円山）
+  - name: area_level
+    description: area の粒度。municipality=市区町村（5桁）、small_area=町丁・字等（9桁）、small_area_detail=丁目など町丁・字等の内訳（11桁）。municipality と small_area はどちらも全域を覆い、総人口の合計はどちらも 126,146,099 で一致する。small_area_detail は丁目に分かれている地域にしか無く全域を覆わない（総人口で 80,726,789、64%）ので、この粒度だけで合計すると足りない
+  - name: cat01
+    title: 男女・年齢区分コード
+    description: 男女・年齢区分のコード（4桁）。0010〜0200 が総数、0210〜0400 が男、0410〜0600 が女で、男女の別もこの列に入っている。各区分の中に「総数、年齢「不詳」含む」と5歳階級と4区分（15歳未満・15〜64歳・65歳以上・75歳以上）が同居するため、cat01 を絞らずに value を合計すると何重にも重複する
+  - name: age_class
+    title: 男女・年齢区分名（5歳階級・4区分）
+    description: cat01 に対応する区分名（「総数、年齢「不詳」含む」「　男６５歳以上」など）。先頭の全角空白は元データの階層表現をそのまま残したもの
+  - name: cat02
+    title: 秘匿・合算区分コード
+    description: 秘匿・合算区分のコード。1=無し、2=合算、3=秘匿。男女区分ではない（男女は cat01 側に入っている）
+  - name: sex
+    title: 秘匿・合算区分名（無し/合算/秘匿）
+    description: cat02 に対応する区分名（無し／合算／秘匿）。列名は sex だが中身は秘匿・合算区分で、男女ではない
+  - name: unit
+    title: 単位
+    description: 単位。この表では常に「人」
+  - name: value
+    title: 人口
+    description: 人口（人）。cat02=3（秘匿）の行は 0 が入るが「0人」ではなく非公表で、実数は cat02=2（合算）の地域に含まれている。秘匿を 0 として合計すると実態より小さくなる
+themes: [population]
+---

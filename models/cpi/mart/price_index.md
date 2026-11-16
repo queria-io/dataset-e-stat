@@ -1,0 +1,104 @@
+---
+$schema: https://queria.io/schemas/table/v1.json
+table: cpi.price_index
+title: 品目別価格指数（2020年基準）
+description: |-
+  消費者物価指数（2020年基準）の品目別の指数を、全国・地域・都市階級別に月次・年次で持つテーブルです。
+
+  - 指数は地域ごとに 2020年 = 100 にしているので、地域どうしで水準を比べられません
+  - 表章（tab）に指数と変化率が並んでいます
+keywords:
+  - e-stat
+  - 消費者物価指数
+  - 物価
+  - CPI
+sources:
+  - path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003427113
+fields:
+  - name: tab
+    title: 表章項目コード
+    description: 表章項目コード。1=指数、2=前月比・前年比・前年度比、3=前年同月比。3表章が同じ列に縦に積まれているので、tab で絞らないと指数と変化率が混ざる
+  - name: tab_name
+    title: 表章項目名（指数／前月比・前年比・前年度比／前年同月比）
+    description: tab に対応する表章項目名（指数／前月比・前年比・前年度比／前年同月比）
+  - name: cat01
+    title: 品目コード
+    description: 品目コード（4桁）。0001=総合、0002〜が10大費目から個別品目までの790区分。総合・費目・品目が同じ列に混在するため、cat01 を絞らずに集計すると重複する
+  - name: item_name
+    title: 品目名
+    description: cat01 に対応する品目名。「0001 総合」のようにコードが前置される
+  - name: area
+    title: 地域コード
+    description: 地域コード（5桁）。00000=全国、00012〜00021=都市階級（大都市・中都市・小都市Ａ・小都市Ｂ／町村）、00042〜00057=地方、01A01 形式が県庁所在市・政令市。標準地域コードとは別体系で、市の標準地域コードは area_name の先頭に付いている。全国・都市階級・地方・市が同じ列に混在するので、area を絞らずに集計すると重複する
+  - name: area_name
+    title: 地域名
+    description: area に対応する地域名。全国・都市階級・地方は名称のみ（全国、大都市、北海道地方）、市は「01100 札幌市」のように5桁の標準地域コードが前置される。東京は「13100 東京都区部」で、特別区をまとめた1行
+  - name: time
+    title: 時間軸コード
+    description: 時間軸コード。月次と年次・年度次が同じ列に混在するので、粒度を揃えるにはこのコードか time_name で絞る
+  - name: time_name
+    title: 時間軸名
+    description: 時間軸の名称。「2020年」（年次）と「2020年6月」（月次）が混在する。収録は1970年〜2026年6月
+  - name: year
+    title: 年
+    description: time_name から抽出した西暦4桁。月次の行も年だけになるので、月まで必要なら time_name を使う
+  - name: unit
+    title: 単位
+    description: 単位。tab=2/3（変化率）は「%」、tab=1（指数）は指数なので空
+  - name: value
+    title: 統計値
+    description: 統計値。tab=1 は2020年=100 とする指数、tab=2/3 は変化率（%）。元データが非数値だった場合は NULL
+themes: [economy]
+---
+
+# 消費者物価指数（price_index）
+
+消費者物価指数（2020年基準）です。品目別の価格指数を全国・地域・都市階級別に月次／年次で収録します。テーブルは `e_stat.cpi.price_index`。
+
+出典: [総務省統計局 消費者物価指数（2020年基準）](https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003427113)
+
+## 列の使い方
+
+年次データだけを取りたいときは `time_name LIKE '____年'`、月次は `time_name LIKE '%月'` で絞り込みます。
+
+## 全国・総合指数の年次推移
+
+```sql
+SELECT year, value
+FROM e_stat.cpi.price_index
+WHERE tab = '1' AND cat01 = '0001' AND area_name = '全国'
+  AND time_name LIKE '____年'
+ORDER BY year
+```
+
+## 品目を探す
+
+```sql
+SELECT DISTINCT cat01, item_name
+FROM e_stat.cpi.price_index
+WHERE item_name LIKE '%米%'
+ORDER BY cat01
+LIMIT 20
+```
+
+## 特定品目の月次推移（直近）
+
+米類（`0004`）の直近12か月の指数を取り出します。
+
+```sql
+SELECT time_name, value
+FROM e_stat.cpi.price_index
+WHERE tab = '1' AND cat01 = '0004' AND area_name = '全国'
+  AND time_name LIKE '%月'
+ORDER BY time DESC
+LIMIT 12
+```
+
+## 補足: cpi.price_index
+
+品目別価格指数を全国・地域・都市階級別の月次／年次で収録。
+指数は地域ごとに 2020年 = 100 に揃えてあるため、地域間で水準を比べても意味を持たない。
+比較できるのは同じ地域の時間変化か、tab=2/3 の変化率。
+表章（tab）は「指数」「前月比・前年比・前年度比」「前年同月比」の3種類を含む。
+品目（cat01）は総合・10大費目から個別品目までの790区分。
+地域（area）は全国・都市階級・地方・都道府県庁所在市など67区分。

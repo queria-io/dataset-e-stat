@@ -1,0 +1,63 @@
+---
+$schema: https://queria.io/schemas/table/v1.json
+table: local_finance.fiscal_capacity
+title: 地方財政状況調査 市区町村の財政力指数・標準財政規模（年度次）
+description: |-
+  地方財政状況調査の、市区町村の財政力指数・基準財政収入額・基準財政需要額・標準財政規模（千円）を2014年度から持つテーブルです。
+
+  - 都道府県と一部事務組合は含みません
+keywords:
+  - e-stat
+  - 地方財政状況調査
+  - 決算カード
+  - 財政力指数
+  - 標準財政規模
+  - 基準財政需要額
+  - 基準財政収入額
+  - 地方交付税
+  - 不交付団体
+  - 地方財政
+  - 市区町村
+sources:
+  - path: https://www.e-stat.go.jp/stat-search/files?toukei=00200251
+fields:
+  - name: fiscal_year
+    title: 決算年度（西暦）
+    description: 決算年度（西暦）。2014年度から収録する
+  - name: entity_category_code
+    title: 団体区分コード（原典）
+    description: 原典の団体区分コード。1=政令指定都市、2=特別区、8=中核市、9=施行時特例市、3・4=その他の市、5=町村
+  - name: area_code
+    title: 標準地域コード（5桁）
+    description: 標準地域コード（5桁）。lg_code の先頭5桁で、census / boundary / soumu.code.municipality と同じ体系
+    semantic: {role: entity, name: city}
+  - name: lg_code
+    title: 全国地方公共団体コード（6桁）
+    description: 全国地方公共団体コード（6桁・チェックデジット付き）
+    semantic: {role: entity, name: city}
+  - name: pref_name
+    title: 都道府県名
+    description: 都道府県名
+  - name: entity_name
+    title: 市区町村名
+    description: 市区町村名
+  - name: fiscal_capacity_index
+    title: 財政力指数
+    description: "財政力指数。基準財政収入額を基準財政需要額で割った値の3か年平均で、小数第2位まで。原典は100倍した整数で持ち、ここで100で割っている（2024年度の実測: 飛島村1.99、武蔵野市1.57、千代田区0.85、夕張市0.19で、1を超えるのは1741市区町村のうち74）。3か年平均なので、普通交付税の交付・不交付を単年度で判定した結果とは一致しない。対象の3か年は年度ごとに1年ずつ動く"
+  - name: standard_fiscal_scale
+    title: 標準財政規模（千円）
+    description: 標準財政規模（千円）。通常の状態で入る一般財源の規模。実質収支比率や実質公債費比率の分母になる
+  - name: standard_tax_revenue
+    title: 標準税収入額等（千円）
+    description: 標準税収入額等（千円）。標準的な税率で見込まれる地方税収に地方譲与税などを加えた額
+  - name: standard_revenue
+    title: 基準財政収入額（千円）
+    description: 基準財政収入額（千円）。地方交付税の算定で収入として見込む額。標準税収入額等の75%が基本
+  - name: standard_demand
+    title: 基準財政需要額（千円）
+    description: 基準財政需要額（千円）。地方交付税の算定で必要と見込む額。基準財政需要額が基準財政収入額を上回る分が普通交付税のもとになる
+  - name: extraordinary_bond_limit
+    title: 臨時財政対策債発行可能額（千円）
+    description: 臨時財政対策債発行可能額（千円）。普通交付税の不足分を地方債に振り替えた枠で、標準財政規模に含まれる
+themes: [government_finance]
+---

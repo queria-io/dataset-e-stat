@@ -1,0 +1,47 @@
+---
+$schema: https://queria.io/schemas/table/v1.json
+table: main.raw_meta_info
+title: メタ情報 (raw)
+description: 'e-Stat API getMetaInfo から取得したメタ情報。
+
+  各統計表の表章事項・分類事項・地域事項・時間軸事項のコード、名称、単位、階層レベル等を提供する。
+
+  API仕様: https://www.e-stat.go.jp/api/api-info/e-stat-manual3-0#api_2_5'
+keywords:
+  - e-stat
+  - メタデータ
+sources:
+  - path: https://www.e-stat.go.jp/api/api-info/e-stat-manual3-0#api_2_5
+fields:
+  - name: stats_data_id
+    title: 統計表ID
+    description: 統計表ID（e-Stat の statsDataId）。stg_stats_list の id、stats_catalog の stats_data_id と同じキー
+  - name: class_id
+    title: 分類軸ID (tab, cat01〜cat15, area, time)
+    description: 分類軸ID。tab=表章事項、cat01〜cat15=分類事項、area=地域事項、time=時間軸事項。各 mart テーブルの tab / cat01 / area / time 列がどの軸かはここで対応する
+  - name: class_name
+    title: 分類軸名
+    description: 分類軸の名称（表章項目、地域、時間軸 など）。統計表ごとに付け方が違う
+  - name: class_description
+    title: 分類軸の解説
+    description: 分類軸につけられた解説文。設定されていない統計表が多く、その場合は空
+  - name: item_code
+    title: 項目コード
+    description: 分類項目のコード。各 mart テーブルの tab / cat01 / area / time の値と突き合わせる結合キー
+  - name: item_name
+    title: 項目名
+    description: 分類項目名。item_code に対応する表示名
+  - name: level
+    title: 階層レベル
+    description: 階層レベル。1 が最上位で、数字が大きいほど下位。統計表によっては全て 1 で階層を持たない
+  - name: unit
+    title: 単位
+    description: 当該項目の単位。単位を持つのは主に表章事項・分類事項で、地域や時間軸では空
+  - name: parent_code
+    title: 親コード
+    description: 上位項目のコード。階層を持たない統計表では空
+  - name: add_inf
+    title: 追加情報
+    description: e-Stat の追加情報欄。設定されていないことが多く、その場合は空
+published: false
+---

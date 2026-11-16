@@ -1,6 +1,6 @@
 # 社会・人口統計体系（SSDS）
 
-社会・人口統計体系（SSDS）の指標を、11分野（A〜K）× 都道府県・市区町村の22テーブルに収録しています。都道府県のテーブルは `e_stat.ssds.<分野>_pref_<名前>`、市区町村のテーブルは `e_stat.ssds.<分野>_municipal_<名前>` です。分野ごとの代表的な指標と SQL の例は、各分野の都道府県のテーブル（例: [A 人口・世帯](a_pref_population.md)）の使い方ガイドにあります。
+社会・人口統計体系（SSDS）の指標を、11分野（A〜K）× 都道府県・市区町村の22テーブルに収録しています。都道府県のテーブルは `e_stat.ssds.<分野>_pref_<名前>`、市区町村のテーブルは `e_stat.ssds.<分野>_municipal_<名前>` です。分野ごとの代表的な指標と SQL の例は、各分野の都道府県のテーブル（例: [A 人口・世帯](../../models/ssds/mart/pref/a_pref_population.md)）の使い方ガイドにあります。
 
 出典: [社会・人口統計体系（SSDS）](https://www.e-stat.go.jp/statistics/00200502)
 

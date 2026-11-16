@@ -1,0 +1,59 @@
+---
+$schema: https://queria.io/schemas/table/v1.json
+table: kaigo_service.service_establishment
+title: 居宅サービス・地域密着型サービスの事業所数（都道府県別）
+description: |-
+  介護サービス施設・事業所調査の、居宅サービスなどの事業所数を都道府県別・サービスの種類別に2013年から持つテーブルです。
+
+  - 全国になるのは area_kind が prefecture の行だけです
+  - 制度改正でサービスの種類が入れ替わります（2016年に小規模な通所介護が地域密着型へ移行）
+keywords:
+  - e-stat
+  - 介護サービス施設・事業所調査
+  - 居宅サービス
+  - 介護予防サービス
+  - 地域密着型サービス
+  - 訪問介護
+  - 通所介護
+  - デイサービス
+  - 訪問看護
+  - 居宅介護支援
+  - グループホーム
+  - 介護
+  - 高齢者
+  - 事業所数
+  - 都道府県
+sources:
+  - path: https://www.e-stat.go.jp/stat-search/files?toukei=00450042
+fields:
+  - name: survey_year
+    title: 調査年
+    description: "調査年。毎年10月1日現在の調査で、2013〜2024で欠けは無い"
+  - name: area_code
+    title: 地域コード
+    description: "統計に用いる標準地域コード（5桁）。原典の行見出しは地域名だけなので、soumu.code.municipality の現行の名前から当てている。全国は 00000"
+    semantic: {role: entity, name: city}
+  - name: area_name
+    title: 地域名
+    description: "地域の名称。都道府県は原典が2023年調査まで略称（「青森」）で出すので、接尾辞を補って正式名にそろえている"
+  - name: area_kind
+    title: 集計の段
+    description: "集計の段。nationwide=全国、prefecture=都道府県、designated_city=指定都市（再掲）、core_city=中核市（再掲）。足し合わせて全国になるのは prefecture だけ"
+  - name: prefecture_code
+    title: 都道府県コード
+    description: "都道府県コード（2桁）。指定都市・中核市の行はその市がある都道府県。全国の行は NULL"
+    semantic: {role: entity, name: prefecture}
+  - name: prefecture_name
+    title: 都道府県名
+    description: "都道府県名。soumu.code.municipality の pref_name。全国の行は NULL"
+  - name: service_category
+    title: サービスの区分
+    description: "サービスの区分。居宅サービス・介護予防サービス・地域密着型サービス・地域密着型介護予防サービスの4つで、原典の表に対応する"
+  - name: service_type
+    title: サービスの種類
+    description: "サービスの種類。原典の列見出し。2015年調査までの地域密着型サービスの「〜事業所」の接尾辞は外し、複合型サービスは2015年の改称後の名前（複合型サービス（看護小規模多機能型居宅介護））にそろえている。地域密着型通所介護は2016年調査から、介護予防訪問介護・介護予防通所介護は2017年調査まで"
+  - name: value
+    title: 事業所数
+    description: "事業所数。原典が「-」（該当なし）の行は NULL"
+themes: [social_security_health]
+---

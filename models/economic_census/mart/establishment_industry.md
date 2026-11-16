@@ -1,0 +1,77 @@
+---
+$schema: https://queria.io/schemas/table/v1.json
+table: economic_census.establishment_industry
+title: 市区町村別 産業大分類別の事業所数・従業者数・売上金額（令和3年経済センサス）
+description: |-
+  令和3年経済センサス‐活動調査の、全国・都道府県・市区町村ごとの民営事業所数・従業者数・売上（収入）金額を、産業大分類別・経営組織別に持つテーブルです。
+
+  - 事業所数は売上の集計の母数で、ほかの表の民営事業所数より約5.5%少なくなります
+  - 売上（収入）金額は一部の産業で調査しておらず NULL です
+  - 産業・経営組織・地域の総数と内訳が同じ列に並ぶので、絞ってから合計してください
+keywords:
+  - e-stat
+  - 経済センサス
+  - 事業所
+  - 従業者数
+  - 売上高
+  - 産業分類
+  - 市区町村
+  - 都道府県
+temporal_coverage: {start: "2021", end: "2021"}
+sources:
+  - path: https://www.e-stat.go.jp/statistics/00200553
+fields:
+  - name: area
+    title: 標準地域コード（5桁）
+    description: 標準地域コード。全国は 00000、都道府県は 13000 のように市区町村部が 000。census_municipality の area・soumu.code.municipality の area_code と同じ体系
+    semantic: {role: entity, name: city}
+  - name: area_name
+    title: 地域名
+    description: 地域の名称（全国／東京都／特別区部／千代田区／札幌市／札幌市中央区 など）
+  - name: area_level
+    title: 地域の粒度
+    description: 'area の粒度。national=全国（1）、prefecture=都道府県（47）、municipality=市・町村・特別区部（1,719）、ward=政令指定都市の行政区・特別区・境界未定地域（199）。日本全域をちょうど1回覆うのは prefecture だけ、または municipality だけで、どちらも全産業の事業所数が全国の 4,870,898 に一致する。ward は municipality の内訳で、足すと二重に数える'
+  - name: parent_area
+    title: 上位地域の標準地域コード
+    description: 1つ上の階層の area。都道府県の親は全国、市・町村・特別区部の親は都道府県、行政区の親はその市、特別区の親は特別区部（13100）。全国は NULL
+  - name: industry_code
+    title: 産業大分類コード
+    description: 産業大分類のコード。AR=全産業（公務を除く）、AB=農林漁業、CR=非農林漁業、C〜R=大分類（鉱業／建設業／製造業／…／サービス業）、G1・G2・O1・O2・Q1・Q2・R1・R2=大分類の内訳。総数と大分類と内訳が同じ列に混在する
+  - name: industry_name
+    title: 産業大分類
+    description: industry_code に対応する産業の名称
+  - name: industry_level
+    title: 産業分類の階層
+    description: 産業分類の階層の深さ。1=全産業（AR）・農林漁業（AB）・非農林漁業（CR）、2=大分類16区分、3=大分類の内訳8区分。重複なく全産業を覆うのは AB と industry_level = 2 の16区分を合わせた17区分で、その和が AR に一致する
+  - name: parent_industry
+    title: 上位産業のコード
+    description: 1つ上の階層の industry_code。大分類の親は CR、内訳の親はその大分類。AR・AB・CR は NULL
+  - name: organization_code
+    title: 経営組織コード
+    description: 経営組織のコード。0=総数、1=個人、2=会社、3=会社以外の法人、S1=（別掲）外国の会社、S2=（別掲）法人でない団体。総数 = 個人 + 会社 + 会社以外の法人が事業所数・従業者数の全行で成り立つ
+  - name: organization
+    title: 経営組織
+    description: organization_code に対応する経営組織の名称
+  - name: is_reprint
+    title: 別掲かどうか
+    description: 別掲（S1 外国の会社・S2 法人でない団体）なら真。総数の内数を数え直した行で、総数と足すと二重に数える
+  - name: establishments
+    title: 民営事業所数
+    description: 民営事業所数（事業所）。売上（収入）金額等の集計対象で、事業所に関する集計の民営事業所数（全国5,156,063）とは母数が違う
+  - name: employees
+    title: 従業者数
+    description: 従業者数（人）。2021年6月1日現在
+  - name: sales_million_yen
+    title: 売上（収入）金額
+    description: 売上（収入）金額（百万円）。産業によって調査されていないため NULL が入る
+  - name: employees_per_establishment
+    title: 1事業所当たり従業者数
+    description: 1事業所当たり従業者数（人）
+  - name: sales_per_establishment_10k_yen
+    title: 1事業所当たり売上（収入）金額
+    description: 1事業所当たり売上（収入）金額（万円）。sales_million_yen ÷ establishments で割り直した値とは一致しない（原典の分母が違う）
+  - name: sales_per_employee_10k_yen
+    title: 従業者1人当たり売上（収入）金額
+    description: 従業者1人当たり売上（収入）金額（万円）。sales_million_yen ÷ employees で割り直した値とは一致しない（原典の分母が違う）
+themes: [economy]
+---
