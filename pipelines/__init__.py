@@ -9,6 +9,7 @@ from enum import IntEnum
 from pathlib import Path
 
 import dlt
+from dlt.common.schema.typing import LOADS_TABLE_NAME, PIPELINE_STATE_TABLE_NAME
 from dlt.destinations import ducklake
 from dlt.destinations.impl.ducklake.configuration import DuckLakeCredentials
 
@@ -165,3 +166,24 @@ def create_pipeline(pipeline_name: str = "estat", preserve_insertion_order: bool
         destination=ducklake(credentials=credentials, override_data_path=True),
         dataset_name=SOURCE_SCHEMA,
     )
+
+
+def prune_pipeline_state(pipeline: dlt.Pipeline) -> None:
+    """パイプラインの状態の行を、パイプラインごとに最新の 1 行だけ残して消す。
+
+    dlt は読み込みのたびに状態を 1 行足し、古い行を消さない。各実行は最新の行しか
+    読まないのに、テーブルは 2026-11 時点で 215 行・3.7GB あり、読み込みの最初に
+    これを読むところで Apply が落ちた (TProtocolException: Invalid data、2026-11-16)。
+    DuckLake は全行を消したデータファイルをテーブルから外すので、残るのは最新の行の
+    ファイルだけになる。
+    """
+    with pipeline.sql_client() as client:
+        state = client.make_qualified_table_name(PIPELINE_STATE_TABLE_NAME)
+        loads = client.make_qualified_table_name(LOADS_TABLE_NAME)
+        # dlt が読むのは、完了した読み込み (status = 0) のうち最新の行
+        client.execute_sql(
+            f"DELETE FROM {state} WHERE _dlt_load_id NOT IN ("
+            f"SELECT max(s._dlt_load_id) FROM {state} s "
+            f"JOIN {loads} l ON l.load_id = s._dlt_load_id AND l.status = 0 "
+            f"GROUP BY s.pipeline_name)"
+        )
