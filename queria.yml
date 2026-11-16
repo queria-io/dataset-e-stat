@@ -1,0 +1,352 @@
+$schema: https://queria.io/schemas/dataset/v1.json
+name: e_stat
+title: e-Stat 統計データ
+description: |-
+  e-Stat の API と統計GIS から取得した日本の公的統計です。社会・人口統計体系、国勢調査、経済センサスなど約 30 の統計を、スキーマごとに収録しています。
+  出典は政府統計の総合窓口（e-Stat）と各統計の作成府省です。このサービスは、政府統計総合窓口(e-Stat)のAPI機能を使用していますが、サービスの内容は国によって保証されたものではありません。
+keywords:
+  - 法人企業景気予測調査
+  - BSI
+  - 景況判断
+  - 商業動態統計
+  - 商業販売額
+  - 生産動態統計
+  - 鉱工業生産
+  - 経済構造実態調査
+  - 付加価値額
+  - 企業活動基本調査
+  - 研究開発費
+  - 外資系企業
+  - 法人企業統計
+  - 経常利益
+  - 設備投資
+  - 貿易統計
+  - 輸出
+  - 輸入
+  - HS コード
+  - 統計
+  - 政府統計
+  - e-Stat
+  - 社会・人口統計体系
+  - SSDS
+  - 国勢調査
+  - 小地域
+  - 市区町村
+  - 世帯
+  - 消費者物価指数
+  - 家計調査
+  - 家計
+  - 消費支出
+  - 労働力調査
+  - 労働
+  - 就業
+  - 完全失業率
+  - 就業構造基本調査
+  - 有業率
+  - 非正規雇用
+  - 賃金構造基本統計調査
+  - 賃金
+  - 所定内給与額
+  - 学校基本調査
+  - 小学校
+  - 中学校
+  - 児童数
+  - 学校数
+  - 教員数
+  - 生徒数
+  - 建築着工統計調査
+  - 建築着工
+  - 着工床面積
+  - 建築物
+  - 建設総合統計
+  - 建設投資
+  - 出来高
+  - 建設工事受注動態統計調査
+  - 公共工事
+  - 受注高
+  - 鉄道輸送統計調査
+  - 鉄道
+  - 旅客
+  - 輸送人員
+  - 港湾調査
+  - 港湾
+  - 貨物
+  - 住民基本台帳
+  - 人口動態
+  - 人口移動
+  - 転入
+  - 転出
+  - 転入超過
+  - 経済センサス
+  - 工業統計調査
+  - 製造業
+  - 製造品出荷額
+  - 事業所
+  - 人口
+  - 社会
+  - 地方財政状況調査
+  - 地方財政
+  - 決算
+  - 歳入
+  - 歳出
+  - 財政力指数
+  - 地方交付税
+  - 小売物価統計調査
+  - 小売価格
+  - 価格
+  - 物価
+  - 医療施設調査
+  - 病院
+  - 診療所
+  - 病床数
+  - 二次医療圏
+  - 社会福祉施設等調査
+  - 社会福祉施設
+  - 保育所
+  - 介護サービス施設・事業所調査
+  - 介護保険施設
+  - 介護保険事業状況報告
+  - 要介護認定
+  - 要支援
+  - 第1号被保険者
+  - 広域連合
+  - エネルギー消費統計調査
+  - エネルギー消費量
+  - 特別養護老人ホーム
+  - 介護
+  - 福祉
+  - 学校保健統計調査
+  - 身長
+  - 体重
+  - 発育
+  - 民間給与実態統計調査
+  - 平均給与
+  - 給与階級
+  - 作物統計調査
+  - 野菜生産出荷統計
+  - 野菜
+  - 農業
+  - 収穫量
+  - 出荷量
+  - 作付面積
+  - 全国家計構造調査
+  - 年間収入階級
+  - 日本標準産業分類
+  - 産業分類
+  - 人口動態調査
+  - 人口動態統計
+  - 出生数
+  - 死亡数
+  - 死因
+  - 婚姻
+  - 離婚
+  - 小売業
+  - 年間商品販売額
+  - 売場面積
+  - 商業集積地区
+  - 商店街
+homepage: https://github.com/queria-io/dataset-e-stat
+language: ja
+licenses:
+  - JP-GOV-STD-2.0
+
+sources:
+  - title: e-Stat（政府統計の総合窓口）
+    path: https://www.e-stat.go.jp/
+  - title: 統計GIS 境界データ・小地域集計
+    path: https://www.e-stat.go.jp/gis
+  - title: 市区町村を探す（e-Stat）
+    path: https://www.e-stat.go.jp/municipalities/cities
+  - title: 住民基本台帳に基づく人口、人口動態及び世帯数（総務省）
+    path: https://www.soumu.go.jp/main_sosiki/jichi_gyousei/daityo/jinkou_jinkoudoutai-setaisuu.html
+  - title: 住民基本台帳人口移動報告（総務省統計局）
+    path: https://www.stat.go.jp/data/idou/
+  - title: 家計調査（総務省統計局）
+    path: https://www.stat.go.jp/data/kakei/
+  - title: 労働力調査（総務省統計局）
+    path: https://www.stat.go.jp/data/roudou/
+  - title: 工業統計調査（経済産業省）
+    path: https://www.e-stat.go.jp/statistics/00550010
+  - title: 地方財政状況調査（総務省）
+    path: https://www.e-stat.go.jp/stat-search/files?toukei=00200251
+  - title: 小売物価統計調査（総務省統計局）
+    path: https://www.stat.go.jp/data/kouri/
+  - title: 社会福祉施設等調査（厚生労働省）
+    path: https://www.e-stat.go.jp/stat-search/files?toukei=00450041
+  - title: 医療施設調査（厚生労働省）
+    path: https://www.e-stat.go.jp/statistics/00450021
+  - title: 介護サービス施設・事業所調査（厚生労働省）
+    path: https://www.e-stat.go.jp/stat-search/files?toukei=00450042
+  - title: 介護保険事業状況報告（厚生労働省）
+    path: https://www.e-stat.go.jp/stat-search/files?toukei=00450351
+  - title: エネルギー消費統計調査（資源エネルギー庁）
+    path: https://www.e-stat.go.jp/stat-search/files?toukei=00551005
+  - title: 就業構造基本調査（総務省統計局）
+    path: https://www.stat.go.jp/data/shugyou/
+  - title: 賃金構造基本統計調査（厚生労働省）
+    path: https://www.e-stat.go.jp/stat-search/files?toukei=00450091
+  - title: 民間給与実態統計調査（国税庁）
+    path: https://www.nta.go.jp/publication/statistics/kokuzeicho/minkan/toukei.htm
+  - title: 作物統計調査 作況調査（野菜）（農林水産省）
+    path: https://www.e-stat.go.jp/statistics/00500215
+  - title: 全国家計構造調査（総務省統計局）
+    path: https://www.stat.go.jp/data/zenkokukakei/2019/index.html
+  - title: 日本標準産業分類（e-Stat 統計分類・用語の検索）
+    path: https://www.e-stat.go.jp/classifications/terms/10
+  - title: 人口動態調査（厚生労働省）
+    path: https://www.e-stat.go.jp/statistics/00450011
+  - title: 鉄道輸送統計調査（国土交通省）
+    path: https://www.e-stat.go.jp/statistics/00600350
+  - title: 港湾調査（国土交通省）
+    path: https://www.e-stat.go.jp/statistics/00600280
+  - title: 法人企業景気予測調査（内閣府・財務省）
+    path: https://www.mof.go.jp/pri/reference/bos/
+  - title: 商業動態統計調査（経済産業省）
+    path: https://www.meti.go.jp/statistics/tyo/syoudou/
+  - title: 経済産業省生産動態統計（経済産業省）
+    path: https://www.meti.go.jp/statistics/tyo/seidou/
+  - title: 経済構造実態調査（総務省・経済産業省）
+    path: https://www.e-stat.go.jp/statistics/00200555
+  - title: 経済産業省企業活動基本調査（経済産業省）
+    path: https://www.meti.go.jp/statistics/tyo/kikatu/
+  - title: 法人企業統計調査（財務省）
+    path: https://www.mof.go.jp/pri/reference/ssc/
+  - title: 普通貿易統計（財務省）
+    path: https://www.customs.go.jp/toukei/info/
+
+contributors:
+  - title: 総務省統計局
+    path: https://www.stat.go.jp/
+    roles: [rightsHolder]
+  - title: 経済産業省
+    path: https://www.meti.go.jp/
+    roles: [rightsHolder]
+  - title: 厚生労働省
+    path: https://www.mhlw.go.jp/
+    roles: [rightsHolder]
+  - title: 国税庁
+    path: https://www.nta.go.jp/
+    roles: [rightsHolder]
+  - title: 農林水産省
+    path: https://www.maff.go.jp/
+    roles: [rightsHolder]
+  - title: 国土交通省
+    path: https://www.mlit.go.jp/
+    roles: [rightsHolder]
+  - title: 財務省
+    path: https://www.mof.go.jp/
+    roles: [rightsHolder]
+  - title: 内閣府
+    path: https://www.cao.go.jp/
+    roles: [rightsHolder]
+
+temporal_coverage: {start: "1970", end: null}
+spatial_coverage: [JP]
+update_frequency: daily
+schemas:
+  - name: main
+    title: e-Stat 統計データ
+  - name: ssds
+    title: 社会・人口統計体系
+    guide: docs/ssds/index.md
+  - name: boundary
+    title: 境界データ
+    guide: docs/boundary/index.md
+  - name: corporate_finance
+    title: 法人企業統計調査
+    guide: docs/corporate_finance/index.md
+  - name: cpi
+    title: 消費者物価指数
+  - name: census
+    title: 国勢調査
+    guide: docs/census/index.md
+  - name: code
+    title: 市区町村名と標準地域コード・統計分類
+    guide: docs/code/index.md
+  - name: resident_registry
+    title: 住民基本台帳に基づく人口・世帯数
+  - name: economic_census
+    title: 経済センサス‐活動調査
+    guide: docs/economic_census/index.md
+  - name: economic_structure
+    title: 経済構造実態調査
+    guide: docs/economic_structure/index.md
+  - name: enterprise_activity
+    title: 経済産業省企業活動基本調査
+    guide: docs/enterprise_activity/index.md
+  - name: trade
+    title: 普通貿易統計
+  - name: household
+    title: 家計調査
+    guide: docs/household/index.md
+  - name: labor
+    title: 労働力調査
+    guide: docs/labor/index.md
+  - name: production
+    title: 経済産業省生産動態統計
+  - name: manufacture
+    title: 工業統計調査
+  - name: migration
+    title: 住民基本台帳人口移動報告
+    guide: docs/migration/index.md
+  - name: local_finance
+    title: 地方財政状況調査
+    guide: docs/local_finance/index.md
+  - name: retail_price
+    title: 小売物価統計調査
+  - name: welfare_facility
+    title: 社会福祉施設等調査
+  - name: kaigo_service
+    title: 介護サービス施設・事業所調査
+    guide: docs/kaigo_service/index.md
+  - name: medical_facility
+    title: 医療施設調査
+  - name: kaigo_insurance
+    title: 介護保険事業状況報告
+    guide: docs/kaigo_insurance/index.md
+  - name: energy_consumption
+    title: エネルギー消費統計調査
+    guide: docs/energy_consumption/index.md
+  - name: employment_structure
+    title: 就業構造基本調査
+  - name: wage_structure
+    title: 賃金構造基本統計調査
+    guide: docs/wage_structure/index.md
+  - name: school
+    title: 学校基本調査
+    guide: docs/school/index.md
+  - name: school_health
+    title: 学校保健統計調査
+  - name: business_outlook
+    title: 法人企業景気予測調査
+    guide: docs/business_outlook/index.md
+  - name: building_starts
+    title: 建築着工統計調査
+  - name: commerce
+    title: 商業動態統計調査
+  - name: job_placement
+    title: 一般職業紹介状況（職業安定業務統計）
+    guide: docs/job_placement/index.md
+  - name: construction
+    title: 建設総合統計・建設工事受注動態統計調査
+    guide: docs/construction/index.md
+  - name: rail_transport
+    title: 鉄道輸送統計調査
+  - name: port
+    title: 港湾調査
+  - name: private_salary
+    title: 民間給与実態統計調査
+  - name: housing_survey
+    title: 住宅・土地統計調査
+  - name: crop
+    title: 作物統計調査
+  - name: household_structure
+    title: 全国家計構造調査
+  - name: vital_statistics
+    title: 人口動態調査
+
+    guide: docs/vital_statistics/index.md
+themes: [population, economy, labour, social_security_health, education_culture, land_climate, government_finance, housing_land, transport_tourism, justice_safety_environment, agriculture, mining_manufacturing, energy_water]
+cover: 📊
+docs:
+  - docs/catalog.md

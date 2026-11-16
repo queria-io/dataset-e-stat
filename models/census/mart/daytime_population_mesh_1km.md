@@ -1,0 +1,146 @@
+---
+$schema: https://queria.io/schemas/table/v1.json
+table: census.daytime_population_mesh_1km
+title: 1kmメッシュ別 昼間人口・夜間人口（推計）
+description: |-
+  1kmメッシュ別の昼間人口・夜間人口・昼夜間人口比率を持つテーブルです。市区町村の公表値をメッシュへ按分した推計値です。
+
+  - 従業者数のウェイトは平成28年経済センサスで、官公庁の集積と通学による流入は反映されません
+  - mesh_code で boundary.mesh_1km と結合します
+keywords:
+  - e-stat
+  - 国勢調査
+  - 経済センサス
+  - メッシュ
+  - 昼間人口
+  - 夜間人口
+  - GIS
+temporal_coverage: {start: "2020", end: "2020"}
+sources:
+  - path: https://www.e-stat.go.jp/
+fields:
+  - name: mesh_code
+    title: メッシュコード（境界データ mesh_1km と同一体系の8桁）
+    semantic: {role: entity, name: mesh}
+  - name: city_code
+    title: 按分に使った市区町村コード（メッシュ中心点が属する市区町村。5桁）
+    semantic: {role: entity, name: city}
+  - name: nighttime_population
+    title: 夜間人口（常住人口。令和2年国勢調査の人口総数）
+  - name: daytime_population
+    title: 昼間人口（推計値。市区町村合計は公表値に一致する）
+  - name: daytime_ratio
+    title: 昼夜間人口比率（％。夜間人口0のメッシュは NULL）
+  - name: daytime_night_diff
+    title: 昼夜間人口差（昼間人口−夜間人口）
+  - name: employees
+    title: 従業者数（平成28年経済センサス‐活動調査、A～R全産業）
+  - name: establishments
+    title: 事業所数（平成28年経済センサス‐活動調査、A～R全産業）
+themes: [population]
+---
+
+# 1kmメッシュ別 昼間人口（census スキーマ）
+
+`census.daytime_population_mesh_1km` は1kmメッシュごとの昼間人口・夜間人口・昼夜間人口比率です。商圏分析で「そこに何人いるか」を昼と夜で見分けるための表です。
+
+夜間人口は令和2年国勢調査の実測値ですが、**昼間人口は推計値**です。公的統計として昼間人口が公表されているのは市区町村までで、それより細かい単位は存在しません（市区町村の公表値は[昼夜間人口と通勤・通学流動](census_commuting_flow.md)にあります）。小地域集計にも地域メッシュ統計にも従業地・通学地の項目はありますが、どちらも「当地に常住する就業者・通学者」＝ そこから出ていく側だけで、外から入ってくる側は市区町村止まりです。
+
+## 推計の考え方
+
+公表されている市区町村の昼間人口には内訳があります。
+
+| 項目符号 | 内容 |
+|---------|------|
+| A6101 | 従業も通学もしていない人口 |
+| A6102 | 自市区町村で従業・通学している人口 |
+| A6103 / A6104 | 流出人口（県内他市区町村 / 他県） |
+| A6105 / A6106 | 流入人口（県内他市区町村 / 他県） |
+| A6107 | 昼間人口 |
+
+実データでは次の恒等式が市区町村1,913件のうち1,911件で厳密に成り立ちます（残り2件は令和2年時点で存在しない浜松市の新設区で、元データがありません）。
+
+```
+夜間人口 = A6101 + A6102 + A6103 + A6104 + 不詳
+昼間人口 = A6101 + A6102 + A6105 + A6106 + 不詳
+```
+
+不詳は従業地・通学地がわからない常住者で、昼夜とも同じ値です。つまり常住地に留まる扱いになっています。そこで昼間人口を性質の違う2つに割り、それぞれ別のウェイトでメッシュへ配ります。
+
+```
+その場に残る人      = A6101 + 不詳            → メッシュの夜間人口で按分
+そこで従業・通学する人 = A6102 + A6105 + A6106  → メッシュの従業者数で按分
+```
+
+ウェイトは市区町村の中で正規化するので、**メッシュを市区町村ごとに合計すると公表昼間人口に一致します**。千代田区で確かめると `12,064 + 22,282 + 18,510 + 463,702 + 387,222 = 903,780` で公表値と同じになります。
+
+## 地図に載せる
+
+`mesh_code` は境界データ `boundary.mesh_1km` と同じコード体系なので、そのまま結合できます。
+
+```sql
+SELECT
+    b.geometry,
+    d.daytime_population,
+    d.nighttime_population,
+    d.daytime_ratio
+FROM e_stat.census.daytime_population_mesh_1km AS d
+JOIN e_stat.boundary.mesh_1km AS b ON b.mesh_code = d.mesh_code
+WHERE d.city_code = '13101'   -- 千代田区
+```
+
+## 昼間人口が集まる場所を探す
+
+夜間人口が少ないのに昼間人口が多いメッシュがオフィス街です。夜間人口が極端に少ないメッシュは比率が跳ねるので、下限を切って見ます。
+
+```sql
+SELECT mesh_code, city_code, nighttime_population, daytime_population, daytime_ratio
+FROM e_stat.census.daytime_population_mesh_1km
+WHERE nighttime_population >= 100
+ORDER BY daytime_ratio DESC
+LIMIT 20
+```
+
+逆に `daytime_night_diff` が大きく負のメッシュは、昼間に人がいなくなる住宅地です。
+
+```sql
+SELECT mesh_code, city_code, nighttime_population, daytime_population, daytime_night_diff
+FROM e_stat.census.daytime_population_mesh_1km
+ORDER BY daytime_night_diff
+LIMIT 20
+```
+
+## 使うときに知っておくこと
+
+- **従業者数のウェイトは平成28年経済センサスです。** 令和3年のメッシュ統計は e-Stat の API に登録されていないため使えません。流入の総量は令和2年の公表値なので、ずれるのは市区町村の中での配分だけです
+- **官公庁の集積は流入ウェイトに乗りません。** 従業者数が A〜R 全産業（S公務を除く）のためです。県庁・市役所の周辺は昼間人口が実態より小さく出ます
+- **通学による流入は再現できません。** 学校の所在地別の在学者数が公的オープンデータに無いため、事業所の従業者数で代用されます。大学のキャンパスは昼間人口が実態より小さく出ます
+- **買い物客・観光客は含みません。** これは公表されている昼間人口も同じ定義です
+- `city_code` はメッシュの中心点が属する市区町村です。境界をまたぐメッシュは中心点のある側へ丸ごと入ります。ウェイトは市区町村の中で正規化されるので、市区町村ごとの合計が公表値と一致することには影響しません
+- 中心点がどの町丁・字等にも入らないメッシュ（海上など）は `city_code` が NULL で、昼間人口 = 夜間人口 になります
+
+出典: 総務省統計局 令和2年国勢調査／平成28年経済センサス‐活動調査に関する地域メッシュ統計、社会・人口統計体系。
+
+## 補足: 1kmメッシュ別 昼間人口（census スキーマ）
+
+| テーブル | 内容 | 主なカラム |
+|---------|------|-----------|
+| daytime_population_mesh_1km | 1kmメッシュ別 昼間人口・夜間人口・昼夜間人口比率 | mesh_code / city_code / nighttime_population / daytime_population / daytime_ratio |
+| population_mesh_1km | 1kmメッシュ別の人口と世帯（令和2年国勢調査・縦持ち）。昼間人口の推計が按分に使う夜間人口の元の表 | mesh_code / mesh1_code / cat01 / category / cat02 / value |
+
+市区町村の公表値の内訳（A6101〜A6106）を「その場に残る人（A6101 + 不詳）」と
+「そこで従業・通学する人（A6102 + A6105 + A6106）」に分け、前者をメッシュの夜間人口、
+後者をメッシュの従業者数をウェイトに配分しています。ウェイトは市区町村の中で
+正規化するので、メッシュを市区町村ごとに合計すると公表昼間人口（A6107）に一致します。
+
+従業者数のウェイトは平成28年経済センサス（A～R全産業、S公務を除く）です。
+官公庁の集積と通学による流入は反映されません。買い物客・観光客は含みません
+（公表昼間人口も同じ定義です）。
+
+使い方と注意点は[1kmメッシュ別 昼間人口のガイド](daytime_population_mesh_1km.md)を参照してください。
+
+## 補足: census.daytime_population_mesh_1km
+
+昼間人口は市区町村より細かい単位では公表されていないため、市区町村の公表値をメッシュへ按分して推計している。
+公表値の内訳（社会・人口統計体系 A6101〜A6106、令和2年）を「その場に残る人」と「そこで従業・通学する人」に分け、前者はメッシュの夜間人口、後者はメッシュの従業者数をウェイトに配分する。
+買い物客・観光客は含まない（公表昼間人口も同じ）。

@@ -1,0 +1,49 @@
+---
+$schema: https://queria.io/schemas/table/v1.json
+table: census.population_mesh_1km
+title: 1kmメッシュ別 人口・世帯（令和2年国勢調査）
+description: |-
+  令和2年国勢調査の1kmメッシュ別の人口と世帯を持つテーブルです。cat01 の 0010 が人口総数です。
+
+  - 人口総数は秘匿のメッシュにも実値があり、cat02 を問わず合計すると全国の総人口になります
+  - mesh_code で boundary.mesh_1km と結合します
+keywords:
+  - e-stat
+  - 国勢調査
+  - メッシュ
+  - 地域メッシュ統計
+  - 人口
+  - 世帯
+  - GIS
+temporal_coverage: {start: "2020", end: "2020"}
+sources:
+  - path: https://www.e-stat.go.jp/
+fields:
+  - name: mesh_code
+    title: 3次メッシュコード（8桁）
+    description: 境界データ mesh_1km の mesh_code と同じ体系
+    semantic: {role: entity, name: mesh}
+  - name: mesh1_code
+    title: 1次メッシュコード（4桁）
+    description: mesh_code の上4桁。統計表の配布単位で、約80km四方
+    semantic: {role: dimension}
+  - name: cat01
+    title: 区分コード
+    description: 年齢別人口・世帯の種類別世帯数等の区分コード（4桁）。0010 が人口総数。総数と内訳が同じ列に並ぶので、cat01 を絞らずに value を合計すると重複する
+  - name: category
+    title: 区分名
+    description: cat01 に対応する区分名
+  - name: cat02
+    title: 秘匿・合算区分コード
+    description: 1=無し、2=合算、3=秘匿。人口総数（0010）は秘匿・合算のメッシュもそれぞれ実値を持つので、cat02 を問わず合計してよい。年齢などの内訳は確かめていないので、1メッシュごとに使うときは cat02 = '1' に絞る
+  - name: suppression
+    title: 秘匿・合算区分名
+    description: cat02 に対応する区分名（無し／合算／秘匿）
+  - name: unit
+    title: 単位
+    description: 人または世帯
+  - name: value
+    title: 値
+    description: 人口（人）または世帯数（世帯）
+themes: [population]
+---
