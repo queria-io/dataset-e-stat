@@ -9,8 +9,6 @@ WITH capital_codes AS (
     WHERE kind IN ('capital_balance', 'capital_business')
 ),
 
-{# 子会社の業種の大分類は、親会社の産業と区分が違う（J 金融業、保険業、R サービス業 など）。
-   2020年以降の子会社の表で同じ名前に付いたコードを引く #}
 {# 名前の書き方が年で揺れるもの（2010年調査の「和歌山」、「クレジットカード業・割賦金融業」）を
    2020年以降の表の名前にそろえる。コードで引く #}
 current_names AS (
@@ -26,6 +24,8 @@ prefecture_names AS (
     GROUP BY breakdown_code
 ),
 
+{# 子会社の業種の大分類は、親会社の産業と区分が違う（J 金融業、保険業、R サービス業 など）。
+   2020年以降の子会社の表で同じ名前に付いたコードを引く #}
 subsidiary_codes AS (
     SELECT DISTINCT breakdown_name, breakdown_code
     FROM {{ ref('stg_enterprise_activity') }}

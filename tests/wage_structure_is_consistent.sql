@@ -25,11 +25,11 @@ i AS (
 labels AS (
     SELECT DISTINCT 'prefecture_wage' AS t, s.year, s.area, m.area_name, s.area_label
     FROM {{ ref('stg_wage_structure_prefecture') }} s
-    JOIN {{ ref('prefecture_wage') }} m USING (year, area)
+    JOIN (SELECT DISTINCT year, area, area_name FROM {{ ref('prefecture_wage') }}) m USING (year, area)
     UNION ALL
     SELECT DISTINCT 'prefecture_industry_wage', s.year, s.area, m.area_name, s.area_label
     FROM {{ ref('stg_wage_structure_prefecture_industry') }} s
-    JOIN {{ ref('prefecture_industry_wage') }} m USING (year, area)
+    JOIN (SELECT DISTINCT year, area, area_name FROM {{ ref('prefecture_industry_wage') }}) m USING (year, area)
 ),
 
 by_sex AS (
