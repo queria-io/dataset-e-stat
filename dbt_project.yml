@@ -19,6 +19,9 @@ seeds:
         area_code: varchar
         insurer_name: varchar
 
+on-run-start:
+  - "{{ drop_retired_municipality_code() }}"
+
 models:
   e_stat:
     +database: e_stat
