@@ -22,7 +22,7 @@
 | `corporate_finance` | 法人企業統計調査 | [説明](docs/corporate_finance/index.md) |
 | `main` | 統計表カタログ・指標定義 | [説明](docs/catalog.md) |
 | `census` | 国勢調査（小地域・市区町村・昼夜間人口・通勤通学・メッシュ） | [説明](docs/census/index.md) |
-| `boundary` | 町丁・字等と1kmメッシュの境界 | [説明](docs/boundary/index.md) |
+| `boundary` | 町丁・字等と1km・250mメッシュの境界 | [説明](docs/boundary/index.md) |
 | `code` | 標準地域コードと統計分類（産業・職業・商品・ICD-10 など） | [説明](docs/code/index.md) |
 | `resident_registry` | 住民基本台帳の人口・世帯数・人口動態 | [説明](models/resident_registry/mart/population.md) |
 | `economic_census` | 経済センサス‐活動調査 | [説明](docs/economic_census/index.md) |

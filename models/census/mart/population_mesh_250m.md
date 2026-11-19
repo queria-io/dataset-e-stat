@@ -6,7 +6,7 @@ description: |-
   令和2年国勢調査の250mメッシュ別の人口と世帯を、年齢区分・世帯人員・家族類型など50区分で持つテーブルです。
 
   - 秘匿のメッシュは年齢などの内訳が0で、その人数は合算先のメッシュに含まれます。範囲で合計してから使ってください
-  - mesh_1km_code で boundary.mesh_1km と結合します
+  - mesh_code で boundary.mesh_250m と、mesh_1km_code で boundary.mesh_1km と結合します
 keywords:
   - e-stat
   - 国勢調査
@@ -66,7 +66,7 @@ themes: [population]
 17 歳以下・18〜64 歳を出せます。全国で約 5,800 万行あります。
 
 `mesh_code` は 10 桁で、上 8 桁（`mesh_1km_code`）が 3 次メッシュ（1km）のコードです。
-境界データ mesh_1km と `mesh_1km_code` で結合できます。
+境界データ mesh_250m と `mesh_code` で、mesh_1km と `mesh_1km_code` で結合できます。
 
 ## 秘匿と合算
 

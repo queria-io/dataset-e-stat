@@ -71,6 +71,27 @@ WHERE mesh1_code = '5339'
 LIMIT 5
 ```
 
+# 250mメッシュ境界（mesh_250m）
+
+標準地域メッシュの4分の1地域メッシュ（250mメッシュ）の区画です。テーブルは `e_stat.boundary.mesh_250m`。250mメッシュ統計（`census.population_mesh_250m`）を地図に載せるときに `mesh_code` で結合します。
+
+- mesh_code: 250mメッシュコード（10桁）。上8桁が3次メッシュ、9桁目が500mメッシュ、10桁目が250mメッシュの位置（どちらも 1=南西、2=南東、3=北西、4=北東）
+- mesh_1km_code / mesh1_code: 上位の3次メッシュ（8桁）と1次メッシュ（4桁）
+- mesh4_code / mesh5_code: 9桁目と10桁目
+- geometry: 区画のポリゴン（CRS: EPSG:4612）。1区画は緯度方向7.5秒・経度方向11.25秒
+
+mesh_1km の各区画を16に分けて作っています。統計GIS が配る250mメッシュ境界は、176 区画すべての1次メッシュで、mesh_1km の各区画を16に分けたものと区画の集合も座標も一致します。全国で 8,025,600 区画あるので、`mesh1_code` か `mesh_1km_code` で範囲を絞ってから使ってください。
+
+```sql
+-- 1次メッシュ 5339（東京付近）の250mメッシュ人口を区画のポリゴンと並べる
+SELECT b.mesh_code, p.value AS population, ST_AsText(b.geometry) AS wkt
+FROM e_stat.boundary.mesh_250m AS b
+JOIN e_stat.census.population_mesh_250m AS p
+  ON p.mesh_code = b.mesh_code AND p.cat01 = '0010'
+WHERE b.mesh1_code = '5339'
+LIMIT 5
+```
+
 ## 補足: 境界データ（boundary スキーマ）
 
 地図化・空間集計に使う区画のポリゴンです。統計値は持ちません。
@@ -82,6 +103,9 @@ mesh1_code / mesh2_code / mesh3_code にも分けて持たせています。同�
 メッシュ統計と `mesh_code` で結合して地図に載せられます。1 区画の大きさは緯度方向
 30 秒・経度方向 45 秒で、南鳥島・沖ノ鳥島を含む陸域の 1次メッシュ 176 区画分
 （501,600 メッシュ）を収録しています。座標系は EPSG:4612 です。
+
+mesh_250m は mesh_1km の各区画を 16 に分けた 4分の1地域メッシュ（250mメッシュ）です。
+mesh_code は 10 桁で、上 8 桁が 3次メッシュコードです。
 
 出典: 総務省統計局 統計GIS 境界データ。https://www.e-stat.go.jp/gis
 

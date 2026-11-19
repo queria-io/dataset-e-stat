@@ -1,0 +1,44 @@
+---
+$schema: https://queria.io/schemas/table/v1.json
+table: boundary.mesh_250m
+title: 250mメッシュ境界
+description: |-
+  250mメッシュ（4分の1地域メッシュ）の境界ポリゴンを持つテーブルです。統計値は持たず、mesh_code で census.population_mesh_250m などの250mメッシュ統計と結合して地図にします。
+
+  - 1kmメッシュ境界（mesh_1km）にある区画をそれぞれ16に分けたもので、統計GIS が配る250mメッシュ境界と区画も座標も同じです
+  - 全国で約800万区画あります。mesh1_code か mesh_1km_code で範囲を絞ってから使ってください
+keywords:
+  - e-stat
+  - メッシュ
+  - 境界
+  - GIS
+  - 地域メッシュ統計
+  - 250mメッシュ
+sources:
+  - path: https://www.e-stat.go.jp/gis/statmap-search?page=1&type=2&aggregateUnitForBoundary=Q&coordsys=1&format=gml
+fields:
+  - name: mesh_code
+    title: 250mメッシュコード（10桁）
+    description: 4分の1地域メッシュのコード（10桁）。上8桁が3次メッシュ（1km）、9桁目が2分の1地域メッシュ（500m）、10桁目が4分の1地域メッシュ（250m）の位置。census.population_mesh_250m の mesh_code と同じ体系
+    semantic: {role: entity, name: mesh}
+  - name: mesh_1km_code
+    title: 3次メッシュコード（8桁）
+    description: mesh_code の上8桁。mesh_1km の mesh_code と結合できる
+    semantic: {role: entity, name: mesh}
+  - name: mesh1_code
+    title: 1次メッシュコード
+    description: 上位区画である1次メッシュ（約80km四方）のコード（4桁）
+    semantic: {role: dimension}
+  - name: mesh4_code
+    title: 2分の1地域メッシュ番号
+    description: 3次メッシュ内の500mメッシュの位置（1桁）。1=南西、2=南東、3=北西、4=北東
+    semantic: {role: dimension}
+  - name: mesh5_code
+    title: 4分の1地域メッシュ番号
+    description: 500mメッシュ内の250mメッシュの位置（1桁）。1=南西、2=南東、3=北西、4=北東
+    semantic: {role: dimension}
+  - name: geometry
+    title: メッシュポリゴン
+    description: 'CRS: EPSG:4612。緯度方向7.5秒・経度方向11.25秒の長方形'
+themes: [land_climate]
+---
