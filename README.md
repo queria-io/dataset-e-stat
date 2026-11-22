@@ -51,7 +51,7 @@
 | `construction` | 建設総合統計・建設工事受注動態統計調査 | [説明](docs/construction/index.md) |
 | `rail_transport` | 鉄道輸送統計調査 | [説明](models/rail_transport/mart/passengers_monthly.md) |
 | `port` | 港湾調査 | [説明](models/port/mart/cargo_tonnage_annual.md) |
-| `housing_survey` | 住宅・土地統計調査 | [説明](models/housing_survey/mart/municipality_income_tenure.md) |
+| `housing_survey` | 住宅・土地統計調査 | [年収階級別の主世帯数](models/housing_survey/mart/municipality_income_tenure.md)、[空き家数](models/housing_survey/mart/municipality_vacant_homes.md) |
 | `trade` | 普通貿易統計（品別国別表） | [説明](models/trade/mart/commodity_country_monthly.md) |
 | `crop` | 作物統計調査（野菜） | [説明](models/crop/mart/vegetable_production.md) |
 | `household_structure` | 全国家計構造調査 | [説明](models/household_structure/mart/income_class_expenditure.md) |
