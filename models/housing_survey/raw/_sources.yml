@@ -6,3 +6,4 @@ sources:
     schema: _source
     tables:
       - name: housing_survey_income_tenure
+      - name: housing_survey_vacant_homes
