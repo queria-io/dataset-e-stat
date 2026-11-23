@@ -1,0 +1,106 @@
+$schema: https://tabledoc.queria.io/schemas/table/v1.json
+title: 住民基本台帳 人口・世帯数・人口動態（市区町村別・年次）
+description: |-
+  住民基本台帳に基づく人口・世帯数と1年間の出生・死亡・転入・転出を、全国・都道府県・市区町村ごとに1968年から年次で持つテーブルです。
+
+  - 調査期日は2014年以降が1月1日、2013年以前が3月31日です
+  - 住民区分（総計・日本人・外国人）と地域の粒度が同じ列に並ぶので、絞ってから合計してください
+topics:
+  - e-stat
+  - 住民基本台帳
+  - 住基人口
+  - 人口
+  - 世帯数
+  - 人口動態
+  - 転入
+  - 転出
+  - 出生
+  - 死亡
+  - 市区町村
+  - 都道府県
+  - 外国人住民
+sources: [jinkou_jinkoudoutai-setaisuu]
+columns:
+  - name: reference_date
+    title: 調査期日（2014年以降は1月1日、2013年以前は3月31日）
+    description: 人口・世帯数の調査期日。2014年以降は1月1日、2013年以前は3月31日。人口動態はこの日の直前1年間の値
+  - name: year
+    title: 年（reference_date の年）
+    description: reference_date の年。年次の時系列を並べるときの軸
+  - name: resident_kind
+    title: 住民区分（total / japanese / foreign）
+    description: 住民区分。total=総計、japanese=日本人住民、foreign=外国人住民。3区分が同じ列に縦に積まれるので、絞らずに合計すると二重に数える。3区分に分かれるのは2013年以降で、2012年以前は住民基本台帳が日本人住民のみを対象としていたため japanese だけになる
+  - name: area_level
+    title: 地域の粒度（national / prefecture / municipality）
+    description: 地域の粒度。national=全国計、prefecture=都道府県、municipality=市区町村。集計行と明細行が同じ表に同居するので、絞らずに合計すると重複する。municipality には郡・政令指定都市の合計・行政区も含まれる
+  - name: area_code
+    title: 標準地域コード（5桁）
+    description: 標準地域コード（5桁）。lg_code の先頭5桁で、census / boundary / soumu.code.municipality と同じ体系。政令市とその区、郡とその町村を数え分けるには、このコードで soumu.code.municipality を引いて area_kind / is_municipality を見る。全国計の行と、コードを持たない行では NULL
+    entity: {type: foreign, name: city}
+  - name: lg_code
+    title: 全国地方公共団体コード（6桁）
+    description: 全国地方公共団体コード（6桁・チェックデジット付き）。元データの団体コードそのまま。全国計の行は NULL。東京都の島しょ集計行と2009年の北方領土6村もコードを持たず NULL になる
+    entity: {type: foreign, name: city}
+  - name: pref_name
+    title: 都道府県名
+    description: 都道府県名。全国計の行では NULL
+  - name: municipality_name
+    title: 市区町村名
+    description: 市区町村名。元データの表記そのままで、郡に属する町村は「宮古郡多良間村」、政令市の区は「札幌市中央区」のように上位の名称が前に付く。全国計・都道府県の行では NULL
+  - name: population_total
+    title: 人口（人）
+    description: 人口（人）。2025年以降の外国人住民には在留カードの性別欄が空欄の住民が含まれ、その分だけ男女の合計より大きくなる（2026年で全国74人）
+  - name: population_male
+    title: 男の人口（人）
+    description: 男の人口（人）
+  - name: population_female
+    title: 女の人口（人）
+    description: 女の人口（人）
+  - name: households
+    title: 世帯数（世帯）
+    description: 世帯数（世帯）。日本人住民の区分では日本人住民のみの世帯と複数国籍の世帯の合計
+  - name: births
+    title: 出生者数（人）
+    description: 出生者数（人）。1980年より前の年は収録が無く NULL
+  - name: deaths
+    title: 死亡者数（人）
+    description: 死亡者数（人）。1980年より前の年は収録が無く NULL
+  - name: natural_change
+    title: 自然増減数（人）
+    description: 自然増減数（人）。出生者数 - 死亡者数
+  - name: moved_in_total
+    title: 転入者数 計（人）
+    description: 転入者数の計（人）。1980年より前の年は収録が無く NULL
+  - name: moved_in_domestic
+    title: 転入者数 国内（人・2013年以降）
+    description: 国内からの転入者数（人）。国内・国外の内訳が付くのは2013年以降で、それ以前は NULL
+  - name: moved_in_overseas
+    title: 転入者数 国外（人・2013年以降）
+    description: 国外からの転入者数（人）。国内・国外の内訳が付くのは2013年以降で、それ以前は NULL
+  - name: moved_out_total
+    title: 転出者数 計（人）
+    description: 転出者数の計（人）。1980年より前の年は収録が無く NULL
+  - name: moved_out_domestic
+    title: 転出者数 国内（人・2013年以降）
+    description: 国内への転出者数（人）。国内・国外の内訳が付くのは2013年以降で、それ以前は NULL
+  - name: moved_out_overseas
+    title: 転出者数 国外（人・2013年以降）
+    description: 国外への転出者数（人）。国内・国外の内訳が付くのは2013年以降で、それ以前は NULL
+  - name: social_change
+    title: 社会増減数（人）
+    description: 社会増減数（人）。増減数 - 自然増減数にあたり、転入転出だけでなく職権記載・職権消除・帰化・国籍喪失といったその他の増減も含む。転入者数 - 転出者数とは一致しない
+  - name: other_added
+    title: 住民票記載数 その他（人）
+    description: 住民票記載数のうち、転入・出生以外の計（人）。職権記載、帰化、国籍喪失などを含む
+  - name: other_removed
+    title: 住民票消除数 その他（人）
+    description: 住民票消除数のうち、転出・死亡以外の計（人）。職権消除、帰化、国籍喪失などを含む
+  - name: total_added
+    title: 住民票記載数 計（人）
+    description: 住民票記載数の計（人）。転入者数 + 出生者数 + その他
+  - name: total_removed
+    title: 住民票消除数 計（人）
+    description: 住民票消除数の計（人）。転出者数 + 死亡者数 + その他
+  - name: net_change
+    title: 増減数（人）
+    description: 増減数（人）。住民票記載数の計 - 住民票消除数の計

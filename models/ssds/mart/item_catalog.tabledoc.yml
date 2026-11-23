@@ -1,0 +1,44 @@
+$schema: https://tabledoc.queria.io/schemas/table/v1.json
+title: 分類項目定義
+description: |-
+  社会・人口統計体系（SSDS）の22テーブルで使う統計指標と分類体系の一覧です。
+topics:
+  - e-stat
+  - 社会・人口統計体系
+sources:
+  - id: ssds-2
+    path: https://www.stat.go.jp/data/ssds/2.html
+columns:
+  - name: table_title
+    title: 統計表題名
+    description: 当該項目が掲載されている統計表の題名。同じ item_code が複数の統計表に載るため、この列の分だけ行が重複する（5,377 項目に対し 7,093 行）。項目を一意に引くときは stg_item_lookup を使う
+  - name: stats_data_id
+    title: 統計表ID
+    description: 統計表ID（e-Stat の statsDataId）。main.stats_catalog の stats_data_id と同じキー
+  - name: class_id
+    title: 分類軸ID
+    description: 分類軸ID。表章事項 tab・地域 area・時間軸 time を除外しているため、SSDS では常に cat01
+  - name: class_name
+    title: 分類軸名
+    description: 分類軸の名称。SSDS では「Ｊ　福祉・社会保障」のような統計表のカテゴリ名が入る
+  - name: class_description
+    title: 分類軸の解説
+    description: 分類軸につけられた解説文。SSDS では設定されておらず常に空
+  - name: item_code
+    title: 項目コード
+    description: 分類項目のコード。各 mart テーブルの cat01 と突き合わせる結合キー。桁の長いコードほど上位項目の内訳を表し、階層はコードの前方一致で辿る
+  - name: item_name
+    title: 項目名
+    description: 分類項目名。「J110203_現に保護を受けた生活保護被保護実世帯数（高齢者世帯）」のようにコードが前置される
+  - name: level
+    title: 階層レベル
+    description: 階層レベル。SSDS では常に 1 で、階層の判別には使えない。上位・下位は item_code の桁数で見る
+  - name: unit
+    title: 単位
+    description: 当該項目の単位（人、世帯、千円、％ など）。mart テーブルの unit はこの値を引いている
+  - name: parent_code
+    title: 親コード
+    description: 上位項目のコード。SSDS では設定されておらず常に空。階層は item_code の前方一致で辿る
+  - name: add_inf
+    title: 追加情報
+    description: e-Stat の追加情報欄。SSDS では常に空

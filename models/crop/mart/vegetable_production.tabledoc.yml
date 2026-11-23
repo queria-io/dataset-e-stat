@@ -1,0 +1,58 @@
+$schema: https://tabledoc.queria.io/schemas/table/v1.json
+title: 都道府県別の野菜の作付面積・収穫量・出荷量（野菜生産出荷統計）
+description: |-
+  作物統計調査の野菜の作付面積・収穫量・出荷量を、都道府県別・品目別・作型別に2003年産から持つテーブルです。
+
+  - 年間の量は season = '計'、品目の量は subset IS NULL の行だけを見てください
+  - 主産県だけを調べる年産があり、調べていない県は NULL です。全国の値は全国の行で見てください
+topics:
+  - e-stat
+  - 作物統計調査
+  - 野菜生産出荷統計
+  - 野菜
+  - 農業
+  - 収穫量
+  - 出荷量
+  - 作付面積
+  - キャベツ
+  - 都道府県
+sources:
+  - statistics-00500215
+  - id: sakkyou_yasai
+    path: https://www.maff.go.jp/j/tokei/kouhyou/sakumotu/sakkyou_yasai/
+columns:
+  - name: year
+    title: 年産
+    description: 年産（西暦4桁）。2003〜2024。その年に収穫されたもの（作型によって前年の秋に植えたものを含む）
+  - name: crop
+    title: 品目
+    description: 品目名（キャベツ、だいこん、トマト、ばれいしょ など41品目）。原典の表記のまま。ばれいしょは年によって「ばれいしょ（じゃがいも）」と書かれるのを「ばれいしょ」にそろえている
+  - name: season
+    title: 作型
+    description: 作型。計=年間の合計、ほかは春・夏・秋・冬・春夏・夏秋・秋冬・冬春・春植え・秋植え・その他・温室。品目によって分け方が違い、作型の無い品目は計だけ。作型を足すと計になるので、計と一緒に合計しない
+  - name: subset
+    title: うち内訳
+    description: 「うち」の内訳（ミニトマト、加工用トマト、ししとう、サラダ菜、ながいも）。同じ品目・作型の subset IS NULL の行の内数。品目全体の行は NULL
+  - name: area
+    title: 地域コード
+    description: 標準地域コード（5桁）。00000=全国、XX000=都道府県
+    entity: {type: foreign, name: prefecture}
+  - name: area_name
+    title: 地域名
+    description: 地域名（全国、北海道、茨城県、群馬県 など）
+  - name: prefecture_code
+    title: 都道府県コード
+    description: 都道府県コード（2桁）。全国は NULL
+    entity: {type: foreign, name: prefecture}
+  - name: planted_area_ha
+    title: 作付面積
+    description: 作付面積（ha）。調べていない県・事実のないものは NULL
+  - name: yield_kg_per_10a
+    title: 10a当たり収量
+    description: 10a当たり収量（kg）
+  - name: harvest_t
+    title: 収穫量
+    description: 収穫量（t）。調べていない県・事実のないものは NULL
+  - name: shipment_t
+    title: 出荷量
+    description: 出荷量（t）。収穫量のうち市場などに出したもので、自家消費などを除く
