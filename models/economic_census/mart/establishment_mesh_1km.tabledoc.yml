@@ -1,0 +1,38 @@
+$schema: https://tabledoc.queria.io/schemas/table/v1.json
+title: 1kmメッシュ別 産業大分類別の事業所数・従業者数（平成28年経済センサス）
+description: |-
+  平成28年経済センサス‐活動調査の1kmメッシュ別の産業大分類別の事業所数と従業者数を持つテーブルです。
+
+  - 公務（S）は含みません
+  - mesh_code で boundary.mesh_1km と結合します
+topics:
+  - e-stat
+  - 経済センサス
+  - メッシュ
+  - 地域メッシュ統計
+  - 事業所
+  - 従業者
+  - GIS
+temporal_coverage: {start: "2016", end: "2016"}
+sources: [e-stat]
+columns:
+  - name: mesh_code
+    title: 3次メッシュコード（8桁）
+    description: 境界データ mesh_1km の mesh_code と同じ体系
+    entity: {type: foreign, name: mesh}
+  - name: mesh1_code
+    title: 1次メッシュコード（4桁）
+    description: mesh_code の上4桁。統計表の配布単位で、約80km四方
+    dimension: categorical
+  - name: cat01
+    title: 区分コード
+    description: 産業大分類×事業所数／従業者数の区分コード。0010 全産業の事業所数、0200 全産業の従業者数。総数と内訳が同じ列に並ぶので、cat01 を絞らずに value を合計すると重複する
+  - name: category
+    title: 区分名
+    description: cat01 に対応する区分名
+  - name: unit
+    title: 単位
+    description: 事業所または人
+  - name: value
+    title: 値
+    description: 事業所数または従業者数

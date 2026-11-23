@@ -1,0 +1,36 @@
+$schema: https://tabledoc.queria.io/schemas/table/v1.json
+title: 1kmメッシュ別 昼間人口・夜間人口（推計）
+description: |-
+  1kmメッシュ別の昼間人口・夜間人口・昼夜間人口比率を持つテーブルです。市区町村の公表値をメッシュへ按分した推計値です。
+
+  - 従業者数のウェイトは平成28年経済センサスで、官公庁の集積と通学による流入は反映されません
+  - mesh_code で boundary.mesh_1km と結合します
+topics:
+  - e-stat
+  - 国勢調査
+  - 経済センサス
+  - メッシュ
+  - 昼間人口
+  - 夜間人口
+  - GIS
+temporal_coverage: {start: "2020", end: "2020"}
+sources: [e-stat]
+columns:
+  - name: mesh_code
+    title: メッシュコード（境界データ mesh_1km と同一体系の8桁）
+    entity: {type: foreign, name: mesh}
+  - name: city_code
+    title: 按分に使った市区町村コード（メッシュ中心点が属する市区町村。5桁）
+    entity: {type: foreign, name: city}
+  - name: nighttime_population
+    title: 夜間人口（常住人口。令和2年国勢調査の人口総数）
+  - name: daytime_population
+    title: 昼間人口（推計値。市区町村合計は公表値に一致する）
+  - name: daytime_ratio
+    title: 昼夜間人口比率（％。夜間人口0のメッシュは NULL）
+  - name: daytime_night_diff
+    title: 昼夜間人口差（昼間人口−夜間人口）
+  - name: employees
+    title: 従業者数（平成28年経済センサス‐活動調査、A～R全産業）
+  - name: establishments
+    title: 事業所数（平成28年経済センサス‐活動調査、A～R全産業）

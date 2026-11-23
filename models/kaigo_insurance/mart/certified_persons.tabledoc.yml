@@ -1,0 +1,55 @@
+$schema: https://tabledoc.queria.io/schemas/table/v1.json
+title: 要介護（要支援）認定者数（保険者別）
+description: |-
+  介護保険事業状況報告の要介護（要支援）認定者数を、保険者別・被保険者の区分別・要介護度別に2001年度から持つテーブルです。
+
+  - 被保険者の区分・要介護度・全国と保険者の行に総数と内訳が並ぶので、絞ってから合計してください
+  - 要介護度の区分は制度改正で変わります
+topics:
+  - e-stat
+  - 介護保険事業状況報告
+  - 介護保険
+  - 要介護認定
+  - 要介護
+  - 要支援
+  - 認定者数
+  - 認定率
+  - 高齢者
+  - 保険者
+  - 広域連合
+  - 市区町村
+temporal_coverage: {start: "2001", end: "2024"}
+sources: [files-00450351]
+columns:
+  - name: fiscal_year
+    title: 年度
+    description: "年度。値は年度末（翌年3月末）現在。2001〜2024で欠けは無い"
+  - name: prefecture_code
+    title: 都道府県コード
+    description: "都道府県コード（2桁）。全国の行は NULL"
+    entity: {type: foreign, name: prefecture}
+  - name: prefecture_name
+    title: 都道府県名
+    description: "都道府県名。全国の行は「全国」"
+  - name: insurer_name
+    title: 保険者名
+    description: "保険者名。原典の表記のまま。全国の行は NULL"
+  - name: insurer_kind
+    title: 保険者の種類
+    description: "nationwide=全国の行、municipality=市区町村（東京23区・政令指定都市は1保険者）、union=広域連合・一部事務組合。足し合わせて全国になるのは municipality と union"
+  - name: area_code
+    title: 地域コード
+    description: "市区町村が単独で保険者の行の、統計に用いる標準地域コード（5桁）。現行の soumu.code.municipality に名前で当てたもの。広域連合・全国の行と、合併で無くなった市町村は NULL"
+    entity: {type: foreign, name: city}
+  - name: insured_category
+    title: 被保険者の区分
+    description: "総数・第1号被保険者（65歳以上）・第2号被保険者（40〜64歳）。総数 = 第1号 + 第2号"
+  - name: age_group
+    title: 年齢
+    description: "第1号被保険者の年齢の内訳。2013年度まで 65歳以上75歳未満／75歳以上、2014年度から 65歳以上70歳未満・70歳以上75歳未満・75歳以上80歳未満・80歳以上85歳未満・85歳以上90歳未満・90歳以上。NULL の行が区分の合計"
+  - name: care_level
+    title: 要介護度
+    description: "要支援（2005年度まで）・要支援1・要支援2・経過的要介護（2006〜2009年度）・要介護1〜5・合計。合計は内訳の合計"
+  - name: value
+    title: 人数
+    description: "認定者数（人）。原典の「-」は0。2013年度の長野県平谷村に負の値がある"

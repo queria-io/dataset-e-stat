@@ -1,0 +1,36 @@
+$schema: https://tabledoc.queria.io/schemas/table/v1.json
+title: 普通貿易統計の取得ファイル
+description: |-
+  e-Stat から取得した普通貿易統計の品別国別表（全国分）の CSV（2025年以降）の一覧です。1 行が 1 つのファイルで、取得した URL・掲載ページ・取得日時と、ファイルの sha256 を持ちます。
+
+  - commodity_country_monthly の source_sha256 列とこの表の sha256 列で、各行をどのファイルから作ったかを確認できます
+  - 同じファイルを取得し直して中身が変わったときは、sha256 ごとに行が分かれます
+  - ファイル本体は保存していません。url から取得し直せます
+topics:
+  - e-stat
+  - 普通貿易統計
+  - 取得ファイル
+sources: [files-00350300]
+columns:
+  - name: url
+    title: ファイルの URL
+  - name: page_url
+    title: 掲載ページの URL
+    description: e-Stat でファイルが掲載されていたページの URL。取得できなかったときは NULL
+  - name: sha256
+    title: sha256
+    description: ファイルの sha256
+  - name: bytes
+    title: バイト数
+  - name: media_type
+    title: メディアタイプ
+    description: 取得したときの応答の Content-Type
+  - name: retrieved_at
+    title: 取得日時
+    description: ファイルを取得した日時（UTC）
+  - name: etag
+    title: ETag
+    description: 取得したときの応答の ETag ヘッダー。無ければ NULL
+  - name: last_modified
+    title: Last-Modified
+    description: 取得したときの応答の Last-Modified ヘッダー。無ければ NULL

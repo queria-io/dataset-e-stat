@@ -1,0 +1,71 @@
+$schema: https://tabledoc.queria.io/schemas/table/v1.json
+title: 港別の海上出入貨物トン数（年次）
+description: |-
+  港湾調査の甲種港湾の港別・年別の海上出入貨物トン数を持つテーブルです。2010〜2023年（2018年を除く）です。
+
+  - 都道府県と港の行が同じ列に並ぶので、area_level で絞ってから合計してください
+topics:
+  - e-stat
+  - 港湾調査
+  - 港湾統計
+  - 港湾
+  - 甲種港湾
+  - 貨物
+  - 取扱貨物量
+  - 輸出
+  - 輸入
+  - 移出
+  - 移入
+  - フェリー
+sources:
+  - id: dbview-0003130803
+    path: https://www.e-stat.go.jp/dbview?sid=0003130803
+columns:
+  - name: area_code
+    title: 地域コード
+    description: "港湾調査の港湾コード（5桁）。先頭2桁が都道府県コードで、末尾3桁が000の行は都道府県の計、それ以外は甲種港湾"
+  - name: area_level
+    title: 地域の段
+    description: "2=都道府県の計、3=甲種港湾。県の行はその県の港の和なので、足すときはどちらかに絞る"
+  - name: prefecture_code
+    title: 都道府県コード
+    description: "area_code の先頭2桁（JIS の都道府県コード）"
+    entity: {type: foreign, name: prefecture}
+  - name: prefecture_name
+    title: 都道府県名
+    description: "港が属する都道府県の名前"
+  - name: port_name
+    title: 港名
+    description: "港の名前（名古屋、千葉 など）。都道府県の行は NULL"
+  - name: flow_code
+    title: 輸移出入コード
+    description: "輸移出入のコード。100=合計、110=輸出、120=輸入、130=移出、140=移入。合計は4つの内訳の和に一致する"
+  - name: flow_name
+    title: 輸移出入
+    description: "flow_code に対応する名称"
+  - name: time
+    title: 時間軸コード
+    description: "e-Stat の時間軸コード。2023000000 が2023年"
+  - name: year
+    title: 年
+    description: "time から切り出した西暦4桁。暦年"
+  - name: cargo_tons
+    title: 海上出入貨物トン数
+    description: "その港・年・輸移出入の貨物の総トン数（トン）。原典に輸送形態の計の行があればその値、無ければ一般と自動車航送船の和。どちらも「-」（該当数字がない）なら NULL"
+  - name: cargo_tons_is_derived
+    title: 合計を補ったか
+    description: "true なら cargo_tons は原典の計ではなく、一般と自動車航送船の和で補った値"
+  - name: general_tons
+    title: 一般貨物トン数
+    description: "自動車航送船以外の船で運んだ貨物のトン数（トン）。原典が「-」なら NULL"
+  - name: ferry_tons
+    title: 自動車航送船貨物トン数
+    description: "フェリーなど自動車航送船で運んだ貨物のトン数（トン）。原典が「-」なら NULL"
+  - name: transshipment_tons
+    title: T/S貨物トン数
+    description: "一般貨物のうち、積み替え（T/S、トランシップ）の貨物のトン数（トン）。general_tons の内数。原典が「-」なら NULL"
+metrics:
+  - {name: cargo_tons, agg: sum, expr: cargo_tons}
+  - {name: general_tons, agg: sum, expr: general_tons}
+  - {name: ferry_tons, agg: sum, expr: ferry_tons}
+  - {name: transshipment_tons, agg: sum, expr: transshipment_tons}

@@ -1,0 +1,31 @@
+$schema: https://tabledoc.queria.io/schemas/table/v1.json
+title: 指標別の収録年
+description: |-
+  社会・人口統計体系（SSDS）の22テーブルの指標ごとに、値がある最も古い年・最も新しい年・年数を持つテーブルです。
+
+  - 収録年は地域をまたいだ値です。1つの地域で使うときは、その年の行があるかを確認してください
+topics:
+  - e-stat
+  - 社会・人口統計体系
+  - メタデータ
+  - 収録期間
+sources: [statistics-00200502]
+columns:
+  - name: table_name
+    title: テーブル名
+    description: ssds スキーマの表名（a_pref_population など）。この表と同じスキーマにある22表のいずれか
+  - name: cat01
+    title: 分類事項コード
+    description: 統計指標の項目符号。各 mart テーブルの cat01 と同じ値。符号の定義は https://www.stat.go.jp/data/ssds/2.html
+  - name: item_name
+    title: 分類事項名
+    description: cat01 に対応する指標名。参照元テーブルの item_name と同じ値
+  - name: min_year
+    title: 収録開始年
+    description: いずれかの地域に値が入っている最も古い年。地域をまたいだ和なので、地域を1つに絞ると始まりがこれより後になることがある。value が NULL の行（元データが「-」「X」）は数えない
+  - name: max_year
+    title: 収録終了年
+    description: いずれかの地域に値が入っている最も新しい年。地域をまたいだ和なので、地域を1つに絞るとこの年の行が無いことがある（c_municipal_economy では199指標中114指標で最新年が地域ごとに違う）。value が NULL の行（元データが「-」「X」）は数えない
+  - name: year_count
+    title: 収録年数
+    description: いずれかの地域に値が入っている年の数。max_year - min_year + 1 と一致しない場合は年が飛んでいる（5年ごとの国勢調査ベースの系列など）

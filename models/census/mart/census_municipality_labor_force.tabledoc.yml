@@ -1,0 +1,54 @@
+$schema: https://tabledoc.queria.io/schemas/table/v1.json
+title: 市区町村別 労働力状態別人口（令和2年国勢調査）
+description: |-
+  令和2年国勢調査の、全国・都道府県・市区町村ごとの15歳以上人口を、男女別・労働力状態別に持つテーブルです。
+
+  - 合計に使えるのは labor_status_level = 1 かつ labor_status_code <> '0' の3行です
+  - 全国・都道府県・市区町村などの行が同じ列に並ぶので、area_level で1つの粒度に絞ってから合計してください
+  - area は標準地域コード（5桁）で、6桁の全国地方公共団体コードとは別体系です
+topics:
+  - e-stat
+  - 国勢調査
+  - 市区町村
+  - 都道府県
+  - 労働力
+  - 就業者
+  - 完全失業者
+  - 非労働力人口
+temporal_coverage: {start: "2020", end: "2020"}
+sources: [statistics-00200521]
+columns:
+  - name: area
+    title: 標準地域コード（5桁）
+    description: 標準地域コード。全国は 00000、都道府県は 13000 のように市区町村部が 000。census_municipality の area と同じ体系で、そちらの部分集合（2000年市区町村の再掲を除いた1,965地域）
+    entity: {type: foreign, name: city}
+  - name: area_name
+    title: 地域名
+    description: 地域の名称（全国／東京都／特別区部／千代田区／札幌市／札幌市中央区 など）
+  - name: area_level
+    title: 地域の粒度
+    description: 'area の粒度。national=全国（1）、prefecture=都道府県（47）、city=市・特別区部（793）、ward=政令指定都市の区と特別区（198）、town_village=町村（926）。日本全域をちょうど1回覆うのは prefecture だけ、または city と town_village の組だけで、どちらも15歳以上人口の合計が全国の 108,258,569 に一致する。ward は city の内訳（例: 千代田区は特別区部の内訳）で、足すと二重に数える'
+  - name: parent_area
+    title: 上位地域の標準地域コード
+    description: 1つ上の階層の area。都道府県の親は全国、市・町村の親は都道府県、政令指定都市の区の親はその市、特別区の親は特別区部（13100）。全国は NULL
+  - name: sex_code
+    title: 男女コード
+    description: 男女のコード。0=総数、1=男、2=女。同じ地域・同じ労働力状態で 男 + 女 = 総数 が全行で成り立つため、絞らずに合計すると2倍になる
+  - name: sex
+    title: 男女
+    description: sex_code に対応する区分名（総数／男／女）
+  - name: labor_status_code
+    title: 労働力状態コード
+    description: "労働力状態のコード。0=総数、1=労働力人口、11=就業者、111/112/113/114=就業者の内訳（主に仕事／家事のほか仕事／通学のかたわら仕事／休業者）、12=完全失業者、2=非労働力人口、21/22/23=非労働力人口の内訳（家事／通学／その他）、3=労働力状態「不詳」。総数と大区分と内訳が同じ列に混在する"
+  - name: labor_status
+    title: 労働力状態
+    description: labor_status_code に対応する区分名。内訳の名称は原典どおり括弧付き（「（就業者）休業者」など）
+  - name: labor_status_level
+    title: 労働力状態の階層
+    description: "労働力状態の階層の深さ。1=総数と大区分（労働力人口・非労働力人口・労働力状態「不詳」）、2=その内訳（就業者・完全失業者・家事・通学・その他）、3=就業者の内訳。合計に使えるのは labor_status_level = 1 かつ labor_status_code <> '0' の3行で、その和が総数に一致する"
+  - name: unit
+    title: 単位
+    description: 単位。この表では常に「人」
+  - name: value
+    title: 人口
+    description: 15歳以上人口（人）。2020年10月1日現在。原典が「-」の区分は NULL。内訳の合計が総数と一致することから、「-」は該当者がいない（0人）ことを表す。全町避難が続いた双葉町だけは39行すべてが「-」で、全項目が NULL になる
