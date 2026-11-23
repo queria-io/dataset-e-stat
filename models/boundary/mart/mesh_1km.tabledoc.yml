@@ -10,12 +10,12 @@ topics:
   - 地域メッシュ統計
 sources:
   - id: statmap-boundary-s
-    path: https://www.e-stat.go.jp/gis/statmap-search?page=1&type=2&aggregateUnitForBoundary=S&coordsys=1&format=gml
+    url: https://www.e-stat.go.jp/gis/statmap-search?page=1&type=2&aggregateUnitForBoundary=S&coordsys=1&format=gml
 columns:
   - name: mesh_code
     title: メッシュコード
     description: 3次メッシュコード（8桁）。地域メッシュ統計の集計単位コードと同一体系
-    entity: {type: foreign, name: mesh}
+    entity: mesh
   - name: mesh1_code
     title: 1次メッシュコード
     description: 上位区画である1次メッシュ（約80km四方）のコード（4桁）。配布単位でもある

@@ -31,7 +31,7 @@ columns:
   - name: area
     title: 地域コード
     description: 地域コード（5桁）。XX000=都道府県の計。東京都外・大阪市外の行は NULL
-    entity: {type: foreign, name: city}
+    entity: city
   - name: area_name
     title: 地域名
     description: 地域名（原典の表記）。政令指定都市の区は区名だけ
@@ -41,11 +41,11 @@ columns:
   - name: prefecture_code
     title: 都道府県コード
     description: 都道府県コード（2桁）
-    entity: {type: foreign, name: prefecture}
+    entity: prefecture
   - name: city_code
     title: 市区町村コード
     description: 市区町村コード（5桁）。政令指定都市の区は市のコード、ほかの市区町村は area と同じ。都道府県の計と outside の行は NULL
-    entity: {type: foreign, name: city}
+    entity: city
   - name: grade
     title: 学年
     description: 学年。小学校 1〜6、中学校 1〜3。0 は学年の計

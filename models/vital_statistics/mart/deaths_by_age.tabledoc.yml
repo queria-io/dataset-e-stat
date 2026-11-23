@@ -21,7 +21,7 @@ columns:
   - name: area_code
     title: 標準地域コード（5桁）
     description: 標準地域コード。全国は 00000、住所が外国は 51000、不詳は 52000、都道府県は 13000 のように市区町村部が 000。soumu.code.municipality の area_code と同じ体系で、各年のコードのまま入る。全国地方公共団体コード（6桁）とは別体系
-    entity: {type: foreign, name: city}
+    entity: city
   - name: area_name
     title: 地域名
     description: 地域の名称（全国／外国／不詳／東京都／新宿区／札幌市中央区 など）
@@ -31,7 +31,7 @@ columns:
   - name: prefecture_code
     title: 都道府県コード
     description: area_code の上2桁。全国・外国・不詳は NULL
-    entity: {type: foreign, name: prefecture}
+    entity: prefecture
   - name: age_code
     title: 年齢区分のコード
     description: 原典の年齢区分のコード（5歳階級と不詳）

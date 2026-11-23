@@ -19,7 +19,7 @@ columns:
   - name: mesh_code
     title: 3次メッシュコード（8桁）
     description: 境界データ mesh_1km の mesh_code と同じ体系
-    entity: {type: foreign, name: mesh}
+    entity: mesh
   - name: mesh1_code
     title: 1次メッシュコード（4桁）
     description: mesh_code の上4桁。統計表の配布単位で、約80km四方

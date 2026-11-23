@@ -17,7 +17,7 @@ topics:
   - 業種
 sources:
   - id: database-0004009620
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004009620
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004009620
 columns:
   - name: year
     title: 年分

@@ -12,7 +12,7 @@ topics:
   - 取得ファイル
 sources:
   - id: files-00550030
-    path: https://www.e-stat.go.jp/stat-search/files?toukei=00550030
+    url: https://www.e-stat.go.jp/stat-search/files?toukei=00550030
 columns:
   - name: url
     title: ファイルの URL

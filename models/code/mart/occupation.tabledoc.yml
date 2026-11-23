@@ -16,7 +16,7 @@ topics:
 primary_key: [revision, code]
 sources:
   - id: terms-20
-    path: https://www.e-stat.go.jp/classifications/terms/20
+    url: https://www.e-stat.go.jp/classifications/terms/20
 columns:
   - name: revision
     title: 改定年（2009 / 1997）

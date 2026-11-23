@@ -25,14 +25,14 @@ columns:
   - name: area
     title: 地域コード
     description: "地域コード（5桁）。00000=全国、XX000=都道府県"
-    entity: {type: foreign, name: prefecture}
+    entity: prefecture
   - name: area_name
     title: 地域名
     description: "地域名（全国、北海道、青森県 など）"
   - name: prefecture_code
     title: 都道府県コード
     description: "都道府県コード（2桁）。全国は NULL"
-    entity: {type: foreign, name: prefecture}
+    entity: prefecture
   - name: energy_type
     title: エネルギー種別
     description: "エネルギー種別（原典の表記）。合計・燃料・非石油系燃料・石油系燃料・電力・熱は計の行"

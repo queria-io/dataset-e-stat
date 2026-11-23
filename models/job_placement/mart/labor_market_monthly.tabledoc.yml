@@ -42,7 +42,7 @@ columns:
   - name: prefecture_code
     title: 都道府県コード
     description: 都道府県コード（2桁）。01=北海道〜47=沖縄県。全国は NULL
-    entity: {type: foreign, name: prefecture}
+    entity: prefecture
   - name: new_job_openings
     title: 新規求人数
     description: その月に新たに受け付けた求人の数（人）

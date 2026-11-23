@@ -19,7 +19,7 @@ columns:
   - name: area
     title: 地域コード（5桁）
     description: 標準地域コード。全国は 00000、都道府県は 13000 のように末尾 000
-    entity: {type: foreign, name: city}
+    entity: city
   - name: area_name
     title: 地域名
   - name: area_level

@@ -19,7 +19,7 @@ topics:
 sources:
   - statistics-00500215
   - id: sakkyou_yasai
-    path: https://www.maff.go.jp/j/tokei/kouhyou/sakumotu/sakkyou_yasai/
+    url: https://www.maff.go.jp/j/tokei/kouhyou/sakumotu/sakkyou_yasai/
 columns:
   - name: year
     title: 年産
@@ -36,14 +36,14 @@ columns:
   - name: area
     title: 地域コード
     description: 標準地域コード（5桁）。00000=全国、XX000=都道府県
-    entity: {type: foreign, name: prefecture}
+    entity: prefecture
   - name: area_name
     title: 地域名
     description: 地域名（全国、北海道、茨城県、群馬県 など）
   - name: prefecture_code
     title: 都道府県コード
     description: 都道府県コード（2桁）。全国は NULL
-    entity: {type: foreign, name: prefecture}
+    entity: prefecture
   - name: planted_area_ha
     title: 作付面積
     description: 作付面積（ha）。調べていない県・事実のないものは NULL

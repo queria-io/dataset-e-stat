@@ -13,17 +13,17 @@ topics:
   - 能力開発費
 sources:
   - id: database-0003458228
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003458228
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003458228
   - id: database-0003459146
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003459146
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003459146
   - id: database-0004018985
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004018985
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004018985
   - id: database-0004019550
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004019550
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004019550
   - id: database-0004029514
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004029514
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004029514
   - id: database-0004062626
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004062626
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004062626
 columns:
   - name: fiscal_year
     title: 年度

@@ -18,25 +18,25 @@ topics:
   - 季節調整
 sources:
   - id: database-0003060191
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003060191
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003060191
   - id: database-0003066618
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003066618
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003066618
   - id: database-0003061946
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003061946
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003061946
   - id: database-0003061948
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003061948
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003061948
   - id: database-0003060192
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003060192
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003060192
   - id: database-0003060193
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003060193
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003060193
   - id: database-0003060194
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003060194
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003060194
   - id: database-0003060221
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003060221
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003060221
   - id: database-0003060222
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003060222
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003060222
   - id: database-0003060223
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003060223
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003060223
 columns:
   - name: scope
     title: 対象業種の範囲

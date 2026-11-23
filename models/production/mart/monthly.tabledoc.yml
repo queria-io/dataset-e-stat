@@ -18,7 +18,7 @@ topics:
   - 月次
 sources:
   - id: files-00550200
-    path: https://www.e-stat.go.jp/stat-search/files?toukei=00550200
+    url: https://www.e-stat.go.jp/stat-search/files?toukei=00550200
 columns:
   - name: time
     title: 時間軸コード

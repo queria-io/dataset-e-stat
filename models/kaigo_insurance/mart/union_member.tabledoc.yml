@@ -20,14 +20,14 @@ columns:
   - name: prefecture_code
     title: 都道府県コード
     description: "都道府県コード（2桁）"
-    entity: {type: foreign, name: prefecture}
+    entity: prefecture
   - name: prefecture_name
     title: 都道府県名
     description: "都道府県名"
   - name: area_code
     title: 地域コード
     description: "構成市町村の統計に用いる標準地域コード（5桁）。この表の一意キー"
-    entity: {type: primary, name: city}
+    entity: city
   - name: municipality_name
     title: 市町村名
     description: "構成市町村の名前。soumu.code.municipality の名前"

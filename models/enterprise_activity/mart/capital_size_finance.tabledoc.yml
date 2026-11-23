@@ -15,29 +15,29 @@ topics:
   - 給与総額
 sources:
   - id: database-0003458220
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003458220
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003458220
   - id: database-0003459138
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003459138
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003459138
   - id: database-0004018977
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004018977
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004018977
   - id: database-0004019542
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004019542
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004019542
   - id: database-0004029507
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004029507
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004029507
   - id: database-0004062618
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004062618
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004062618
   - id: database-0003458222
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003458222
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003458222
   - id: database-0003459140
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003459140
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003459140
   - id: database-0004018979
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004018979
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004018979
   - id: database-0004019544
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004019544
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004019544
   - id: database-0004029509
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004029509
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004029509
   - id: database-0004062620
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004062620
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004062620
 columns:
   - name: fiscal_year
     title: 年度

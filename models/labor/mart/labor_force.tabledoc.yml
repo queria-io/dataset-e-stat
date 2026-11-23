@@ -15,9 +15,9 @@ topics:
   - 失業
 sources:
   - id: dbview-0002060002
-    path: https://www.e-stat.go.jp/dbview?sid=0002060002
+    url: https://www.e-stat.go.jp/dbview?sid=0002060002
   - id: dbview-0003009572
-    path: https://www.e-stat.go.jp/dbview?sid=0003009572
+    url: https://www.e-stat.go.jp/dbview?sid=0003009572
 columns:
   - name: frequency
     title: 時間軸の粒度

@@ -16,13 +16,13 @@ topics:
   - 見通し
 sources:
   - id: dbview-0003326060
-    path: https://www.e-stat.go.jp/dbview?sid=0003326060
+    url: https://www.e-stat.go.jp/dbview?sid=0003326060
   - id: dbview-0003326044
-    path: https://www.e-stat.go.jp/dbview?sid=0003326044
+    url: https://www.e-stat.go.jp/dbview?sid=0003326044
   - id: dbview-0003326161
-    path: https://www.e-stat.go.jp/dbview?sid=0003326161
+    url: https://www.e-stat.go.jp/dbview?sid=0003326161
   - id: dbview-0003326163
-    path: https://www.e-stat.go.jp/dbview?sid=0003326163
+    url: https://www.e-stat.go.jp/dbview?sid=0003326163
 columns:
   - name: survey_time
     title: 調査期コード

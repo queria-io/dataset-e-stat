@@ -15,11 +15,11 @@ topics:
   - 景気
 sources:
   - id: dbview-0003325983
-    path: https://www.e-stat.go.jp/dbview?sid=0003325983
+    url: https://www.e-stat.go.jp/dbview?sid=0003325983
   - id: dbview-0003326004
-    path: https://www.e-stat.go.jp/dbview?sid=0003326004
+    url: https://www.e-stat.go.jp/dbview?sid=0003326004
   - id: dbview-0003326002
-    path: https://www.e-stat.go.jp/dbview?sid=0003326002
+    url: https://www.e-stat.go.jp/dbview?sid=0003326002
 columns:
   - name: survey_time
     title: 調査期コード

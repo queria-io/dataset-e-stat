@@ -22,7 +22,7 @@ columns:
   - name: area_code
     title: 標準地域コード（5桁）
     description: 標準地域コード。都道府県は 13000 のように市区町村部が 000。soumu.code.municipality の area_code と同じ体系で、各年のコードのまま入る。全国地方公共団体コード（6桁）とは別体系
-    entity: {type: foreign, name: city}
+    entity: city
   - name: area_name
     title: 地域名
     description: 地域の名称（東京都／新宿区／札幌市中央区 など）
@@ -32,7 +32,7 @@ columns:
   - name: prefecture_code
     title: 都道府県コード
     description: area_code の上2桁
-    entity: {type: foreign, name: prefecture}
+    entity: prefecture
   - name: mother_age_code
     title: 母の年齢区分のコード
     description: 原典の母の年齢区分のコード。00190=14歳以下 … 00310=50歳以上、00450=不詳

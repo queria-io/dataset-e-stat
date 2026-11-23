@@ -85,4 +85,4 @@ columns:
   - name: overall_total_number
     title: 総件数
     description: 当該統計表の総データ件数。e-Stat API から1回で取り切れるかの目安になる
-listed: false
+hidden: true

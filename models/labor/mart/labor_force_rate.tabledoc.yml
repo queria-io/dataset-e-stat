@@ -14,9 +14,9 @@ topics:
   - 雇用
 sources:
   - id: dbview-0002060004
-    path: https://www.e-stat.go.jp/dbview?sid=0002060004
+    url: https://www.e-stat.go.jp/dbview?sid=0002060004
   - id: dbview-0003009576
-    path: https://www.e-stat.go.jp/dbview?sid=0003009576
+    url: https://www.e-stat.go.jp/dbview?sid=0003009576
 columns:
   - name: frequency
     title: 時間軸の粒度

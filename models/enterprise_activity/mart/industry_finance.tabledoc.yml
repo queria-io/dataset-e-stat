@@ -14,17 +14,17 @@ topics:
   - 付加価値額
 sources:
   - id: database-0003458218
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003458218
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003458218
   - id: database-0003459118
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003459118
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003459118
   - id: database-0004018975
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004018975
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004018975
   - id: database-0004019540
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004019540
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004019540
   - id: database-0004029505
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004029505
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004029505
   - id: database-0004062616
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004062616
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004062616
 columns:
   - name: fiscal_year
     title: 年度
