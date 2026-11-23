@@ -154,130 +154,130 @@ licenses:
 sources:
   - id: e-stat
     title: e-Stat（政府統計の総合窓口）
-    path: https://www.e-stat.go.jp/
+    url: https://www.e-stat.go.jp/
   - id: gis
     title: 統計GIS 境界データ・小地域集計
-    path: https://www.e-stat.go.jp/gis
+    url: https://www.e-stat.go.jp/gis
   - id: cities
     title: 市区町村を探す（e-Stat）
-    path: https://www.e-stat.go.jp/municipalities/cities
+    url: https://www.e-stat.go.jp/municipalities/cities
   - id: jinkou_jinkoudoutai-setaisuu
     title: 住民基本台帳に基づく人口、人口動態及び世帯数（総務省）
-    path: https://www.soumu.go.jp/main_sosiki/jichi_gyousei/daityo/jinkou_jinkoudoutai-setaisuu.html
+    url: https://www.soumu.go.jp/main_sosiki/jichi_gyousei/daityo/jinkou_jinkoudoutai-setaisuu.html
   - id: idou
     title: 住民基本台帳人口移動報告（総務省統計局）
-    path: https://www.stat.go.jp/data/idou/
+    url: https://www.stat.go.jp/data/idou/
   - id: kakei
     title: 家計調査（総務省統計局）
-    path: https://www.stat.go.jp/data/kakei/
+    url: https://www.stat.go.jp/data/kakei/
   - id: roudou
     title: 労働力調査（総務省統計局）
-    path: https://www.stat.go.jp/data/roudou/
+    url: https://www.stat.go.jp/data/roudou/
   - id: statistics-00550010
     title: 工業統計調査（経済産業省）
-    path: https://www.e-stat.go.jp/statistics/00550010
+    url: https://www.e-stat.go.jp/statistics/00550010
   - id: files-00200251
     title: 地方財政状況調査（総務省）
-    path: https://www.e-stat.go.jp/stat-search/files?toukei=00200251
+    url: https://www.e-stat.go.jp/stat-search/files?toukei=00200251
   - id: kouri
     title: 小売物価統計調査（総務省統計局）
-    path: https://www.stat.go.jp/data/kouri/
+    url: https://www.stat.go.jp/data/kouri/
   - id: files-00450041
     title: 社会福祉施設等調査（厚生労働省）
-    path: https://www.e-stat.go.jp/stat-search/files?toukei=00450041
+    url: https://www.e-stat.go.jp/stat-search/files?toukei=00450041
   - id: statistics-00450021
     title: 医療施設調査（厚生労働省）
-    path: https://www.e-stat.go.jp/statistics/00450021
+    url: https://www.e-stat.go.jp/statistics/00450021
   - id: files-00450042
     title: 介護サービス施設・事業所調査（厚生労働省）
-    path: https://www.e-stat.go.jp/stat-search/files?toukei=00450042
+    url: https://www.e-stat.go.jp/stat-search/files?toukei=00450042
   - id: files-00450351
     title: 介護保険事業状況報告（厚生労働省）
-    path: https://www.e-stat.go.jp/stat-search/files?toukei=00450351
+    url: https://www.e-stat.go.jp/stat-search/files?toukei=00450351
   - id: files-00551005
     title: エネルギー消費統計調査（資源エネルギー庁）
-    path: https://www.e-stat.go.jp/stat-search/files?toukei=00551005
+    url: https://www.e-stat.go.jp/stat-search/files?toukei=00551005
   - id: shugyou
     title: 就業構造基本調査（総務省統計局）
-    path: https://www.stat.go.jp/data/shugyou/
+    url: https://www.stat.go.jp/data/shugyou/
   - id: files-00450091
     title: 賃金構造基本統計調査（厚生労働省）
-    path: https://www.e-stat.go.jp/stat-search/files?toukei=00450091
+    url: https://www.e-stat.go.jp/stat-search/files?toukei=00450091
   - id: toukei
     title: 民間給与実態統計調査（国税庁）
-    path: https://www.nta.go.jp/publication/statistics/kokuzeicho/minkan/toukei.htm
+    url: https://www.nta.go.jp/publication/statistics/kokuzeicho/minkan/toukei.htm
   - id: statistics-00500215
     title: 作物統計調査 作況調査（野菜）（農林水産省）
-    path: https://www.e-stat.go.jp/statistics/00500215
+    url: https://www.e-stat.go.jp/statistics/00500215
   - id: zenkokukakei-2019
     title: 全国家計構造調査（総務省統計局）
-    path: https://www.stat.go.jp/data/zenkokukakei/2019/index.html
+    url: https://www.stat.go.jp/data/zenkokukakei/2019/index.html
   - id: terms-10
     title: 日本標準産業分類（e-Stat 統計分類・用語の検索）
-    path: https://www.e-stat.go.jp/classifications/terms/10
+    url: https://www.e-stat.go.jp/classifications/terms/10
   - id: statistics-00450011
     title: 人口動態調査（厚生労働省）
-    path: https://www.e-stat.go.jp/statistics/00450011
+    url: https://www.e-stat.go.jp/statistics/00450011
   - id: statistics-00600350
     title: 鉄道輸送統計調査（国土交通省）
-    path: https://www.e-stat.go.jp/statistics/00600350
+    url: https://www.e-stat.go.jp/statistics/00600350
   - id: statistics-00600280
     title: 港湾調査（国土交通省）
-    path: https://www.e-stat.go.jp/statistics/00600280
+    url: https://www.e-stat.go.jp/statistics/00600280
   - id: bos
     title: 法人企業景気予測調査（内閣府・財務省）
-    path: https://www.mof.go.jp/pri/reference/bos/
+    url: https://www.mof.go.jp/pri/reference/bos/
   - id: syoudou
     title: 商業動態統計調査（経済産業省）
-    path: https://www.meti.go.jp/statistics/tyo/syoudou/
+    url: https://www.meti.go.jp/statistics/tyo/syoudou/
   - id: seidou
     title: 経済産業省生産動態統計（経済産業省）
-    path: https://www.meti.go.jp/statistics/tyo/seidou/
+    url: https://www.meti.go.jp/statistics/tyo/seidou/
   - id: statistics-00200555
     title: 経済構造実態調査（総務省・経済産業省）
-    path: https://www.e-stat.go.jp/statistics/00200555
+    url: https://www.e-stat.go.jp/statistics/00200555
   - id: kikatu
     title: 経済産業省企業活動基本調査（経済産業省）
-    path: https://www.meti.go.jp/statistics/tyo/kikatu/
+    url: https://www.meti.go.jp/statistics/tyo/kikatu/
   - id: ssc
     title: 法人企業統計調査（財務省）
-    path: https://www.mof.go.jp/pri/reference/ssc/
+    url: https://www.mof.go.jp/pri/reference/ssc/
   - id: info
     title: 普通貿易統計（財務省）
-    path: https://www.customs.go.jp/toukei/info/
+    url: https://www.customs.go.jp/toukei/info/
 
 contributors:
   - id: stat
     title: 総務省統計局
-    path: https://www.stat.go.jp/
+    url: https://www.stat.go.jp/
     roles: [rightsHolder]
   - id: meti
     title: 経済産業省
-    path: https://www.meti.go.jp/
+    url: https://www.meti.go.jp/
     roles: [rightsHolder]
   - id: mhlw
     title: 厚生労働省
-    path: https://www.mhlw.go.jp/
+    url: https://www.mhlw.go.jp/
     roles: [rightsHolder]
   - id: nta
     title: 国税庁
-    path: https://www.nta.go.jp/
+    url: https://www.nta.go.jp/
     roles: [rightsHolder]
   - id: maff
     title: 農林水産省
-    path: https://www.maff.go.jp/
+    url: https://www.maff.go.jp/
     roles: [rightsHolder]
   - id: mlit
     title: 国土交通省
-    path: https://www.mlit.go.jp/
+    url: https://www.mlit.go.jp/
     roles: [rightsHolder]
   - id: mof
     title: 財務省
-    path: https://www.mof.go.jp/
+    url: https://www.mof.go.jp/
     roles: [rightsHolder]
   - id: cao
     title: 内閣府
-    path: https://www.cao.go.jp/
+    url: https://www.cao.go.jp/
     roles: [rightsHolder]
 
 temporal_coverage: {start: "1970", end: null}

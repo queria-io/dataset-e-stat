@@ -17,7 +17,7 @@ topics:
   - 月次
 sources:
   - id: dbview-0003423105
-    path: https://www.e-stat.go.jp/dbview?sid=0003423105
+    url: https://www.e-stat.go.jp/dbview?sid=0003423105
 columns:
   - name: operator_type_code
     title: 業態コード

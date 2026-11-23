@@ -20,11 +20,11 @@ columns:
   - name: mesh_code
     title: 250mメッシュコード（10桁）
     description: 4分の1地域メッシュのコード（10桁）。上8桁が3次メッシュ（1km）、9桁目が2分の1地域メッシュ（500m）、10桁目が4分の1地域メッシュ（250m）の位置
-    entity: {type: foreign, name: mesh}
+    entity: mesh
   - name: mesh_1km_code
     title: 3次メッシュコード（8桁）
     description: mesh_code の上8桁。境界データ mesh_1km の mesh_code と結合できる
-    entity: {type: foreign, name: mesh}
+    entity: mesh
   - name: mesh1_code
     title: 1次メッシュコード（4桁）
     description: mesh_code の上4桁。統計表の配布単位で、約80km四方

@@ -18,23 +18,23 @@ topics:
   - 付加価値
 sources:
   - id: database-0003060791
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003060791
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003060791
   - id: database-0003061945
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003061945
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003061945
   - id: database-0003061947
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003061947
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003061947
   - id: database-0003060824
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003060824
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003060824
   - id: database-0003060825
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003060825
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003060825
   - id: database-0003060826
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003060826
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003060826
   - id: database-0003060827
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003060827
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003060827
   - id: database-0003060828
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003060828
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003060828
   - id: database-0003060829
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003060829
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003060829
 columns:
   - name: scope
     title: 対象業種の範囲

@@ -51,7 +51,7 @@ columns:
   - name: pref_code
     title: 都道府県コード（2桁）
     description: area_code の先頭 2 桁
-    entity: {type: foreign, name: prefecture}
+    entity: prefecture
   - name: area_code
     title: 標準地域コード（5桁）
     description: その期間の標準地域コード（5桁）。合併で使われなくなったコードも含む。soumu.code.municipality の area_code と同じ体系
@@ -70,4 +70,4 @@ columns:
   - name: current_area_code
     title: 今の標準地域コード（合併後のコード）
     description: このコードの今の標準地域コード。今も使われているコードは自分自身、合併・編入で使われなくなったコードは引き継いだ団体を今までたどったコード。分割などで引き継ぎ先が 1 つに決まらないときは NULL
-    entity: {type: foreign, name: city}
+    entity: city

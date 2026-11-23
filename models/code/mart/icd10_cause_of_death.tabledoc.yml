@@ -14,7 +14,7 @@ topics:
 primary_key: [revision, code]
 sources:
   - id: terms-60
-    path: https://www.e-stat.go.jp/classifications/terms/60
+    url: https://www.e-stat.go.jp/classifications/terms/60
 columns:
   - name: revision
     title: 版（2013 / 2003 / 1994）

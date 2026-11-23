@@ -32,7 +32,7 @@ columns:
   - name: area
     title: 標準地域コード（5桁）
     description: 地区を含む市区町村（政令指定都市と特別区部では区）の標準地域コード。計の行はその地域自身のコード（全国 00000、都道府県 13000 など）。retail_municipality・establishment_industry の area・soumu.code.municipality の area_code と同じ体系
-    entity: {type: foreign, name: city}
+    entity: city
   - name: parent_district_code
     title: 上位の district_code
     description: 1つ上の計の行。地区の親は市区町村の計か区の計、区の親は政令指定都市・特別区部の計、市区町村の親は都道府県の計、都道府県の親は全国の計。全国は NULL

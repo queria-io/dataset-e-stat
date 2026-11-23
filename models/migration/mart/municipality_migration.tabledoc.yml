@@ -15,14 +15,14 @@ topics:
   - 市区町村
 sources:
   - id: dbview-0003419945
-    path: https://www.e-stat.go.jp/dbview?sid=0003419945
+    url: https://www.e-stat.go.jp/dbview?sid=0003419945
   - id: dbview-0003461887
-    path: https://www.e-stat.go.jp/dbview?sid=0003461887
+    url: https://www.e-stat.go.jp/dbview?sid=0003461887
 columns:
   - name: area
     title: 標準地域コード（5桁）
     description: 地域コード（5桁）。00000=全国、下3桁が000は都道府県、001／002は市部／郡部の集計。標準地域コード（6桁）とは桁が違うので、lg_code や address_br と結合するときは桁を揃える。soumu.code.municipality の area_code・census 系の area と同じ体系
-    entity: {type: foreign, name: city}
+    entity: city
   - name: area_name
     title: 地域名
     description: area に対応する地域名。市区町村は「千代田区」「札幌市」のように名称のみで、都道府県名は付かない

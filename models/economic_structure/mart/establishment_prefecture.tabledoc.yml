@@ -15,13 +15,13 @@ topics:
   - 都道府県
 sources:
   - id: database-0004009880
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004009880
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004009880
   - id: database-0004021920
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004021920
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004021920
   - id: database-0004032882
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004032882
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004032882
   - id: database-0004068497
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004068497
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004068497
 columns:
   - name: year
     title: 調査年

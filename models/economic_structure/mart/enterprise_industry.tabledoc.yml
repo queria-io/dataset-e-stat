@@ -19,17 +19,17 @@ topics:
   - 産業小分類
 sources:
   - id: database-0003414933
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003414933
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003414933
   - id: database-0003433753
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003433753
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003433753
   - id: database-0004007360
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004007360
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004007360
   - id: database-0004018720
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004018720
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004018720
   - id: database-0004030059
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004030059
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004030059
   - id: database-0004055461
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004055461
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004055461
 columns:
   - name: year
     title: 調査年

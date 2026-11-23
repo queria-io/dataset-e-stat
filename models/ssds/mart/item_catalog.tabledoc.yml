@@ -7,7 +7,7 @@ topics:
   - 社会・人口統計体系
 sources:
   - id: ssds-2
-    path: https://www.stat.go.jp/data/ssds/2.html
+    url: https://www.stat.go.jp/data/ssds/2.html
 columns:
   - name: table_title
     title: 統計表題名

@@ -15,7 +15,7 @@ topics:
 primary_key: [revision, code]
 sources:
   - id: terms-30
-    path: https://www.e-stat.go.jp/classifications/terms/30
+    url: https://www.e-stat.go.jp/classifications/terms/30
 columns:
   - name: revision
     title: 改定年（1990）

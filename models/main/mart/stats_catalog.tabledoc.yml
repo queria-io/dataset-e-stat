@@ -11,7 +11,7 @@ topics:
   - カタログ
 sources:
   - id: database
-    path: https://www.e-stat.go.jp/stat-search/database
+    url: https://www.e-stat.go.jp/stat-search/database
 columns:
   - name: stats_data_id
     title: 統計表ID

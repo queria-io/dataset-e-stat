@@ -14,9 +14,9 @@ topics:
   - 品目
 sources:
   - id: dbview-0004023601
-    path: https://www.e-stat.go.jp/dbview?sid=0004023601
+    url: https://www.e-stat.go.jp/dbview?sid=0004023601
   - id: dbview-0004023605
-    path: https://www.e-stat.go.jp/dbview?sid=0004023605
+    url: https://www.e-stat.go.jp/dbview?sid=0004023605
 columns:
   - name: cat01
     title: 品目コード

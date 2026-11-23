@@ -13,17 +13,17 @@ topics:
   - 外資系企業
 sources:
   - id: database-0003458233
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003458233
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003458233
   - id: database-0003459124
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003459124
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0003459124
   - id: database-0004018990
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004018990
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004018990
   - id: database-0004019555
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004019555
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004019555
   - id: database-0004029519
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004029519
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004029519
   - id: database-0004062631
-    path: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004062631
+    url: https://www.e-stat.go.jp/stat-search/database?statdisp_id=0004062631
 columns:
   - name: fiscal_year
     title: 年度

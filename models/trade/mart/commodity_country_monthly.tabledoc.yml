@@ -18,7 +18,7 @@ topics:
   - 国別
 sources:
   - id: files-00350300
-    path: https://www.e-stat.go.jp/stat-search/files?toukei=00350300
+    url: https://www.e-stat.go.jp/stat-search/files?toukei=00350300
 columns:
   - name: flow
     title: 輸出入

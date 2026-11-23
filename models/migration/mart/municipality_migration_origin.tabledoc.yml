@@ -17,33 +17,33 @@ topics:
 sources:
   - sankouhyo
   - id: dbview-0003150300
-    path: https://www.e-stat.go.jp/dbview?sid=0003150300
+    url: https://www.e-stat.go.jp/dbview?sid=0003150300
   - id: dbview-0003149520
-    path: https://www.e-stat.go.jp/dbview?sid=0003149520
+    url: https://www.e-stat.go.jp/dbview?sid=0003149520
   - id: dbview-0003146921
-    path: https://www.e-stat.go.jp/dbview?sid=0003146921
+    url: https://www.e-stat.go.jp/dbview?sid=0003146921
   - id: dbview-0003150940
-    path: https://www.e-stat.go.jp/dbview?sid=0003150940
+    url: https://www.e-stat.go.jp/dbview?sid=0003150940
   - id: dbview-0003159820
-    path: https://www.e-stat.go.jp/dbview?sid=0003159820
+    url: https://www.e-stat.go.jp/dbview?sid=0003159820
   - id: dbview-0003213995
-    path: https://www.e-stat.go.jp/dbview?sid=0003213995
+    url: https://www.e-stat.go.jp/dbview?sid=0003213995
   - id: dbview-0003283015
-    path: https://www.e-stat.go.jp/dbview?sid=0003283015
+    url: https://www.e-stat.go.jp/dbview?sid=0003283015
   - id: dbview-0003413173
-    path: https://www.e-stat.go.jp/dbview?sid=0003413173
+    url: https://www.e-stat.go.jp/dbview?sid=0003413173
   - id: dbview-0003420493
-    path: https://www.e-stat.go.jp/dbview?sid=0003420493
+    url: https://www.e-stat.go.jp/dbview?sid=0003420493
   - id: dbview-0003448458
-    path: https://www.e-stat.go.jp/dbview?sid=0003448458
+    url: https://www.e-stat.go.jp/dbview?sid=0003448458
   - id: dbview-0004003460
-    path: https://www.e-stat.go.jp/dbview?sid=0004003460
+    url: https://www.e-stat.go.jp/dbview?sid=0004003460
   - id: dbview-0004014380
-    path: https://www.e-stat.go.jp/dbview?sid=0004014380
+    url: https://www.e-stat.go.jp/dbview?sid=0004014380
   - id: dbview-0004026700
-    path: https://www.e-stat.go.jp/dbview?sid=0004026700
+    url: https://www.e-stat.go.jp/dbview?sid=0004026700
   - id: dbview-0004044293
-    path: https://www.e-stat.go.jp/dbview?sid=0004044293
+    url: https://www.e-stat.go.jp/dbview?sid=0004044293
 columns:
   - name: year
     title: 年
@@ -51,7 +51,7 @@ columns:
   - name: origin_code
     title: 前住地の標準地域コード（5桁）
     description: 移動前の住所地（前住地）の地域コード（5桁）。標準地域コード（6桁）とは桁が違う。soumu.code.municipality の area_code・municipality_migration の area と同じ体系。00005=総数、99000=その他の県、末尾999=その他の市町村、政令指定都市コード+99（01199 など）=その他の区。この表では前住地が相手の地域で、総数とその他の行を持つ
-    entity: {type: foreign, name: city}
+    entity: city
   - name: origin_name
     title: 前住地の地域名
     description: 前住地の地域名。政令指定都市の区は2019年以前が「札幌市中央区」、2020年以降が「中央区」のように年で表記が違うので、区は origin_code で見分ける
@@ -64,7 +64,7 @@ columns:
   - name: destination_code
     title: 現住地の標準地域コード（5桁）
     description: 移動後の住所地（現住地）の地域コード（5桁）。体系は origin_code と同じ。この表では現住地が表の主の地域で、総数とその他の行は持たない
-    entity: {type: foreign, name: city}
+    entity: city
   - name: destination_name
     title: 現住地の地域名
     description: 現住地の地域名。区の表記は origin_name と同じく年で違う

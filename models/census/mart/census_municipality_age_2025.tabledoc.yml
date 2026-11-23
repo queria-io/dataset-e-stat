@@ -21,7 +21,7 @@ columns:
   - name: area
     title: 標準地域コード（5桁）
     description: 標準地域コード。census_municipality_2025 の area と同じ体系。全国地方公共団体コード（6桁）とは別体系
-    entity: {type: foreign, name: city}
+    entity: city
   - name: area_name
     title: 地域名
     description: 地域の名称。2000年市区町村の行は「（旧：戸井町）」のように括弧付きで入る
