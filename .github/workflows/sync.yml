@@ -17,7 +17,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
-    uses: queria-io/dataset-shared/.github/workflows/sync.yml@d3bbf1d881a8ee5856df5a5d7a92973d233a1525
+    uses: queria-io/dataset-shared/.github/workflows/sync.yml@0eccc3cd8a42b3fd4b08fb3d2025ad6df5035407
     with:
       dataset_name: e_stat
       # 共通の既定 90 分では足りない。成功ランの実測は最大 210 分
