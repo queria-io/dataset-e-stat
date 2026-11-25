@@ -41,11 +41,9 @@ columns:
   - name: kigo_d
     title: 特殊記号D
     description: D=飛び地、D1=抜け地（飛び地）
-    dimension: categorical
   - name: kigo_i
     title: 特殊記号I
     description: I=島
-    dimension: categorical
   - name: jinko
     title: 人口
     description: 当該町丁・字等の人口。元データではKIGO_E=En(n≧2)の場合は0
