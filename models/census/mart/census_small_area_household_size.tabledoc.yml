@@ -28,15 +28,19 @@ columns:
   - name: cat01
     title: 世帯人員コード
     description: 世帯人員コード（4桁）。0010=一般世帯数（総数。6人以上を含む）、0020〜0060=世帯人員1人〜5人の世帯数、0070=一般世帯人員（人）、0080=1世帯当たり人員（人／世帯）。6人以上の世帯数の行は無く、0010 から 0020〜0060 を引いた差にあたる。0070 と 0080 は単位が違うので、cat01 を絞らずに value を合計すると意味の無い数になる
+    dimension: categorical
   - name: household_size
     title: 世帯人員名
     description: cat01 に対応する名称。先頭の全角空白は元データの階層表現をそのまま残したもので、字下げのある行が総数の内訳
+    dimension: categorical
   - name: cat02
     title: 秘匿・合算区分コード
     description: 秘匿・合算区分のコード。1=無し、2=合算、3=秘匿
+    dimension: categorical
   - name: secrecy
     title: 秘匿・合算区分名（無し/合算/秘匿）
     description: cat02 に対応する区分名（無し／合算／秘匿）
+    dimension: categorical
   - name: unit
     title: 単位
     description: 単位。cat01 によって違い、0010〜0060 は「世帯」、0070 は「人」、0080 は「*人／世帯」（先頭の * も元データの表記のまま）

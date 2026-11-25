@@ -27,15 +27,19 @@ columns:
   - name: cat01
     title: 家族類型コード
     description: 世帯の家族類型コード（4桁）。0010=一般世帯総数、0020=親族世帯、0030=核家族世帯、0040/0050=そのうち夫婦のみ／夫婦と子供、0060=核家族以外。総数と内訳が同じ列に混在するため、cat01 を絞らずに value を合計すると二重計上になる
+    dimension: categorical
   - name: family_type
     title: 世帯の家族類型名
     description: cat01 に対応する家族類型名。先頭の全角空白は元データの階層表現をそのまま残したもので、字下げが深いほど下位の内訳
+    dimension: categorical
   - name: cat02
     title: 秘匿・合算区分コード
     description: 秘匿・合算区分のコード。1=無し、2=合算、3=秘匿
+    dimension: categorical
   - name: secrecy
     title: 秘匿・合算区分名（無し/合算/秘匿）
     description: cat02 に対応する区分名（無し／合算／秘匿）
+    dimension: categorical
   - name: unit
     title: 単位
     description: 単位。この表では常に「世帯」

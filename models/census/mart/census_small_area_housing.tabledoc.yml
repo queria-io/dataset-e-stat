@@ -27,15 +27,19 @@ columns:
   - name: cat01
     title: 住宅の種類・所有の関係コード
     description: 住宅の種類・所有の関係コード（4桁）。0010=住宅に住む一般世帯（総数）、0020=持ち家、0030=民営借家 以降が内訳。総数と内訳が同じ列に混在するため、cat01 を絞らずに value を合計すると二重計上になる
+    dimension: categorical
   - name: tenure
     title: 住宅の種類・所有の関係名
     description: cat01 に対応する住宅の種類・所有の関係名（住宅に住む一般世帯、持ち家、民営借家 など）
+    dimension: categorical
   - name: cat02
     title: 秘匿・合算区分コード
     description: 秘匿・合算区分のコード。1=無し、2=合算、3=秘匿
+    dimension: categorical
   - name: secrecy
     title: 秘匿・合算区分名（無し/合算/秘匿）
     description: cat02 に対応する区分名（無し／合算／秘匿）
+    dimension: categorical
   - name: unit
     title: 単位
     description: 単位。この表では常に「世帯」

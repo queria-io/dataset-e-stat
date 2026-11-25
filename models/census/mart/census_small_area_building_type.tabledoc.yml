@@ -30,15 +30,19 @@ columns:
   - name: cat01
     title: 住宅の建て方コード
     description: 住宅の建て方コード（4桁）。0010=主世帯数（総数）、0020=一戸建、0030=長屋建、0040=共同住宅、0050〜0080=共同住宅のうち1・2階建／3〜5階建／6〜10階建／11階建以上、0090=その他。0040 は 0050〜0080 の合計なので、cat01 を絞らずに value を合計すると二重・三重の計上になる
+    dimension: categorical
   - name: building_type
     title: 住宅の建て方名
     description: cat01 に対応する住宅の建て方名（主世帯数、一戸建、共同住宅１１階建以上 など）
+    dimension: categorical
   - name: cat02
     title: 秘匿・合算区分コード
     description: 秘匿・合算区分のコード。1=無し、2=合算、3=秘匿
+    dimension: categorical
   - name: secrecy
     title: 秘匿・合算区分名（無し/合算/秘匿）
     description: cat02 に対応する区分名（無し／合算／秘匿）
+    dimension: categorical
   - name: unit
     title: 単位
     description: 単位。この表では常に「世帯」

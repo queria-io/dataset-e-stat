@@ -28,19 +28,22 @@ columns:
   - name: mesh1_code
     title: 1次メッシュコード（4桁）
     description: mesh_code の上4桁。統計表の配布単位で、約80km四方
-    dimension: categorical
   - name: cat01
     title: 区分コード
     description: 年齢別人口・世帯の種類別世帯数等の区分コード（4桁）。0010 人口総数、0040 0〜14歳、0100 15〜64歳、0130 18歳以上、0160 20歳以上、0190 65歳以上、0220 75歳以上、0310 外国人、0340 世帯総数など50区分。総数と内訳が同じ列に並ぶので、cat01 を絞らずに value を合計すると重複する
+    dimension: categorical
   - name: category
     title: 区分名
     description: cat01 に対応する区分名（「人口（総数）」「１８歳以上人口　総数」など）
+    dimension: categorical
   - name: cat02
     title: 秘匿・合算区分コード
     description: 1=無し、2=合算、3=秘匿。秘匿のメッシュは年齢などの内訳が0で、その人数は合算先（cat02=2）のメッシュの内訳に含まれる
+    dimension: categorical
   - name: suppression
     title: 秘匿・合算区分名
     description: cat02 に対応する区分名（無し／合算／秘匿）
+    dimension: categorical
   - name: unit
     title: 単位
     description: 人または世帯
