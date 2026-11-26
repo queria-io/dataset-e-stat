@@ -34,9 +34,9 @@ columns:
   - name: cat02
     title: 秘匿・合算区分コード
     description: 秘匿・合算区分のコード。1=無し、2=合算、3=秘匿。男女区分ではない（男女は cat01 側に入っている）
-  - name: sex
+  - name: secrecy
     title: 秘匿・合算区分名（無し/合算/秘匿）
-    description: cat02 に対応する区分名（無し／合算／秘匿）。列名は sex だが中身は秘匿・合算区分で、男女ではない
+    description: cat02 に対応する区分名（無し／合算／秘匿）
   - name: unit
     title: 単位
     description: 単位。この表では常に「人」

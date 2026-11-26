@@ -12,7 +12,7 @@
 | census_small_area_building_type | 住宅の建て方別世帯数 | 住宅の建て方 | 主世帯数 |
 | census_small_area_economic_type | 世帯の経済構成別一般世帯数 | 世帯の経済構成 | 一般世帯数 |
 
-7表とも `area` / `area_name` / `area_level` / `cat01` / 主分類名 / `cat02` / 秘匿区分名 / `unit` / `value` の9カラムです。主分類の名称列だけテーブルごとに `age_class` / `family_type` / `industry` / `tenure` / `household_size` / `building_type` / `economic_type` と名前が違います。
+7表とも `area` / `area_name` / `area_level` / `cat01` / 主分類名 / `cat02` / `secrecy` / `unit` / `value` の9カラムです。主分類の名称列だけテーブルごとに `age_class` / `family_type` / `industry` / `tenure` / `household_size` / `building_type` / `economic_type` と名前が違います。
 
 `census_small_area_household_size` は `cat01` によって単位が違います。`0010`〜`0060` は世帯数、`0070` は一般世帯人員（人）、`0080` は1世帯当たり人員（人／世帯）です。
 
@@ -46,8 +46,6 @@ LIMIT 10
 `census_small_area_age` の `cat01` は男女と年齢区分をまとめて表します。総数が `0010`〜`0200`、男が `0210`〜`0400`、女が `0410`〜`0600` です。
 
 各区分の中に「総数、年齢「不詳」含む」と5歳階級と4区分（15歳未満・15〜64歳・65歳以上・75歳以上）が同居しているので、`cat01` を絞らずに合計すると何重にも重複します。
-
-列名が `sex` の列は男女ではなく秘匿・合算区分です（他の3表の `secrecy` と同じもの）。名前が実態と合っていませんが、公開済みのため変えていません。
 
 ```sql
 -- 高齢化率（65歳以上 / 総数）を町丁・字等の単位で
@@ -129,9 +127,8 @@ area には市区町村・町丁・字等・その内訳の3階層が含まれ�
 
 #### 地域の粒度
 
-7表とも cat02 は秘匿・合算区分です。census_small_area_age だけ名称列が sex という
-名前ですが、中身は他の6表の secrecy と同じ秘匿・合算区分で、男女は cat01 側
-（総数 / 男 / 女 × 年齢区分）に入っています。主分類の名称列はテーブルごとに
+7表とも cat02 は秘匿・合算区分で、名称列は secrecy です。
+census_small_area_age の男女は cat01 側（総数 / 男 / 女 × 年齢区分）に入っています。主分類の名称列はテーブルごとに
 age_class / family_type / industry / tenure / household_size / building_type /
 economic_type として展開しています。
 
