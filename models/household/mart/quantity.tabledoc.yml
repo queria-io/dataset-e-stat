@@ -22,9 +22,11 @@ columns:
   - name: cat01
     title: 品目コード
     description: 品目コード（9桁）。expenditure と同じ体系で、数量を調査している204品目だけが入る
+    dimension: categorical
   - name: item_name
     title: 品目名
     description: cat01 に対応する品目名。「1.1.1 米」のように分類番号が前置される
+    dimension: categorical
   - name: item_level
     title: 品目階層
     description: 品目階層の深さ（2〜5）。数量を調査している品目だけなので、消費支出や10大費目にあたる level=1 の行は無く、level=2 も電気代（1kWh）1項目だけ
@@ -34,9 +36,11 @@ columns:
   - name: cat02
     title: 世帯区分コード
     description: 世帯区分コード。03=二人以上の世帯（2000年〜）、04=そのうち勤労者世帯、01=二人以上の世帯（農林漁家世帯を除く／1985〜2007年,2017年）、02=そのうち勤労者世帯。括弧内は e-Stat の区分名だが、実際は 01/02 が2017年まで、03/04 が2000年〜で、2000〜2017年は両方に行がある。絞らずに集計するとその18年を二重に数える。地域別の内訳を持つのは 03 だけ
+    dimension: categorical
   - name: household_type
     title: 世帯区分名
     description: cat02 に対応する世帯区分名
+    dimension: categorical
   - name: area
     title: 地域コード
     description: 地域コード（5桁）。月次は 00000（全国）だけ。年次は expenditure と同じ53区分で、コードも expenditure と共通

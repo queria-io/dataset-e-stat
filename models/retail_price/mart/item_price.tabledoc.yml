@@ -20,9 +20,11 @@ columns:
   - name: cat02
     title: 品目コード
     description: 品目コード（5桁）。e-Stat の分類軸「銘柄」で、階層は無く全品目が同じ高さに並ぶ。品目番号は item_name の先頭にも付く。2015年1月・2020年1月の符号変更で同じ品目に新旧2つのコードがあることがあり、item_note に移動先の番号が入る
+    dimension: categorical
   - name: item_name
     title: 品目名
     description: cat02 に対応する品目名。「1001 うるち米(単一原料米,「コシヒカリ」)」のように品目番号が前置され、末尾に【…】の注記が付くことがある
+    dimension: categorical
   - name: item_note
     title: 品目の注記
     description: item_name の末尾に付く【…】の注記。調査終了年（【2021年12月調査終了】）、符号変更（【2015年01月から3511 電気代】）、表章単位（【表章単位：割合】）などで、注記の無い品目は NULL。現役の品目だけを見るなら調査終了の注記を除く

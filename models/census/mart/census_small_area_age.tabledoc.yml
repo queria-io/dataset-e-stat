@@ -28,15 +28,19 @@ columns:
   - name: cat01
     title: 男女・年齢区分コード
     description: 男女・年齢区分のコード（4桁）。0010〜0200 が総数、0210〜0400 が男、0410〜0600 が女で、男女の別もこの列に入っている。各区分の中に「総数、年齢「不詳」含む」と5歳階級と4区分（15歳未満・15〜64歳・65歳以上・75歳以上）が同居するため、cat01 を絞らずに value を合計すると何重にも重複する
+    dimension: categorical
   - name: age_class
     title: 男女・年齢区分名（5歳階級・4区分）
     description: cat01 に対応する区分名（「総数、年齢「不詳」含む」「　男６５歳以上」など）。先頭の全角空白は元データの階層表現をそのまま残したもの
+    dimension: categorical
   - name: cat02
     title: 秘匿・合算区分コード
     description: 秘匿・合算区分のコード。1=無し、2=合算、3=秘匿。男女区分ではない（男女は cat01 側に入っている）
+    dimension: categorical
   - name: secrecy
     title: 秘匿・合算区分名（無し/合算/秘匿）
     description: cat02 に対応する区分名（無し／合算／秘匿）
+    dimension: categorical
   - name: unit
     title: 単位
     description: 単位。この表では常に「人」

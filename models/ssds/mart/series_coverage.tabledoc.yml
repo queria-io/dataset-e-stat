@@ -17,9 +17,11 @@ columns:
   - name: cat01
     title: 分類事項コード
     description: 統計指標の項目符号。各 mart テーブルの cat01 と同じ値。符号の定義は https://www.stat.go.jp/data/ssds/2.html
+    dimension: categorical
   - name: item_name
     title: 分類事項名
     description: cat01 に対応する指標名。参照元テーブルの item_name と同じ値
+    dimension: categorical
   - name: min_year
     title: 収録開始年
     description: いずれかの地域に値が入っている最も古い年。地域をまたいだ和なので、地域を1つに絞ると始まりがこれより後になることがある。value が NULL の行（元データが「-」「X」）は数えない

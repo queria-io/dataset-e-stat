@@ -23,13 +23,14 @@ columns:
   - name: mesh1_code
     title: 1次メッシュコード（4桁）
     description: mesh_code の上4桁。統計表の配布単位で、約80km四方
-    dimension: categorical
   - name: cat01
     title: 区分コード
     description: 産業大分類×事業所数／従業者数の区分コード。0010 全産業の事業所数、0200 全産業の従業者数。総数と内訳が同じ列に並ぶので、cat01 を絞らずに value を合計すると重複する
+    dimension: categorical
   - name: category
     title: 区分名
     description: cat01 に対応する区分名
+    dimension: categorical
   - name: unit
     title: 単位
     description: 事業所または人

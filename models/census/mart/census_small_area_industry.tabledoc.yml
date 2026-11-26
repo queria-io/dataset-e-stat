@@ -27,15 +27,19 @@ columns:
   - name: cat01
     title: 産業大分類コード
     description: 産業大分類のコード（4桁）。0010=総数、0020 以降が日本標準産業分類の大分類（Ａ農業、林業／Ｂ漁業…）。総数と「うち農業」のような内訳が同じ列に混在するため、cat01 を絞らずに value を合計すると二重計上になる
+    dimension: categorical
   - name: industry
     title: 産業大分類名
     description: cat01 に対応する産業大分類名（総数、Ａ農業、林業 など）。「うち農業」で始まる行は直前の大分類の内訳
+    dimension: categorical
   - name: cat02
     title: 秘匿・合算区分コード
     description: 秘匿・合算区分のコード。1=無し、2=合算、3=秘匿
+    dimension: categorical
   - name: secrecy
     title: 秘匿・合算区分名（無し/合算/秘匿）
     description: cat02 に対応する区分名（無し／合算／秘匿）
+    dimension: categorical
   - name: unit
     title: 単位
     description: 単位。この表では常に「人」

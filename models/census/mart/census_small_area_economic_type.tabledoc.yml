@@ -29,15 +29,19 @@ columns:
   - name: cat01
     title: 世帯の経済構成コード
     description: 世帯の経済構成コード（4桁）。0010=総数、0020=農林漁業就業者世帯、0030=農林漁業・非農林漁業就業者混合世帯、0040=非農林漁業就業者世帯、0050=非就業者世帯、0060=分類不能の世帯。総数と内訳が同じ列に混在するため、cat01 を絞らずに value を合計すると二重計上になる
+    dimension: categorical
   - name: economic_type
     title: 世帯の経済構成名
     description: cat01 に対応する世帯の経済構成名（総数、非農林漁業就業者世帯、非就業者世帯 など）
+    dimension: categorical
   - name: cat02
     title: 秘匿・合算区分コード
     description: 秘匿・合算区分のコード。1=無し、2=合算、3=秘匿
+    dimension: categorical
   - name: secrecy
     title: 秘匿・合算区分名（無し/合算/秘匿）
     description: cat02 に対応する区分名（無し／合算／秘匿）
+    dimension: categorical
   - name: unit
     title: 単位
     description: 単位。この表では常に「世帯」

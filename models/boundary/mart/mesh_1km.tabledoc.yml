@@ -19,15 +19,12 @@ columns:
   - name: mesh1_code
     title: 1次メッシュコード
     description: 上位区画である1次メッシュ（約80km四方）のコード（4桁）。配布単位でもある
-    dimension: categorical
   - name: mesh2_code
     title: 2次メッシュ番号
     description: 1次メッシュ内の2次メッシュ（約10km四方）の位置（2桁）
-    dimension: categorical
   - name: mesh3_code
     title: 3次メッシュ番号
     description: 2次メッシュ内の3次メッシュ（約1km四方）の位置（2桁）
-    dimension: categorical
   - name: geometry
     title: メッシュポリゴン
     description: 'CRS: EPSG:4612'
