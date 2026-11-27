@@ -67,6 +67,13 @@ models:
         +materialized: table
       mart:
         +materialized: table
+    population_estimates:
+      raw:
+        +materialized: table
+      stg:
+        +materialized: table
+      mart:
+        +materialized: table
     census:
       raw:
         +materialized: table

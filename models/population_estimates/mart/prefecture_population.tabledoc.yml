@@ -1,0 +1,49 @@
+$schema: https://tabledoc.queria.io/schemas/table/v1.json
+title: 都道府県別 男女別の総人口・日本人人口（人口推計、令和2年国勢調査基準）
+description: |-
+  人口推計の各年10月1日現在人口を、全国と都道府県別に、男女別・総人口と日本人人口で持つテーブルです。2005年・2010年・2015年・2020年（国勢調査の人口）と2021〜2024年（推計）の8時点を収録しています。
+
+  - 令和2年国勢調査を基準にした値です。令和7年国勢調査を基準にした値は含みません
+  - 男女と人口の種類は計と内訳が同じ列に並ぶので、絞ってから合計してください
+topics:
+  - e-stat
+  - 人口推計
+  - 推計人口
+  - 総人口
+  - 日本人人口
+  - 都道府県
+  - 男女別
+sources:
+  - id: dbview-0003448232
+    url: https://www.e-stat.go.jp/dbview?sid=0003448232
+columns:
+  - name: area
+    title: 地域コード（5桁）
+    description: 標準地域コード。全国は 00000、都道府県は 13000 のように末尾 000
+    entity: city
+  - name: area_name
+    title: 地域名
+  - name: area_level
+    title: 地域の粒度
+    description: national=全国、prefecture=都道府県
+  - name: sex_code
+    title: 男女コード
+    description: 000=男女計、001=男、002=女
+  - name: sex
+    title: 男女
+  - name: population_type_code
+    title: 人口の種類コード
+    description: 001=総人口、002=日本人人口
+  - name: population_type
+    title: 人口の種類
+  - name: time
+    title: 時間軸コード
+    description: e-Stat の時間軸コード。2015年は 2015000001 のように、2005〜2015年は末尾が 01、2020年以降は 2020000000 のように末尾が 00
+  - name: year
+    title: 年
+    description: time から切り出した西暦4桁。10月1日現在
+  - name: population
+    title: 人口
+    description: 人口（千人）。千人未満を丸めた値で、男と女を足すと男女計と最大1千人、都道府県を足すと全国と最大3千人ずれる
+metrics:
+  - {name: population, agg: sum, expr: population}
